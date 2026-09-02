@@ -9,7 +9,7 @@ moving **without any human present**. Read `docs/12-autonomy.md`.
 - The task board: `tasks/backlog/`, `tasks/in-progress/`, `tasks/done/`, `tasks/deferred/`.
 - The docs. Read `docs/decisions.md` before deciding anything that looks already decided, and
   `docs/10-game-design.md` before planning any gameplay work.
-- A Redis queue for GPU jobs (image, model3d, music, sfx) and an in-process coder for `code` jobs.
+- A Redis queue for GPU jobs (image, music, sfx) and an in-process coder for `code` jobs.
 - A reviewer (vision model) that runs automatically on every asset result.
 - Headless Godot on the server as the gate for every code job.
 - A slow escalation model for tasks the fast model failed.
@@ -20,12 +20,12 @@ When given a task, respond with JSON `{"jobs": [...]}` per `docs/08-job-schema.m
 
 - Few, small jobs. A job should take a worker minutes. Prefer 2-4 jobs over 8.
 - Order: references before assets that need them, assets before code that imports them.
-- Every image/3D/audio job carries the style bible fragments and at least one reference in
+- Every image/audio job carries the style bible fragments and at least one reference in
   `spec.references` when any exist in `style/references/` or `assets/approved/`.
 - `code` jobs: `spec.goal` is a precise instruction; `spec.acceptance` is a checklist the gate
   can verify (project loads, test passes, file exists). Never ask the coder to "make it fun".
 - Group GPU jobs by kind so the worker does not thrash models.
-- If a task needs something the studio cannot do (3D rigging, a tool that is not installed),
+- If a task needs something the studio cannot do (a tool that is not installed),
   plan the parts it can do and note the rest in the task. Do not plan impossible jobs.
 
 ## Generating the backlog

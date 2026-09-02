@@ -26,5 +26,6 @@ reviewer. You do not have taste of your own; the style bible does.
 - Palette drift. Compare to the palette swatch before submitting.
 - Inconsistent character features between sprites. Always use the character reference sheet.
 - Text, watermarks, or signatures in the image.
+- Frames of an animation that change proportions, palette, or outline weight between frames.
 - Wrong perspective for the game's camera (top-down vs side-on vs isometric).
 - Non-transparent background on sprites.

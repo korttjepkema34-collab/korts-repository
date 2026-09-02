@@ -18,7 +18,6 @@ from pydantic import BaseModel, Field
 class JobKind(str, Enum):
     STUB = "stub"        # echoes back; for testing the pipeline end to end
     IMAGE = "image"      # ComfyUI: sprites, tiles, backgrounds, concept art
-    MODEL3D = "model3d"  # TRELLIS / Hunyuan3D: glTF assets
     MUSIC = "music"      # ACE-Step: tracks and loops
     SFX = "sfx"          # Stable Audio Open: short effects
     CODE = "code"        # handled in-process by the orchestrator's coder loop, never queued to the GPU worker
@@ -29,7 +28,6 @@ class Role(str, Enum):
     ORCHESTRATOR = "orchestrator"
     CODER = "coder"
     ARTIST_2D = "artist-2d"
-    ARTIST_3D = "artist-3d"
     AUDIO = "audio"
     REVIEWER = "reviewer"
 

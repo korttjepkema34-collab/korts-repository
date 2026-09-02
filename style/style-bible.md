@@ -1,7 +1,7 @@
 # Style bible
 
 **This is a template.** The game's genre and look are not decided yet (see
-`docs/open-questions.md`). Every art, 3D, and audio prompt must include the relevant section of
+`docs/open-questions.md`). Every art and audio prompt must include the relevant section of
 this file once it is filled in. The reviewer rejects anything that drifts from it.
 
 ## Game
@@ -34,12 +34,6 @@ this file once it is filled in. The reviewer rejects anything that drifts from i
 
 - Tile size: 16x16
 - Lighting: TBD
-
-## 3D (if applicable)
-
-- Poly budget per prop / character: TBD
-- Texture style: TBD (flat colour / hand-painted / PBR)
-- Scale: 1 unit = 1 metre, Y-up
 
 ## Audio
 

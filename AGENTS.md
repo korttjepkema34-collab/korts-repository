@@ -8,8 +8,8 @@ take, and the rules that apply to every role.
 
 A small studio made of AI workers, coordinated by one orchestrator model, supervised by a human
 owner (the creative director). The goal is for the AI team to do most of the production work:
-GDScript and scenes, 2D sprites and backgrounds, 3D models, music and sound effects, and
-eventually animation. The human sets direction, reviews, and approves.
+GDScript and scenes, 2D sprites, tiles and backgrounds, music and sound effects, and 2D
+animation. The human sets direction, reviews, and approves.
 
 The game is a **2D pixel-art online RPG**: a story campaign playable solo or co-op on a
 persistent shared world, built as a scope ladder towards an MMO. Read `docs/10-game-design.md`
@@ -21,7 +21,7 @@ dedicated server. See `docs/01-vision.md`.
 | Hostname | What it is | Runs |
 |---|---|---|
 | `server` | Home server, i7-10700K, 96 GB DDR4, no GPU (12 GB card planned), **Windows**, always on | Ollama (native), Redis + Forgejo (Docker Desktop), Syncthing (native), orchestrator (native Python), headless Godot for tests, dedicated game server later |
-| `gpu` | Gaming PC, Ryzen 9 7900X, 32 GB DDR5, RTX 3080 Ti 12 GB VRAM, Windows, online when not gaming | GPU worker daemon, ComfyUI, TRELLIS/Hunyuan3D, ACE-Step, Godot editor + Godot MCP server, optional coder LLM when the GPU is idle |
+| `gpu` | Gaming PC, Ryzen 9 7900X, 32 GB DDR5, RTX 3080 Ti 12 GB VRAM, Windows, online when not gaming | GPU worker daemon, ComfyUI, ACE-Step, optional Godot editor for interactive sessions |
 
 Connected over **Tailscale**. Use Tailscale hostnames or IPs, never public addresses.
 Full details: `docs/02-hardware.md`.
@@ -41,7 +41,7 @@ daily  ->  reports/YYYY-MM-DD.md + PROGRESS.md, committed and pushed
 
 Key rules: **the server never calls the gaming PC directly** (it enqueues, the worker pulls), and
 **the studio never waits for a human** (`docs/12-autonomy.md`). Code and planning continue when
-the gaming PC is off; only art, 3D and audio wait for it.
+the gaming PC is off; only art and audio wait for it.
 
 Details: `docs/03-architecture.md`. Job format: `docs/08-job-schema.md` and `shared/jobs.py`.
 
@@ -52,9 +52,8 @@ Each role has a system prompt in `agents/`. Load the one you are acting as.
 | Role | File | Where it runs | Model tier |
 |---|---|---|---|
 | Orchestrator / studio lead | `agents/orchestrator.md` | server (CPU, MoE model) | large MoE, needs planning + tool calling |
-| Coder | `agents/coder.md` | **server** (file edits + headless Godot, no editor needed) | strongest coder that fits in RAM |
+| Coder | `agents/coder.md` | **server** (file tools + headless gate + windowed screenshots + optional editor MCP) | strongest coder that fits in RAM |
 | 2D artist | `agents/artist-2d.md` | gpu (ComfyUI), later server too | small LLM + SDXL/FLUX |
-| 3D artist | `agents/artist-3d.md` | gpu (TRELLIS / Hunyuan3D) | small LLM + 3D model |
 | Audio | `agents/audio.md` | gpu (ACE-Step, Stable Audio Open), later server | small LLM + audio model |
 | Reviewer / QA | `agents/reviewer.md` | server (vision model) | vision-language model |
 
@@ -64,7 +63,7 @@ Model picks and alternatives: `docs/04-models.md`.
 
 1. **Server-authoritative gameplay, always.** Clients send inputs; the server simulates. See `docs/10-game-design.md`.
 2. **Godot 4 only.** GDScript 2.0 syntax. Never emit Godot 3 code. See `docs/09-godot-conventions.md`.
-3. **Every art, 3D, and audio prompt includes the style bible.** `style/style-bible.md` plus the
+3. **Every art and audio prompt includes the style bible.** `style/style-bible.md` plus the
    references in `style/references/`. Consistency beats individual quality.
 4. **Never write directly into `assets/approved/`.** Generated output goes to `assets/incoming/`.
    Only the reviewer moves things to `approved/` or `rejected/`.

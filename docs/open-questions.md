@@ -17,13 +17,13 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 - [ ] Exact Ollama tags for the Qwen MoE, Qwen3-Coder, Qwen3-VL and gpt-oss picks.
 - [ ] Whether the vision reviewer model handles 4 candidate images plus 2 references in one call
       on CPU in reasonable time. If not, lower to 2 candidates in `reviewer.py`.
-- [ ] Hunyuan3D texture stage on 12 GB; Stable Audio Open version and licence.
+- [ ] Stable Audio Open version and licence.
 - [ ] Server case clearance and PSU headroom for a full-size GPU.
 
 ## Not started
 
-- [ ] Audio and 3D review (currently auto-approved on existence).
-- [ ] TRELLIS and audio API wrappers (`worker/services/`).
+- [ ] Audio review (currently auto-approved on existence).
+- [ ] Audio API wrapper (`worker/services/`).
 - [ ] Nakama compose entry for scope rung 2.
 - [ ] Dedicated game server launch as a service on the Windows server.
 - [ ] Dashboard.

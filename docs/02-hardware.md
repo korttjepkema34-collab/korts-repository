@@ -6,7 +6,7 @@
 
 | Part | Spec |
 |---|---|
-| CPU | Intel Core i7-10700K, 8 cores / 16 threads, 3.8 GHz, AVX2 (no AVX-512) |
+| CPU | Intel Core i7-10700K, 8 cores / 16 threads, 3.8 GHz, AVX2 (no AVX-512). **Has Intel UHD 630 integrated graphics**, enough to run the Godot editor and windowed scenes for screenshots. |
 | RAM | 96 GB DDR4 |
 | GPU | None today. **Planned: 12 GB Nvidia card, RTX 3060 12 GB preferred.** |
 | Platform | Z490-era, PCIe 3.0 |
@@ -40,8 +40,6 @@ What fits in 12 GB, one at a time:
 |---|---|---|
 | SDXL + LoRAs | Yes | Comfortable |
 | FLUX | Borderline | Use GGUF quant or schnell, not full dev fp8 |
-| TRELLIS 2 / Hunyuan3D shape stage | Yes | ~6 GB |
-| Hunyuan3D texture stage | Borderline | Wants 12-16 GB, expect some OOMs |
 | ACE-Step 1.5 | Yes | ~8 GB |
 | Stable Audio Open | Yes | |
 | 14B LLM, Q4 | Yes | ~9 GB, but blocks asset jobs while loaded |
@@ -51,8 +49,8 @@ What fits in 12 GB, one at a time:
 
 Asset generation needs CUDA, so it lives on `gpu`. Planning, code review, queue, git, and tests
 do not, so they live on `server` and keep running while the gaming PC is off or in use. With a
-12 GB card added to the server, sprites, music and 3D shape jobs can also run there, leaving the
-3080 Ti for heavy jobs and the Godot editor.
+12 GB card added to the server, sprites and music can also run there, leaving the 3080 Ti
+for the heavier image workflows.
 
 ## Planned upgrade: 12 GB card for the server
 
@@ -65,8 +63,7 @@ What it buys:
 1. **Fast prompt processing for the orchestrator.** llama.cpp can keep MoE experts in system RAM
    and put attention + KV cache on the GPU. The server then runs a model far larger than 12 GB at
    usable speed. This is the single biggest upgrade to the orchestrator.
-2. **A second asset lane.** SDXL, ACE-Step, TRELLIS shape all fit. Sprites and music without
-   waking the gaming PC.
+2. **A second asset lane.** SDXL and ACE-Step fit. Sprites and music without waking the gaming PC.
 3. **Always-resident reviewer.** A small vision model stays loaded to QA every asset.
 
 Check before buying: physical slot clearance in the server case, PSU wattage and a spare 8-pin

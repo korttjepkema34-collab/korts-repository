@@ -90,11 +90,22 @@ The orchestrator sends the magic packet itself (`server/orchestrator/wake.py`) w
 queued and the worker heartbeat is missing. It only needs `GPU_MAC` and `LAN_BROADCAST` in
 `.env`. Test manually: `python scripts\wake_gpu.py`.
 
-## 8. Headless Godot for tests
+## 8. Godot on the server: gate, screenshots, optional editor
 
-Install Godot 4 (the standard Windows build runs headless with `--headless`). Put the path in
-`.env` as `GODOT_BIN`. The orchestrator will use it for gdUnit4 runs once that step is
-implemented. The Linux Dockerfile in `server/godot-headless/` is kept for a Linux server.
+Install Godot 4 (standard Windows build). Put the path in `.env` as `GODOT_BIN`. The coder
+uses it three ways:
+
+1. **Headless gate**: `--headless --import` and gdUnit4. Works with no display.
+2. **Windowed screenshots** (`visual_check`): renders a scene in a real window using the i7's
+   integrated Intel UHD graphics and hands the PNG to the vision model. This needs an
+   **interactive desktop session**: set the server to auto-login (`netplwiz`, untick "users must
+   enter a password"; or Sysinternals Autologon), and register the orchestrator's Task Scheduler
+   entry as "Run only when user is logged on". The screen can be locked; rendering still works.
+3. **Editor tools via MCP** (optional): install a Godot MCP server (docs/11) on the server and
+   set `GODOT_MCP_CMD` in `.env`. The coder then gets `mcp_*` tools for launching the editor,
+   running the project and reading runtime errors. If it is not set, nothing changes.
+
+Any Godot process the coder starts has a hard timeout and is killed if it hangs on a dialog.
 
 ## 9. Test the queue
 

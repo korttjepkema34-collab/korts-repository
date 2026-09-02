@@ -26,7 +26,6 @@ Install each as its own app with its own venv. The worker talks to them over HTT
 | Tool | Install | Port | Handler |
 |---|---|---|---|
 | ComfyUI | github.com/comfyanonymous/ComfyUI, add SDXL checkpoint + LoRAs + IP-Adapter nodes | 8188 | `handlers/comfyui.py` |
-| TRELLIS 2 | github.com/microsoft/TRELLIS, wrap with the small FastAPI in `worker/services/trellis_api.py` (to be written) | 8189 | `handlers/trellis.py` |
 | ACE-Step 1.5 | github.com/ace-step/ACE-Step-1.5, has its own API server | 8190 | `handlers/acestep.py` |
 | Godot 4 + MCP server | Godot from godotengine.org; pick a Godot MCP server (see docs/03) and note it in decisions.md | per server | coder agent uses this directly |
 

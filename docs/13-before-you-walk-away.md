@@ -13,6 +13,11 @@ then leave it. Estimated time: an afternoon.
       redis and forgejo; Forgejo admin user created; this repo pushed to it.
 - [ ] Godot 4 installed; path in `server/.env` as `GODOT_BIN`.
       `"%GODOT_BIN%" --headless --path game --quit` exits without errors.
+- [ ] Auto-login enabled and the orchestrator task set to "run only when user is logged on", so
+      windowed screenshots work. Test:
+      `"%GODOT_BIN%" --path game -s res://scripts/dev/screenshot.gd -- res://scenes/main/main.tscn C:\studio\reports\test.png`
+      produces a PNG.
+- [ ] Optional: a Godot MCP server installed on the server and `GODOT_MCP_CMD` set (docs/11).
 - [ ] gdUnit4 unzipped into `game/addons/gdUnit4` (from the Godot Asset Library or GitHub
       releases). Optional but strongly recommended; without it the coder gate is only a load check.
 - [ ] Syncthing native, `assets/` folder shared with the gaming PC.
@@ -32,8 +37,8 @@ then leave it. Estimated time: an afternoon.
 - [ ] Task Scheduler entry so the worker starts at logon.
 - [ ] Wake-on-LAN enabled in BIOS and the adapter; Fast Startup off.
 - [ ] Syncthing paired with the server.
-- [ ] Optional for now: TRELLIS and ACE-Step. Their handlers fail cleanly until the API
-      wrappers in `worker/services/` exist, and the studio defers those tasks.
+- [ ] Optional for now: ACE-Step and Stable Audio Open. Their handler fails cleanly until
+      the API wrapper in `worker/services/` exists, and the studio defers audio tasks.
 
 ## Smoke test (10 minutes)
 

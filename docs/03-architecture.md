@@ -6,13 +6,14 @@
 SERVER (always on, CPU + 96 GB)                GAMING PC (GPU, sometimes busy)
 +---------------------------------+            +---------------------------------+
 | Ollama  (orchestrator + reviewer|            | worker.py  (pulls jobs)          |
-|          + small coder models)  |            |   handlers: comfyui, trellis,    |
-| Redis   (job queue + results)   |<--pull-----|             acestep, stub        |
+|          + small coder models)  |            |   handlers: comfyui, acestep,    |
+| Redis   (job queue + results)   |<--pull-----|             stub                 |
 | Forgejo (git server, web UI)    |            | ComfyUI        :8188             |
-| orchestrator.py (task loop)     |            | TRELLIS API    :8189             |
-| Godot headless (tests, exports) |            | ACE-Step API   :8190             |
+| orchestrator.py (task loop)     |            | Godot editor + MCP (optional)    |
+| Godot: headless gate + windowed |
+| screenshots for visual review   |            | ACE-Step API   :8190             |
 | Syncthing (assets/ folder)      |<--sync---->| Syncthing (assets/ folder)       |
-| dashboard (Tailscale Serve)     |            | Godot editor + Godot MCP server  |
+| dashboard (Tailscale Serve)     |            |                                  |
 +---------------------------------+            | gaming-mode toggle               |
         |  WoL magic packet over LAN --------> +---------------------------------+
 ```
@@ -56,7 +57,6 @@ All traffic goes over Tailscale. Nothing is exposed to the internet.
 |---|---|---|
 | worker.py | Pulls jobs from Redis, dispatches to handlers, posts results | none |
 | ComfyUI | 2D sprites, backgrounds, concept art | 8188 |
-| TRELLIS 2 / Hunyuan3D API wrapper | Image/text to 3D, exports glTF | 8189 |
 | ACE-Step / Stable Audio API wrapper | Music and SFX | 8190 |
 | Godot editor + MCP server | Coder agent's hands inside the editor | per MCP server |
 | gaming-mode toggle | A file (`worker/GAMING_MODE`) or tray script; worker pauses and frees VRAM | none |
@@ -87,7 +87,7 @@ boot. Gaming mode is a manual toggle so a wake never interrupts a game already r
 - Worker crashes mid-job: jobs are moved to `jobs:<kind>:processing` on pop and restored if no
   completion within a timeout (Redis reliable-queue pattern).
 - GPU OOM: handler returns an error result; orchestrator retries with a smaller variant
-  (e.g. shape-only 3D, lower resolution) before escalating.
+  (lower resolution, fewer candidates) before deferring.
 - Model writes Godot 3 code: headless tests fail on parse; result feeds back to the coder with the
   error text. After 3 failures, escalate to the human.
 

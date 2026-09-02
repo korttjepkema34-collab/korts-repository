@@ -109,7 +109,7 @@ def handle_results(r, st: State) -> None:
         task_id = job_meta.get("task", res.job_id.split("-")[0])
         tf = task_file(task_id)
         spec = job_meta.get("spec", {})
-        if res.status == ResultStatus.OK and job_meta.get("kind") in ("image", "model3d", "music", "sfx"):
+        if res.status == ResultStatus.OK and job_meta.get("kind") in ("image", "music", "sfx"):
             verdict, reason = reviewer.review_result(REPO, res, spec)
             moved = reviewer.file_verdict(REPO, res, verdict, reason)
             if verdict == "approved":

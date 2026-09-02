@@ -1,6 +1,13 @@
-"""File-based coder loop. Runs on the server against the game/ folder with headless Godot as the
-gate. No editor, no MCP, no dependency on the gaming PC. Tool calls go through the
-OpenAI-compatible API (Ollama supports tools for Qwen-class models).
+"""Coder loop. Runs on the server against the game/ folder.
+
+Tools, from always-available to optional:
+  - file tools (list/read/write/delete)                       always
+  - headless load check and gdUnit4 tests                     always (needs GODOT_BIN)
+  - run a scene headless and capture printed output/errors    needs GODOT_BIN
+  - visual_check: windowed screenshot described by the        needs GODOT_BIN + a logged-in desktop
+    vision model                                              (server iGPU is enough)
+  - mcp_* editor tools from a Godot MCP server                needs GODOT_MCP_CMD + the `mcp` package
+Tool calls go through the OpenAI-compatible API (Ollama supports tools for Qwen-class models).
 
 Gate before merge: no Godot 3 patterns, project loads headless, tests pass if gdUnit4 exists.
 """
@@ -11,7 +18,7 @@ import logging
 import time
 from pathlib import Path
 
-from . import gitops, godot, llm
+from . import gitops, godot, llm, mcp_bridge, vision
 
 log = logging.getLogger("coder")
 MAX_STEPS = 40
@@ -30,6 +37,10 @@ TOOLS = [
         "parameters": {"type": "object", "properties": {}, "required": []}}},
     {"type": "function", "function": {"name": "run_tests", "description": "Run gdUnit4 tests headless (or the load check if gdUnit4 is missing).",
         "parameters": {"type": "object", "properties": {}, "required": []}}},
+    {"type": "function", "function": {"name": "visual_check", "description": "Render a scene in a real window, screenshot it, and have the vision model describe it against your expectation. Use after building or changing any scene.",
+        "parameters": {"type": "object", "properties": {"scene": {"type": "string", "description": "res:// path to a .tscn"}, "expectation": {"type": "string"}}, "required": ["scene", "expectation"]}}},
+    {"type": "function", "function": {"name": "run_scene_capture_output", "description": "Run a scene headless for a few seconds and return its printed output and errors (server-side logic, no rendering).",
+        "parameters": {"type": "object", "properties": {"scene": {"type": "string"}, "seconds": {"type": "integer"}}, "required": ["scene"]}}},
     {"type": "function", "function": {"name": "finish", "description": "Call when done. Summarise what you changed and why.",
         "parameters": {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}}},
 ]
@@ -42,7 +53,14 @@ def _safe(game: Path, rel: str) -> Path:
     return p
 
 
-def _exec(game: Path, name: str, args: dict) -> str:
+def _exec(game: Path, name: str, args: dict, mcp=None) -> str:
+    if name.startswith("mcp_") and mcp is not None:
+        return mcp.call(name, args)
+    if name == "visual_check":
+        return vision.visual_check(game.parent, args["scene"], args.get("expectation", ""))
+    if name == "run_scene_capture_output":
+        code, out = godot.run(["--quit-after", str(int(args.get("seconds", 3)) * 60), args["scene"]], game, timeout_s=120)
+        return f"exit {code}\n{out}"
     if name == "list_files":
         base = _safe(game, args.get("subdir") or ".")
         files = [str(p.relative_to(game)) for p in base.rglob("*") if p.is_file() and ".godot" not in p.parts]
@@ -67,6 +85,8 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
     branch = f"coder/{job_id}"
     base = gitops.current_branch(repo)
     gitops.new_branch(repo, branch, base)
+    mcp = mcp_bridge.connect_if_configured(str(game))
+    tools = TOOLS + (mcp.tools if mcp else [])
     try:
         system = llm.load_role(repo, "coder") + "\n\n" + (repo / "docs" / "09-godot-conventions.md").read_text()
         user = ("Goal:\n" + str(spec.get("goal", spec)) + "\n\nAcceptance:\n"
@@ -78,7 +98,7 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
         model = llm.escalation_model() if escalate else llm.coder_model()
         summary = None
         for step in range(MAX_STEPS):
-            resp = llm.client().chat.completions.create(model=model, messages=messages, tools=TOOLS, temperature=0.1)
+            resp = llm.client().chat.completions.create(model=model, messages=messages, tools=tools, temperature=0.1)
             msg = resp.choices[0].message
             messages.append({"role": "assistant", "content": msg.content or "", "tool_calls": [tc.model_dump() for tc in (msg.tool_calls or [])]})
             if not msg.tool_calls:
@@ -93,7 +113,7 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
                     summary = args.get("summary", "")
                     break
                 try:
-                    out = _exec(game, tc.function.name, args)
+                    out = _exec(game, tc.function.name, args, mcp)
                 except Exception as e:
                     out = f"ERROR: {e}"
                 messages.append({"role": "tool", "tool_call_id": tc.id, "content": out[:12000]})
@@ -111,4 +131,6 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
         merged = gitops.merge(repo, branch, base, f"{task_id}: merge {branch}")
         return (True, summary or "merged") if merged else (False, "merge conflict; branch kept")
     finally:
+        if mcp:
+            mcp.close()
         gitops.checkout(repo, base)

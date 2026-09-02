@@ -15,7 +15,7 @@ the contract for how the system behaves in that mode. Every role file assumes it
    orchestrator generates the next few tasks from `docs/10-game-design.md`, capped per day so a
    bad day does not produce a hundred junk tasks.
 4. **Never depend on the gaming PC for code.** The coder runs on the server with headless Godot
-   and file edits. Art, 3D, and audio wait for the GPU box; code and planning never do.
+   and file edits. Art and audio wait for the GPU box; code and planning never do.
 5. **Latency does not matter, correctness does.** In unattended mode the escalation model can be
    the biggest model that fits in RAM even at a few tokens per second. Slow and right beats fast
    and wrong when nobody is waiting.
@@ -48,10 +48,11 @@ the contract for how the system behaves in that mode. Every role file assumes it
 
 ## Known limits of unattended mode today
 
-- Audio and 3D results are auto-approved on existence. The reviewer only judges images so far.
+- Audio results are auto-approved on existence. The reviewer judges images and screenshots.
 - The reviewer is a small local vision model. It will let some drift through and reject some
   good work. The attempt cap keeps that bounded.
-- The coder has no editor. It cannot build complex scenes visually; it writes `.tscn` files as
-  text. Simple scenes are fine. Complex UI will be rough until an MCP-driven session polishes it.
+- The coder writes `.tscn` files as text and checks its work with windowed screenshots judged by
+  the vision model. With a Godot MCP server configured it also gets editor tools. GUI hangs are
+  handled by a per-call timeout that kills the Godot process.
 - If Ollama dies, the loop logs errors every cycle and keeps trying. Nothing is lost; the queue
   and state are on disk.

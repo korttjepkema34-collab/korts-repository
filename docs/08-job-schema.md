@@ -35,7 +35,6 @@ Source of truth: `shared/jobs.py` (pydantic models) and `shared/schema/job.schem
 |---|---|---|
 | `stub` | `handlers/stub.py` | anything; echoes back. For testing the pipeline. |
 | `image` | `handlers/comfyui.py` | prompt, negative_prompt, workflow, references, width, height, seed, count |
-| `model3d` | `handlers/trellis.py` | prompt or image, texture (bool), target_polys |
 | `music` | `handlers/acestep.py` | prompt, duration_s, bpm, lyrics (optional), seed |
 | `sfx` | `handlers/acestep.py` (Stable Audio) | prompt, duration_s, seed, count |
 | `code` | not a worker job; the orchestrator dispatches the coder agent directly | spec, branch, files |

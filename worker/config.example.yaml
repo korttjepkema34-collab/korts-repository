@@ -9,12 +9,11 @@ redis:
 
 # Which job kinds this worker accepts, in priority order. The worker groups by kind so only one
 # generative model is resident at a time.
-kinds: [stub, image, model3d, music, sfx]
+kinds: [stub, image, music, sfx]
 
 # Local tool endpoints (each tool runs as its own app on this machine).
 tools:
   comfyui: http://127.0.0.1:8188
-  trellis: http://127.0.0.1:8189
   acestep: http://127.0.0.1:8190
 
 # Gaming mode: if this file exists the worker finishes its current job, frees VRAM, and idles.

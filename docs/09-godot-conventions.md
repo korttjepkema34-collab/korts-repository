@@ -15,7 +15,7 @@ game/
   project.godot
   scenes/        one folder per feature: player/, enemies/, levels/, ui/
   scripts/       shared scripts, autoloads
-  assets/        symlink or import target for approved assets (sprites/, models/, audio/)
+  assets/        symlink or import target for approved assets (sprites/, tiles/, audio/)
   tests/         gdUnit4 tests
   addons/        gdUnit4, Godot MCP plugin if editor-side
 ```
@@ -39,7 +39,6 @@ game/
 
 - Import only from `assets/approved/`. Never from `incoming/`.
 - Sprites: PNG, power-of-two sheets when animated, filter off for pixel art.
-- 3D: glTF (`.glb`), Y-up, metres, origin at feet for characters.
 - Audio: OGG Vorbis for music, WAV for short SFX.
 
 ## Commits

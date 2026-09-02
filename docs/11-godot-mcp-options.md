@@ -20,5 +20,7 @@ model, and only `godot-mcp` or StraySpark provide it among these.
 Switch to StraySpark later if the two-server setup proves fiddly and the price is acceptable.
 It is the one that would need the "spend money" decision from the human.
 
-Both run on the gaming PC next to the Godot editor. Headless test runs happen on the server
-with plain `godot --headless`, no MCP needed.
+Install the chosen server **on the home server**, not the gaming PC, and set `GODOT_MCP_CMD` in
+`server/.env`. The coder loop bridges its tools in automatically (`server/orchestrator/mcp_bridge.py`).
+The server's integrated Intel graphics is enough to run the editor. The coder keeps file tools,
+the headless gate and windowed screenshots regardless, so MCP is additive, never a dependency.

@@ -1,6 +1,6 @@
 # 05 - Team roles
 
-Six roles. Each has a system prompt in `agents/`. The orchestrator is the only one that reads the
+Five roles. Each has a system prompt in `agents/`. The orchestrator is the only one that reads the
 task board directly; everyone else receives jobs.
 
 | Role | Responsibilities | Inputs | Outputs | Tools |
@@ -8,7 +8,6 @@ task board directly; everyone else receives jobs.
 | **Orchestrator** | Read tasks, plan, split into jobs, dispatch, consume results, merge branches, escalate to human, maintain decision log | `tasks/backlog/*.md`, `docs/`, results from Redis | Jobs on Redis, task files moved, merges, `docs/decisions.md` entries | Redis, git, headless Godot, LLM |
 | **Coder** | GDScript, scenes, resources, imports, tests | Job with spec, `docs/09-godot-conventions.md`, current repo | Commits on `coder/<id>-<slug>` branch, test results | Godot MCP server, git |
 | **2D artist** | Sprites, tilesets, backgrounds, UI art, concept art | Job with description, style bible, references | PNGs in `assets/incoming/<id>/` + sidecar JSON | ComfyUI (SDXL/FLUX, LoRAs, IP-Adapter) |
-| **3D artist** | Props, characters, environment pieces as glTF | Job with description or concept image, style bible | `.glb` in `assets/incoming/<id>/` + sidecar | TRELLIS 2, Hunyuan3D, Blender for cleanup |
 | **Audio** | Music tracks, SFX, placeholder voice | Job with mood/tempo/length or SFX description | `.ogg`/`.wav` in `assets/incoming/<id>/` + sidecar | ACE-Step, Stable Audio Open, Kokoro |
 | **Reviewer** | QA every generated asset and every code branch against style bible and conventions | Asset + style bible, or branch diff + test output | Verdict JSON, file moved to `approved/` or `rejected/` | Vision model, headless Godot, git |
 
@@ -23,5 +22,5 @@ task board directly; everyone else receives jobs.
 
 ## Starting lineup
 
-Milestones 1-4 use only **orchestrator, coder, 2D artist, reviewer**. Audio and 3D join at
+Milestones 1-4 use only **orchestrator, coder, 2D artist, reviewer**. Audio joins at
 milestone 5. This keeps VRAM contention and debugging surface small while the pipeline is proven.

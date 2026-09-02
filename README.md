@@ -17,8 +17,7 @@ persistent shared world, built step by step towards an MMO. Design and scope lad
 
 One **orchestrator** model acts as the studio lead. It reads the task board, breaks work into
 jobs, and dispatches them to specialised **workers**: a coder (GDScript + scenes via a Godot MCP
-server), a 2D artist (ComfyUI), a 3D artist (TRELLIS / Hunyuan3D), an audio worker (ACE-Step /
-Stable Audio Open), and a reviewer (vision model that checks output against the style bible).
+server), a 2D artist (ComfyUI), an audio worker (ACE-Step / Stable Audio Open), and a reviewer (vision model that checks output against the style bible).
 The human owner is the creative director and final QA. Nothing ships without their sign-off.
 
 ## The machines
@@ -64,5 +63,5 @@ checklist: `docs/13-before-you-walk-away.md`. Contract: `docs/12-autonomy.md`.
 
 **Scaffold stage, unattended loop implemented.** The architecture, docs, role definitions, job schema, queue, worker loop
 and orchestrator skeleton exist. Model tags need verifying against the current Ollama library,
-the ComfyUI / TRELLIS / ACE-Step handlers are thin wrappers that need real workflows wired in,
+the ComfyUI / ACE-Step handlers are thin wrappers that need real workflows wired in,
 and the Godot project has not been created yet. See `docs/open-questions.md`.

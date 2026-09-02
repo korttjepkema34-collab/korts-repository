@@ -27,7 +27,7 @@ def plan_jobs(repo: Path, task_path: Path, escalate: bool = False) -> list[Job]:
         "## Task\n" + task_path.read_text(),
         _ctx(repo, "style/style-bible.md", "docs/08-job-schema.md", "docs/10-game-design.md"),
         "Existing approved assets:\n" + "\n".join(str(p.relative_to(repo)) for p in (repo / "assets" / "approved").rglob("*") if p.is_file())[:4000],
-        "Respond with JSON: {\"jobs\": [ ... ]}. Each job: kind (stub|image|model3d|music|sfx|code), "
+        "Respond with JSON: {\"jobs\": [ ... ]}. Each job: kind (stub|image|music|sfx|code), "
         "role, spec (object), output_dir (under assets/incoming/<task-id>-<slug>/ for assets, or "
         "\"game\" for code), slug (short). For code jobs, spec.goal is the instruction to the coder "
         f"and spec.acceptance is a checklist. At most {MAX_JOBS_PER_TASK} jobs. Prefer few, small jobs. "

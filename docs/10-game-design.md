@@ -48,7 +48,7 @@ decision for later, made with real players.
   Character reference sheets and IP-Adapter are mandatory, and a modular sprite system
   (body + equipment layers) is worth building early so equipment does not multiply art work.
 - **Animation.** Walk cycles and attack animations per direction. Plan a 4-direction, 4-6 frame
-  standard and generate against a fixed skeleton reference. Consider open sprite bases
+  standard and generate against a fixed character reference sheet. Consider open sprite bases
   (e.g. the LPC / Universal LPC sprite sheets, CC-BY-SA / GPL, check licence) as a fallback for
   the modular character system.
 

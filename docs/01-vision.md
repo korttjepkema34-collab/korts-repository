@@ -12,16 +12,16 @@ creative director and final QA.
 - Open-weight LLMs are good enough at planning, GDScript, and tool calling to act as workers.
 - Godot MCP servers expose the editor and runtime to an agent (create scenes, edit scripts, run
   the game, read debug output). No copy-pasting from chat.
-- Open image, 3D, and audio generators (SDXL/FLUX, TRELLIS 2, Hunyuan3D, ACE-Step, Stable Audio
-  Open) all run on a 12 GB consumer GPU and export formats Godot imports natively.
+- Open image and audio generators (SDXL/FLUX, ACE-Step, Stable Audio Open) all run on a 12 GB
+  consumer GPU and export formats Godot imports natively.
 - Multi-agent orchestration is a well-understood pattern: planner, workers, reviewer, shared
   task board, shared memory.
 
 ## Where it is hard (be honest about these)
 
-1. **Animation.** Open rigging and animation generation is immature. Expect Mixamo (free, not
-   open) for humanoid rigs and hand-fixing for anything else. 2D sprite-sheet animation from
-   diffusion models is inconsistent frame to frame.
+1. **Animation.** 2D sprite-sheet animation from diffusion models is inconsistent frame to
+   frame. Mitigate with a fixed character reference sheet, a small frame count, and the reviewer
+   comparing frames.
 2. **Consistency.** Five workers produce five art styles unless every prompt carries the same
    style bible and reference images, and a reviewer rejects drift.
 3. **VRAM.** 12 GB means one generative model resident at a time. Jobs are serialised.
@@ -38,7 +38,7 @@ creative director and final QA.
 | 2 | Orchestrator turns a task file into jobs; coder creates a scene via Godot MCP | Planning + code loop |
 | 3 | 2D artist generates a sprite that passes the reviewer and lands in `assets/approved/` | Art loop with QA |
 | 4 | Playable prototype per docs/10-game-design.md: hub + one campaign map, two players over Tailscale on a dedicated server | End-to-end, including netcode |
-| 5 | Add 3D and animation workers | Full team |
+| 5 | Add audio worker and 2D animation pipeline | Full team |
 
-Start with **three workers** (orchestrator, coder, 2D artist). Add audio and 3D once milestone 4
-is reached. Do not try to run all five on day one.
+Start with **three workers** (orchestrator, coder, 2D artist). Add audio once milestone 4 is
+reached. Do not try to run all five on day one.

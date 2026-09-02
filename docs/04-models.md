@@ -13,12 +13,11 @@ MIT licences.
 | **Coder** | **server** (CPU now) | **Qwen3-Coder MoE** (30B-A3B class, ~18 GB Q4) | Runs on CPU at usable speed because only ~3B params are active; the coder is file-based and headless so it needs no GPU | **Escalation: gpt-oss-120b** (~60 GB, ~5-10 tok/s on CPU). Slow, but unattended runs do not care. Used for deferred tasks once a day. |
 | **Reviewer / QA** | server | **Qwen3-VL** small (~8B, ~6 GB Q4) | Sees the image, compares to style references, writes structured verdicts. Small enough to stay resident once the server GPU exists. | Same model on gpu box until then, or a larger VL model on CPU (slow). |
 | **2D artist** | gpu (server later) | **SDXL** + pixel-art / style LoRAs in **ComfyUI** | Fits 12 GB easily, huge LoRA ecosystem, IP-Adapter for reference consistency | **FLUX** GGUF Q8 for backgrounds and concept art when quality matters more than speed |
-| **3D artist** | gpu | **TRELLIS 2** (MIT) | Best quality among fully open, no usage restrictions, ~6 GB for shape | **Hunyuan3D 2.x** for texturing when VRAM allows; Blender addon exists; exports glTF/OBJ/FBX |
 | **Music** | gpu (server later) | **ACE-Step 1.5** (~8 GB) | Full track in seconds on a 3090-class card, lyrics support, diffusion so easy to steer | YuE 7B for vocal-heavy tracks |
 | **SFX** | gpu (server later) | **Stable Audio Open** | Built for short samples and effects | MusicGen for stingers |
 | **Voice** (optional) | server | **Kokoro** or **Chatterbox** TTS | Small, fast, good enough for placeholder dialogue | |
 | **Embeddings** (memory/RAG over docs and code) | server | **nomic-embed-text** or **bge-m3** | Tiny, fast on CPU | |
-| **Animation** | gpu | No good open pick yet | Use Mixamo (free, closed) for humanoid rigs; Hunyuan3D Studio pipeline for rigging is worth testing | Track in `open-questions.md` |
+| **Animation (2D)** | gpu | SDXL + character reference sheet, frame by frame, with the reviewer checking consistency | No dedicated open sprite-animation model is reliable yet | Open sprite bases (LPC) as a fallback for walk cycles; see docs/10-game-design.md |
 
 ## Placement rules
 
@@ -60,8 +59,6 @@ one-line config change if the owner ever changes their mind. Nothing in the code
 |---|---|---|
 | Qwen 3.x family | Apache 2.0 | Yes |
 | gpt-oss | Apache 2.0 | Yes |
-| TRELLIS 2 | MIT | Yes |
-| Hunyuan3D 2.x | Tencent Hunyuan Community | Check current terms, has territory and MAU clauses |
 | SDXL | CreativeML OpenRAIL++ | Yes with use restrictions |
 | FLUX.1 dev | Non-commercial | **No** for shipped assets. Use schnell (Apache 2.0) or SDXL |
 | ACE-Step | Apache 2.0 | Yes |

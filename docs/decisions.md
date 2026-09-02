@@ -25,3 +25,5 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-02 | Unattended operation is the primary mode: never wait for a human, cap and defer instead of block, self-generate backlog, daily reports and checkpoints | Owner will turn it on and return days later with no input. See docs/12-autonomy.md. |
 | 2026-09-02 | Coder runs on the server with file tools and headless Godot, not through the gaming PC's editor/MCP | Code work must continue when the gaming PC is off. MCP stays an option for interactive polishing sessions. |
 | 2026-09-02 | Orchestrator may fill style-bible TBDs itself with conventional defaults, logged "(auto)" | No human to ask; conventional choices are reversible. |
+| 2026-09-02 | Drop the 3D artist role, model3d job kind and TRELLIS/Hunyuan3D tooling | It is a 2D game. Less to install, less to go wrong unattended. |
+| 2026-09-02 | Coder gets eyes: windowed screenshots judged by the vision model, plus optional Godot MCP editor tools, all on the server using its Intel UHD iGPU | File tools stay as the always-available base; editor/render tools are additive. Corrects an earlier over-cautious file-only design. |
