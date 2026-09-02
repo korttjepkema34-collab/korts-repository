@@ -1,0 +1,71 @@
+# Server stack for the always-on home server. See docs/06-setup-server.md.
+# All ports bind to the Tailscale IP only.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "${SERVER_TS_IP}:11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    environment:
+      OLLAMA_NUM_THREADS: "16"
+      OLLAMA_KEEP_ALIVE: "30m"
+      OLLAMA_MAX_LOADED_MODELS: "2"
+    # Uncomment when the 12 GB GPU is installed and nvidia-container-toolkit is set up.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes"]
+    ports:
+      - "${SERVER_TS_IP}:6379:6379"
+    volumes:
+      - redis:/data
+
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:9
+    restart: unless-stopped
+    ports:
+      - "${SERVER_TS_IP}:3000:3000"
+      - "${SERVER_TS_IP}:2222:22"
+    volumes:
+      - forgejo:/data
+    environment:
+      USER_UID: "1000"
+      USER_GID: "1000"
+
+  syncthing:
+    image: syncthing/syncthing:latest
+    restart: unless-stopped
+    network_mode: host   # discovery works best on host network; UI on :8384
+    volumes:
+      - syncthing:/var/syncthing/config
+      - ../assets:/var/syncthing/assets
+
+  orchestrator:
+    build: ./orchestrator
+    restart: unless-stopped
+    depends_on: [redis, ollama]
+    env_file: .env
+    environment:
+      REDIS_HOST: redis
+      REPO_ROOT: /repo
+    volumes:
+      - ..:/repo          # the whole repo: tasks/, docs/, agents/, assets/, game/
+    # Wake-on-LAN needs the LAN. Host network lets the orchestrator send the magic packet.
+    network_mode: host
+
+volumes:
+  ollama:
+  redis:
+  forgejo:
+  syncthing:

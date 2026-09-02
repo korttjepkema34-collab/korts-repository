@@ -1,0 +1,83 @@
+{
+  "description": "One per generated file. Records provenance and licence so assets can ship safely.",
+  "properties": {
+    "generator": {
+      "title": "Generator",
+      "type": "string"
+    },
+    "model": {
+      "title": "Model",
+      "type": "string"
+    },
+    "licence": {
+      "title": "Licence",
+      "type": "string"
+    },
+    "prompt": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Prompt"
+    },
+    "negative_prompt": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Negative Prompt"
+    },
+    "seed": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Seed"
+    },
+    "job_id": {
+      "title": "Job Id",
+      "type": "string"
+    },
+    "extra": {
+      "additionalProperties": true,
+      "title": "Extra",
+      "type": "object"
+    },
+    "review": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Review"
+    }
+  },
+  "required": [
+    "generator",
+    "model",
+    "licence",
+    "job_id"
+  ],
+  "title": "Sidecar",
+  "type": "object"
+}

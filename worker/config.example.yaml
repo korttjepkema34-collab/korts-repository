@@ -1,0 +1,22 @@
+# Copy to config.yaml. Never commit config.yaml.
+worker_name: gpu            # must match GPU_WORKER_NAME in server/.env
+repo_root: C:/studio         # where this repo is cloned on this machine; assets/ lives under it
+
+redis:
+  host: 100.x.y.z            # server's Tailscale IP
+  port: 6379
+  password: change-me-to-something-long
+
+# Which job kinds this worker accepts, in priority order. The worker groups by kind so only one
+# generative model is resident at a time.
+kinds: [stub, image, model3d, music, sfx]
+
+# Local tool endpoints (each tool runs as its own app on this machine).
+tools:
+  comfyui: http://127.0.0.1:8188
+  trellis: http://127.0.0.1:8189
+  acestep: http://127.0.0.1:8190
+
+# Gaming mode: if this file exists the worker finishes its current job, frees VRAM, and idles.
+gaming_mode_file: GAMING_MODE
+poll_timeout_s: 30

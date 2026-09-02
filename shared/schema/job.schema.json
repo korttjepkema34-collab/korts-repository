@@ -1,0 +1,97 @@
+{
+  "$defs": {
+    "JobKind": {
+      "enum": [
+        "stub",
+        "image",
+        "model3d",
+        "music",
+        "sfx"
+      ],
+      "title": "JobKind",
+      "type": "string"
+    },
+    "Role": {
+      "enum": [
+        "orchestrator",
+        "coder",
+        "artist-2d",
+        "artist-3d",
+        "audio",
+        "reviewer"
+      ],
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/JobKind"
+    },
+    "role": {
+      "$ref": "#/$defs/Role"
+    },
+    "priority": {
+      "default": 5,
+      "description": "1 = highest",
+      "maximum": 10,
+      "minimum": 1,
+      "title": "Priority",
+      "type": "integer"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "attempt": {
+      "default": 1,
+      "title": "Attempt",
+      "type": "integer"
+    },
+    "max_attempts": {
+      "default": 3,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "spec": {
+      "additionalProperties": true,
+      "title": "Spec",
+      "type": "object"
+    },
+    "output_dir": {
+      "description": "Relative to repo root, under assets/incoming/",
+      "title": "Output Dir",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Reviewer feedback from earlier attempts",
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "task_id",
+    "kind",
+    "role",
+    "output_dir"
+  ],
+  "title": "Job",
+  "type": "object"
+}

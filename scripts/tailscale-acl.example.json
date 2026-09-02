@@ -1,0 +1,8 @@
+{
+  "_comment": "Paste into the Tailscale admin console ACL editor. Restricts studio ports to the two machines. Tag both nodes with tag:studio.",
+  "tagOwners": { "tag:studio": ["autogroup:admin"] },
+  "acls": [
+    { "action": "accept", "src": ["tag:studio"], "dst": ["tag:studio:11434,6379,3000,2222,8384,22000,8188,8189,8190"] },
+    { "action": "accept", "src": ["autogroup:member"], "dst": ["tag:studio:22,3389,3000,8384"] }
+  ]
+}

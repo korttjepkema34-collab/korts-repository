@@ -1,0 +1,23 @@
+# secrets and per-machine config
+server/.env
+worker/config.yaml
+worker/GAMING_MODE
+
+# generated assets are synced with Syncthing, not git
+assets/**
+!assets/README.md
+!assets/*/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# godot
+game/.godot/
+game/export/
+*.import.tmp
+
+# os
+.DS_Store
+Thumbs.db
