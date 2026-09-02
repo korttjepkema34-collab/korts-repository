@@ -21,3 +21,6 @@ game/export/
 # os
 .DS_Store
 Thumbs.db
+
+# redis snapshots from local testing
+dump.rdb
