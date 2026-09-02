@@ -54,6 +54,7 @@ def _safe(game: Path, rel: str) -> Path:
 
 
 def _exec(game: Path, name: str, args: dict, mcp=None) -> str:
+    game = game.resolve()
     if name.startswith("mcp_") and mcp is not None:
         return mcp.call(name, args)
     if name == "visual_check":
