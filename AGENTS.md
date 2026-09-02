@@ -33,13 +33,15 @@ human writes task  ->  tasks/backlog/*.md
 orchestrator (server) reads task, plans, emits jobs  ->  Redis queue
 GPU worker (gpu) pulls job when online and not gaming  ->  runs tool  ->  writes to assets/incoming/
 reviewer (server, vision model) checks output vs style bible  ->  assets/approved/ or rejected/
-coder (gpu or server) edits game/ via Godot MCP, commits to a branch
-headless Godot (server) runs tests  ->  orchestrator merges or sends back
-human reviews milestone  ->  tasks/done/
+coder (server, in-process) edits game/ with file tools, headless Godot gate  ->  merged or retried
+task closes  ->  tasks/done/ (all jobs passed) or tasks/deferred/ (caps hit; retried daily)
+backlog empty  ->  orchestrator generates next tasks from docs/10-game-design.md
+daily  ->  reports/YYYY-MM-DD.md + PROGRESS.md, committed and pushed
 ```
 
-Key rule: **the server never calls the gaming PC directly.** It enqueues. The GPU worker pulls.
-If the gaming PC is off or in gaming mode, jobs wait. The orchestrator keeps doing CPU-side work.
+Key rules: **the server never calls the gaming PC directly** (it enqueues, the worker pulls), and
+**the studio never waits for a human** (`docs/12-autonomy.md`). Code and planning continue when
+the gaming PC is off; only art, 3D and audio wait for it.
 
 Details: `docs/03-architecture.md`. Job format: `docs/08-job-schema.md` and `shared/jobs.py`.
 
@@ -50,7 +52,7 @@ Each role has a system prompt in `agents/`. Load the one you are acting as.
 | Role | File | Where it runs | Model tier |
 |---|---|---|---|
 | Orchestrator / studio lead | `agents/orchestrator.md` | server (CPU, MoE model) | large MoE, needs planning + tool calling |
-| Coder | `agents/coder.md` | gpu when idle, else server | strongest coder that fits |
+| Coder | `agents/coder.md` | **server** (file edits + headless Godot, no editor needed) | strongest coder that fits in RAM |
 | 2D artist | `agents/artist-2d.md` | gpu (ComfyUI), later server too | small LLM + SDXL/FLUX |
 | 3D artist | `agents/artist-3d.md` | gpu (TRELLIS / Hunyuan3D) | small LLM + 3D model |
 | Audio | `agents/audio.md` | gpu (ACE-Step, Stable Audio Open), later server | small LLM + audio model |
@@ -74,8 +76,10 @@ Model picks and alternatives: `docs/04-models.md`.
    in `docs/decisions.md`. If you are unsure whether something is decided, check there first.
 8. **Check licences** before a generated asset ships. Note the generator and its licence in the
    asset's sidecar `.json`.
-9. **Ask the human** for anything that changes the game's design direction, spends money, or
-   exposes a service outside the tailnet. Everything else, do it and log it.
+9. **Never wait for the human.** The studio runs unattended for days. When you would have asked
+   a question, take the most conservative reasonable answer, log it in `docs/decisions.md`
+   marked "(auto)", and continue. The only hard stops are spending money and exposing a service
+   outside the tailnet: never do either; defer the task instead. See `docs/12-autonomy.md`.
 10. **Verify before claiming.** Run the tests, open the scene, look at the image. Report what
    actually happened, including failures.
 
@@ -83,7 +87,8 @@ Model picks and alternatives: `docs/04-models.md`.
 
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)
 - Decision log: `docs/decisions.md`
-- Open questions for the human: `docs/open-questions.md`
+- Open questions for the human: `docs/open-questions.md` (read on return; nothing blocks on them)
+- Progress: `PROGRESS.md`, `reports/`, `tasks/deferred/` (the human's to-do list)
 - Server stack: `server/docker-compose.yml`
 - GPU worker: `worker/worker.py`, config in `worker/config.yaml`
 - Shared job schema: `shared/jobs.py`

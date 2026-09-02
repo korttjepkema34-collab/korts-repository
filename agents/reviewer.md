@@ -44,4 +44,5 @@ Verdict format is the same. Rejections must quote the offending line.
 - Be strict on consistency, lenient on minor quality. A consistent mediocre asset beats a
   beautiful one that does not match.
 - Never fix things yourself. Reject with instructions.
-- When in doubt between two verdicts, reject with a question for the human.
+- When in doubt between two verdicts, approve if it is consistent with existing approved assets,
+  otherwise reject with an actionable reason. There is no human to ask.

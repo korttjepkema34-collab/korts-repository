@@ -1,35 +1,29 @@
 # Open questions
 
-Things that need the human's decision or that nobody has verified yet. Remove lines when
-resolved and add the outcome to `decisions.md`.
+Nothing here blocks the studio. It runs unattended and makes conservative choices on its own
+(`docs/12-autonomy.md`). This file is for the owner to read on return. Deferred tasks in
+`tasks/deferred/` are the more urgent list.
 
-## Needs the human
+## Owner may want to override on return
 
-- [ ] Fill in the style bible palette, character proportions, and mood (game is decided:
-      2D pixel-art online RPG, see docs/10-game-design.md). Drop a palette swatch and a mood
-      reference in `style/references/`.
-- [ ] Confirm the Godot MCP recommendation in docs/11-godot-mcp-options.md (two open-source
-      servers side by side) or pick StraySpark (paid).
-- [ ] Is a small monthly spend on a paid API for escalation acceptable, or strictly free only?
-      See docs/04-models.md "Why not just use a frontier cloud model" for what it changes.
-- [ ] Gaming PC OS: Windows assumed. Confirm.
-- [ ] Netcode design review before the coder builds it (docs/10-game-design.md).
+- [ ] Style choices the orchestrator made automatically (palette, proportions). Check
+      `docs/decisions.md` for "(auto)" lines and `style/style-bible.md`.
+- [ ] Godot MCP choice for interactive sessions (docs/11-godot-mcp-options.md). Not needed for
+      unattended runs.
 - [ ] Buy the RTX 3060 12 GB for the server now or after milestone 4?
 
-## Needs verifying
+## Needs verifying (setup time, see docs/13-before-you-walk-away.md)
 
-- [ ] Exact Ollama tags for the Qwen MoE, Qwen3-Coder, and Qwen3-VL picks in `docs/04-models.md`.
-- [ ] Whether Hunyuan3D's texture stage fits in 12 GB with current optimisations.
-- [ ] Which Stable Audio Open version is current and its licence terms for shipped assets.
-- [ ] Hunyuan3D Studio's rigging pipeline as an animation option.
+- [ ] Exact Ollama tags for the Qwen MoE, Qwen3-Coder, Qwen3-VL and gpt-oss picks.
+- [ ] Whether the vision reviewer model handles 4 candidate images plus 2 references in one call
+      on CPU in reasonable time. If not, lower to 2 candidates in `reviewer.py`.
+- [ ] Hunyuan3D texture stage on 12 GB; Stable Audio Open version and licence.
 - [ ] Server case clearance and PSU headroom for a full-size GPU.
 
 ## Not started
 
-- [ ] TRELLIS FastAPI wrapper (`worker/services/trellis_api.py`).
-- [ ] ComfyUI workflow JSONs in `worker/workflows/`.
-- [ ] Reviewer implementation in the orchestrator (vision call + file move + sidecar update).
-- [ ] Coder dispatch: orchestrator launching an agent session against the Godot MCP server.
-- [ ] Headless Godot test runner using GODOT_BIN on the Windows server (Linux Dockerfile kept as alternative).
-- [ ] Nakama docker-compose entry for scope rung 2.
+- [ ] Audio and 3D review (currently auto-approved on existence).
+- [ ] TRELLIS and audio API wrappers (`worker/services/`).
+- [ ] Nakama compose entry for scope rung 2.
+- [ ] Dedicated game server launch as a service on the Windows server.
 - [ ] Dashboard.

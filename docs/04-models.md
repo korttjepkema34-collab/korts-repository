@@ -10,7 +10,7 @@ MIT licences.
 | Role | Runs on | Primary pick | Why | Fallback |
 |---|---|---|---|---|
 | **Orchestrator** | server (CPU now, CPU+12 GB later) | **Qwen3.6-35B-A3B** (MoE, ~20 GB Q4, Apache 2.0) | Fast on CPU because only ~3B params are active per token. Good tool calling and planning. Fits RAM with room to spare. | **gpt-oss-120b** (MoE, ~60 GB mxfp4, Apache 2.0): smarter, slower on CPU, only viable because of 96 GB RAM. Becomes the pick once the 12 GB card lands and attention can sit on GPU. |
-| **Coder** | gpu when idle, else server | **Qwen3-Coder** family at the largest size that fits (14B Q4 fully on the 3080 Ti, 27B/30B-A3B with partial offload into 32 GB DDR5) | Best open coding quality per GB; the MoE coder variants run well with partial offload | Paid escalation: **GLM-5.2** or **DeepSeek V4** via API for tasks the local coder fails 3 times. Not free, but cheap, and only for hard problems. |
+| **Coder** | **server** (CPU now) | **Qwen3-Coder MoE** (30B-A3B class, ~18 GB Q4) | Runs on CPU at usable speed because only ~3B params are active; the coder is file-based and headless so it needs no GPU | **Escalation: gpt-oss-120b** (~60 GB, ~5-10 tok/s on CPU). Slow, but unattended runs do not care. Used for deferred tasks once a day. |
 | **Reviewer / QA** | server | **Qwen3-VL** small (~8B, ~6 GB Q4) | Sees the image, compares to style references, writes structured verdicts. Small enough to stay resident once the server GPU exists. | Same model on gpu box until then, or a larger VL model on CPU (slow). |
 | **2D artist** | gpu (server later) | **SDXL** + pixel-art / style LoRAs in **ComfyUI** | Fits 12 GB easily, huge LoRA ecosystem, IP-Adapter for reference consistency | **FLUX** GGUF Q8 for backgrounds and concept art when quality matters more than speed |
 | **3D artist** | gpu | **TRELLIS 2** (MIT) | Best quality among fully open, no usage restrictions, ~6 GB for shape | **Hunyuan3D 2.x** for texturing when VRAM allows; Blender addon exists; exports glTF/OBJ/FBX |
@@ -44,13 +44,15 @@ ollama pull nomic-embed-text         # embeddings
 ollama pull qwen3-coder:14b          # coder         (verify exact tag)
 ```
 
-## Why not just use a frontier cloud model?
+## Escalation is free too
 
-Claude, GPT, and Gemini would all do the orchestrator and coder roles better than any local
-model. They are not free. The design keeps the option open: the orchestrator's LLM client speaks
-the OpenAI-compatible chat format, so pointing it at a paid endpoint is a config change
-(`LLM_BASE_URL` in `server/.env`). The recommended use of paid models is **escalation only**:
-when the local coder fails a task three times, or for a one-off architecture review.
+Decision: strictly free. When the fast model fails a task (caps hit, task deferred), the daily
+pass retries it with `ESCALATION_MODEL`: the biggest model that fits in 96 GB RAM. gpt-oss-120b
+at ~60 GB is the current pick. It runs at a few tokens per second on CPU, which would be
+unusable interactively and is perfectly fine unattended.
+
+The LLM client still speaks the OpenAI-compatible format, so a paid endpoint remains a
+one-line config change if the owner ever changes their mind. Nothing in the code assumes it.
 
 ## Licence notes
 

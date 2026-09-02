@@ -54,9 +54,15 @@ scripts/             <- wake-on-LAN, Tailscale ACL example, helpers
 2. Read `docs/07-setup-gpu-worker.md` and start `worker/worker.py` on the gaming PC.
 3. Drop a task file into `tasks/backlog/` and watch the orchestrator turn it into jobs.
 
+## Unattended mode
+
+Turn it on and walk away. The orchestrator plans, delegates, reviews, retries, defers, generates
+its own backlog, and writes a daily report to `PROGRESS.md`. Nothing waits for a human. Setup
+checklist: `docs/13-before-you-walk-away.md`. Contract: `docs/12-autonomy.md`.
+
 ## Status
 
-**Scaffold stage.** The architecture, docs, role definitions, job schema, queue, worker loop
+**Scaffold stage, unattended loop implemented.** The architecture, docs, role definitions, job schema, queue, worker loop
 and orchestrator skeleton exist. Model tags need verifying against the current Ollama library,
 the ComfyUI / TRELLIS / ACE-Step handlers are thin wrappers that need real workflows wired in,
 and the Godot project has not been created yet. See `docs/open-questions.md`.

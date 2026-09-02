@@ -21,7 +21,8 @@ class JobKind(str, Enum):
     MODEL3D = "model3d"  # TRELLIS / Hunyuan3D: glTF assets
     MUSIC = "music"      # ACE-Step: tracks and loops
     SFX = "sfx"          # Stable Audio Open: short effects
-    # `code` and `review` are handled by the orchestrator itself, not queued to the GPU worker.
+    CODE = "code"        # handled in-process by the orchestrator's coder loop, never queued to the GPU worker
+    # `review` is not a job kind: the orchestrator reviews every asset result automatically.
 
 
 class Role(str, Enum):
