@@ -11,14 +11,16 @@ owner (the creative director). The goal is for the AI team to do most of the pro
 GDScript and scenes, 2D sprites and backgrounds, 3D models, music and sound effects, and
 eventually animation. The human sets direction, reviews, and approves.
 
-The game itself is not decided yet. The first milestone is a **playable prototype** produced
-end to end by the pipeline, to prove the team works. See `docs/01-vision.md`.
+The game is a **2D pixel-art online RPG**: a story campaign playable solo or co-op on a
+persistent shared world, built as a scope ladder towards an MMO. Read `docs/10-game-design.md`
+before any gameplay or netcode work. The first milestone is a playable two-player prototype on a
+dedicated server. See `docs/01-vision.md`.
 
 ## 2. The two machines
 
 | Hostname | What it is | Runs |
 |---|---|---|
-| `server` | Home server, i7-10700K, 96 GB DDR4, no GPU (12 GB card planned), Linux + Docker, always on | Ollama (orchestrator LLM), Redis job queue, Forgejo git, headless Godot for tests/exports, asset library, this repo's orchestrator |
+| `server` | Home server, i7-10700K, 96 GB DDR4, no GPU (12 GB card planned), **Windows**, always on | Ollama (native), Redis + Forgejo (Docker Desktop), Syncthing (native), orchestrator (native Python), headless Godot for tests, dedicated game server later |
 | `gpu` | Gaming PC, Ryzen 9 7900X, 32 GB DDR5, RTX 3080 Ti 12 GB VRAM, Windows, online when not gaming | GPU worker daemon, ComfyUI, TRELLIS/Hunyuan3D, ACE-Step, Godot editor + Godot MCP server, optional coder LLM when the GPU is idle |
 
 Connected over **Tailscale**. Use Tailscale hostnames or IPs, never public addresses.
@@ -58,22 +60,23 @@ Model picks and alternatives: `docs/04-models.md`.
 
 ## 5. Rules for every role
 
-1. **Godot 4 only.** GDScript 2.0 syntax. Never emit Godot 3 code. See `docs/09-godot-conventions.md`.
-2. **Every art, 3D, and audio prompt includes the style bible.** `style/style-bible.md` plus the
+1. **Server-authoritative gameplay, always.** Clients send inputs; the server simulates. See `docs/10-game-design.md`.
+2. **Godot 4 only.** GDScript 2.0 syntax. Never emit Godot 3 code. See `docs/09-godot-conventions.md`.
+3. **Every art, 3D, and audio prompt includes the style bible.** `style/style-bible.md` plus the
    references in `style/references/`. Consistency beats individual quality.
-3. **Never write directly into `assets/approved/`.** Generated output goes to `assets/incoming/`.
+4. **Never write directly into `assets/approved/`.** Generated output goes to `assets/incoming/`.
    Only the reviewer moves things to `approved/` or `rejected/`.
-4. **Never commit to `main`.** Work on a branch named `<role>/<task-id>-<slug>`. The orchestrator
+5. **Never commit to `main`.** Work on a branch named `<role>/<task-id>-<slug>`. The orchestrator
    merges after headless tests pass.
-5. **Generated binaries do not go in git.** `assets/` is synced with Syncthing. Only source,
+6. **Generated binaries do not go in git.** `assets/` is synced with Syncthing. Only source,
    config, docs, and the Godot project's own small resources are committed.
-6. **Log decisions.** Anything that changes architecture, model choice, or conventions gets a line
+7. **Log decisions.** Anything that changes architecture, model choice, or conventions gets a line
    in `docs/decisions.md`. If you are unsure whether something is decided, check there first.
-7. **Check licences** before a generated asset ships. Note the generator and its licence in the
+8. **Check licences** before a generated asset ships. Note the generator and its licence in the
    asset's sidecar `.json`.
-8. **Ask the human** for anything that changes the game's design direction, spends money, or
+9. **Ask the human** for anything that changes the game's design direction, spends money, or
    exposes a service outside the tailnet. Everything else, do it and log it.
-9. **Verify before claiming.** Run the tests, open the scene, look at the image. Report what
+10. **Verify before claiming.** Run the tests, open the scene, look at the image. Report what
    actually happened, including failures.
 
 ## 6. Where things are

@@ -5,13 +5,15 @@ resolved and add the outcome to `decisions.md`.
 
 ## Needs the human
 
-- [ ] **What game are we making?** Genre, 2D or 3D, art style. The style bible is a template
-      until this is answered. Suggest starting 2D pixel-art: cheapest to generate, easiest to
-      keep consistent, and the 3D/animation workers are the weakest anyway.
-- [ ] Server OS: Linux + Docker assumed. Confirm.
-- [ ] Gaming PC OS: Windows assumed. Confirm.
-- [ ] Which Godot MCP server to standardise on (open-source GDAI / godot-ai vs commercial).
+- [ ] Fill in the style bible palette, character proportions, and mood (game is decided:
+      2D pixel-art online RPG, see docs/10-game-design.md). Drop a palette swatch and a mood
+      reference in `style/references/`.
+- [ ] Confirm the Godot MCP recommendation in docs/11-godot-mcp-options.md (two open-source
+      servers side by side) or pick StraySpark (paid).
 - [ ] Is a small monthly spend on a paid API for escalation acceptable, or strictly free only?
+      See docs/04-models.md "Why not just use a frontier cloud model" for what it changes.
+- [ ] Gaming PC OS: Windows assumed. Confirm.
+- [ ] Netcode design review before the coder builds it (docs/10-game-design.md).
 - [ ] Buy the RTX 3060 12 GB for the server now or after milestone 4?
 
 ## Needs verifying
@@ -28,5 +30,6 @@ resolved and add the outcome to `decisions.md`.
 - [ ] ComfyUI workflow JSONs in `worker/workflows/`.
 - [ ] Reviewer implementation in the orchestrator (vision call + file move + sidecar update).
 - [ ] Coder dispatch: orchestrator launching an agent session against the Godot MCP server.
-- [ ] Headless Godot test container.
+- [ ] Headless Godot test runner using GODOT_BIN on the Windows server (Linux Dockerfile kept as alternative).
+- [ ] Nakama docker-compose entry for scope rung 2.
 - [ ] Dashboard.

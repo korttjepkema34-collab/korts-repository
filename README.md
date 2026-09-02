@@ -7,6 +7,12 @@ specialised AI workers, running across two machines on a private Tailscale netwo
 > the project, the machines, your role options, and the rules. The `docs/` folder holds the full
 > design and every decision made so far.
 
+## The game
+
+A **2D pixel-art online RPG**: a story campaign you can play alone or with friends, on a
+persistent shared world, built step by step towards an MMO. Design and scope ladder in
+`docs/10-game-design.md`.
+
 ## The idea in one paragraph
 
 One **orchestrator** model acts as the studio lead. It reads the task board, breaks work into
@@ -19,7 +25,7 @@ The human owner is the creative director and final QA. Nothing ships without the
 
 | Name | Role | Hardware | Always on? |
 |---|---|---|---|
-| `server` | Studio: orchestrator LLM, job queue, git, headless Godot tests, asset library | i7-10700K, 96 GB DDR4, **no GPU yet** (12 GB card planned) | Yes |
+| `server` | Studio: orchestrator LLM, job queue, git, headless Godot tests, asset library, dedicated game server | i7-10700K, 96 GB DDR4, **no GPU yet** (12 GB card planned), Windows | Yes |
 | `gpu` | Contractor: GPU asset generation, Godot editor + MCP | Ryzen 9 7900X, 32 GB DDR5, **RTX 3080 Ti 12 GB** | No, it is also the gaming PC |
 
 They talk over **Tailscale**. The server never pushes work at the gaming PC; it puts jobs on a

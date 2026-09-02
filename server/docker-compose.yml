@@ -1,33 +1,15 @@
-# Server stack for the always-on home server. See docs/06-setup-server.md.
-# All ports bind to the Tailscale IP only.
+# Server stack. On the Windows server only redis and forgejo run here; Ollama, Syncthing and the
+# orchestrator run natively (see docs/06-setup-server.md). On a Linux server you can enable the
+# `ollama-in-docker` and `orchestrator-in-docker` profiles.
 
 services:
-  ollama:
-    image: ollama/ollama:latest
-    restart: unless-stopped
-    ports:
-      - "${SERVER_TS_IP}:11434:11434"
-    volumes:
-      - ollama:/root/.ollama
-    environment:
-      OLLAMA_NUM_THREADS: "16"
-      OLLAMA_KEEP_ALIVE: "30m"
-      OLLAMA_MAX_LOADED_MODELS: "2"
-    # Uncomment when the 12 GB GPU is installed and nvidia-container-toolkit is set up.
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
-
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes"]
     ports:
       - "${SERVER_TS_IP}:6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis:/data
 
@@ -43,29 +25,35 @@ services:
       USER_UID: "1000"
       USER_GID: "1000"
 
-  syncthing:
-    image: syncthing/syncthing:latest
+  ollama:
+    profiles: ["ollama-in-docker"]
+    image: ollama/ollama:latest
     restart: unless-stopped
-    network_mode: host   # discovery works best on host network; UI on :8384
+    ports:
+      - "${SERVER_TS_IP}:11434:11434"
     volumes:
-      - syncthing:/var/syncthing/config
-      - ../assets:/var/syncthing/assets
+      - ollama:/root/.ollama
+    environment:
+      OLLAMA_NUM_THREADS: "16"
+      OLLAMA_KEEP_ALIVE: "30m"
+      OLLAMA_MAX_LOADED_MODELS: "2"
+    # With a GPU on Linux, add nvidia-container-toolkit and:
+    # deploy: { resources: { reservations: { devices: [ { driver: nvidia, count: all, capabilities: [gpu] } ] } } }
 
   orchestrator:
+    profiles: ["orchestrator-in-docker"]
     build: ./orchestrator
     restart: unless-stopped
-    depends_on: [redis, ollama]
+    depends_on: [redis]
     env_file: .env
     environment:
       REDIS_HOST: redis
       REPO_ROOT: /repo
     volumes:
-      - ..:/repo          # the whole repo: tasks/, docs/, agents/, assets/, game/
-    # Wake-on-LAN needs the LAN. Host network lets the orchestrator send the magic packet.
-    network_mode: host
+      - ..:/repo
+    network_mode: host   # Linux only; needed for wake-on-LAN broadcast
 
 volumes:
-  ollama:
   redis:
   forgejo:
-  syncthing:
+  ollama:

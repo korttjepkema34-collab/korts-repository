@@ -1,82 +1,112 @@
-# 06 - Server setup (home server, `server`)
+# 06 - Server setup (home server, `server`, **Windows**)
 
-Assumes Linux with Docker and Docker Compose. If the server runs something else (Windows,
-unRAID, Proxmox), adapt and note it in `docs/decisions.md`.
+The server runs Windows. Decision (see `decisions.md`): keep Windows, do **not** reinstall Linux.
+Run the performance-sensitive and LAN-sensitive pieces natively, and only the stateless services
+in Docker Desktop. Reasons:
+
+- Ollama has a native Windows build. Native gets full access to the 96 GB and, later, the GPU
+  driver with no WSL2 layer. Inside Docker/WSL2, memory is capped at 50% of host RAM by default
+  and CPU inference is slower.
+- Wake-on-LAN needs to broadcast on the physical LAN. Docker Desktop containers sit behind a
+  NAT and cannot. The orchestrator therefore runs natively.
+- Syncthing's Docker `network_mode: host` does not work on Docker Desktop. Native Syncthing does.
+- Redis and Forgejo do not care, so they go in Docker.
 
 ## 1. Tailscale
 
-```bash
-curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up --hostname server
-tailscale ip -4      # note this IP, it is SERVER_TS_IP below
+Install Tailscale for Windows, sign in, set hostname `server`. Note the Tailscale IP
+(`tailscale ip -4` in PowerShell); it is `SERVER_TS_IP` below. Apply the ACL from
+`scripts/tailscale-acl.example.json`.
+
+## 2. Ollama (native)
+
+Install from ollama.com (Windows installer). Then in PowerShell (as your user):
+
+```powershell
+[Environment]::SetEnvironmentVariable("OLLAMA_HOST", "0.0.0.0:11434", "User")   # listen on all, ACL restricts
+[Environment]::SetEnvironmentVariable("OLLAMA_NUM_THREADS", "16", "User")
+[Environment]::SetEnvironmentVariable("OLLAMA_KEEP_ALIVE", "30m", "User")
+[Environment]::SetEnvironmentVariable("OLLAMA_MAX_LOADED_MODELS", "2", "User")
+# restart Ollama from the tray, then:
+ollama pull qwen3.6:35b-a3b      # orchestrator, verify tag (docs/04-models.md)
+ollama pull qwen3-vl:8b          # reviewer
+ollama pull nomic-embed-text
 ```
 
-Apply the ACL in `scripts/tailscale-acl.example.json` from the Tailscale admin console so only the
-two machines can reach the service ports.
+Windows Firewall: allow inbound 11434 on the Tailscale adapter only.
 
-## 2. Clone the repo
+## 3. Docker Desktop (Redis + Forgejo)
 
-```bash
-git clone <this repo> ~/studio && cd ~/studio
-cp server/.env.example server/.env
-# edit server/.env: set REDIS_PASSWORD, SERVER_TS_IP, GPU_MAC (for wake-on-LAN)
+Install Docker Desktop (WSL2 backend). Create `%UserProfile%\.wslconfig` so WSL2 does not hog
+RAM that Ollama needs:
+
+```ini
+[wsl2]
+memory=16GB
+processors=4
 ```
 
-## 3. Bring up the stack
+Then:
 
-```bash
-cd server
-docker compose up -d
-docker compose ps
+```powershell
+cd C:\studio\server
+copy .env.example .env      # edit: SERVER_TS_IP, REDIS_PASSWORD, GPU_MAC, LAN_BROADCAST
+docker compose up -d        # brings up redis and forgejo only (ollama is behind a profile)
 ```
 
-Services: `ollama`, `redis`, `forgejo`, `orchestrator`, `syncthing`. Godot headless is a separate
-image built on demand (see `server/godot-headless/`).
+If you ever want Ollama in Docker instead (e.g. on a Linux reinstall):
+`docker compose --profile ollama-in-docker up -d` and set `LLM_BASE_URL` accordingly.
 
-## 4. Pull models
+## 4. Repo + orchestrator (native Python)
 
-```bash
-docker compose exec ollama ollama pull qwen3.6:35b-a3b   # verify tag, see docs/04-models.md
-docker compose exec ollama ollama pull qwen3-vl:8b
-docker compose exec ollama ollama pull nomic-embed-text
+```powershell
+winget install Python.Python.3.12 Git.Git
+git clone <this repo> C:\studio
+cd C:\studio\server
+python -m venv .venv; .\.venv\Scripts\Activate.ps1
+pip install -r orchestrator\requirements.txt
+.\run-orchestrator.ps1       # loads server\.env, sets REPO_ROOT, starts the loop
 ```
 
-Set `OLLAMA_NUM_THREADS=16` (already in compose) so it uses all logical cores.
+Start on boot: Task Scheduler, "At startup", run
+`powershell -File C:\studio\server\run-orchestrator.ps1`, whether user is logged on or not.
+
+`LLM_BASE_URL` in `.env` should be `http://127.0.0.1:11434/v1` (native Ollama), and
+`REDIS_HOST` should be `127.0.0.1` (Docker publishes it on the Tailscale IP and localhost).
 
 ## 5. Forgejo
 
-Open `http://SERVER_TS_IP:3000`, create the admin user, create a repo named `studio`, and push this
-repo to it. Add GitHub as a mirror if you want an off-site copy.
+Open `http://SERVER_TS_IP:3000`, create the admin user and a repo named `studio`, push this repo
+to it. Add GitHub as a push mirror for an off-site copy.
 
-## 6. Syncthing
+## 6. Syncthing (native)
 
-Open `http://SERVER_TS_IP:8384`, add the `assets/` folder, and pair with the gaming PC's Syncthing
-using the device IDs. Two-way sync. Ignore pattern: nothing (the whole folder syncs).
+Install Syncthing for Windows (SyncTrayzor is a convenient wrapper). Add `C:\studio\assets` as a
+folder, pair with the gaming PC over Tailscale. Two-way.
 
 ## 7. Wake-on-LAN
 
-```bash
-sudo apt install wakeonlan
-# find the gaming PC's MAC from `ipconfig /all` on Windows, put it in server/.env as GPU_MAC
-scripts/wake-gpu.sh     # test it
+The orchestrator sends the magic packet itself (`server/orchestrator/wake.py`) when jobs are
+queued and the worker heartbeat is missing. It only needs `GPU_MAC` and `LAN_BROADCAST` in
+`.env`. Test manually: `python scripts\wake_gpu.py`.
+
+## 8. Headless Godot for tests
+
+Install Godot 4 (the standard Windows build runs headless with `--headless`). Put the path in
+`.env` as `GODOT_BIN`. The orchestrator will use it for gdUnit4 runs once that step is
+implemented. The Linux Dockerfile in `server/godot-headless/` is kept for a Linux server.
+
+## 9. Test the queue
+
+```powershell
+cd C:\studio
+.\server\.venv\Scripts\python.exe scripts\enqueue_stub.py
 ```
 
-Enable WoL in the gaming PC's BIOS and its network adapter's power settings.
+Then start the worker on the gaming PC and watch `assets\incoming\000-stub\` appear.
 
-## 8. Test the queue
+## 10. When the 12 GB GPU arrives
 
-```bash
-cd ~/studio
-python3 -m pip install -r server/orchestrator/requirements.txt
-python3 scripts/enqueue_stub.py     # pushes a `stub` job
-```
-
-When the worker on the gaming PC picks it up you will see a result in
-`redis-cli -a $REDIS_PASSWORD LRANGE results 0 -1`.
-
-## 9. When the 12 GB GPU arrives
-
-- Install the Nvidia driver and `nvidia-container-toolkit`.
-- Uncomment the `deploy.resources` block for `ollama` in `docker-compose.yml`.
-- Switch the orchestrator model per `docs/04-models.md` and add a second worker instance on the
-  server for `image` and `music` kinds (`worker/` runs on Linux too).
+Install the Nvidia driver. Native Ollama picks it up automatically. Switch the orchestrator model
+per `docs/04-models.md` and run a second copy of `worker/` on the server for `image` and `music`
+kinds (it runs on Windows too).

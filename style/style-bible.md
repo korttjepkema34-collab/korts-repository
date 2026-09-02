@@ -7,13 +7,13 @@ this file once it is filled in. The reviewer rejects anything that drifts from i
 ## Game
 
 - Working title: TBD
-- Genre: TBD
-- Perspective / camera: TBD (top-down, side-on, isometric, 3D third-person)
-- Target resolution: TBD (e.g. 640x360 pixel art scaled 3x)
+- Genre: online RPG with a story campaign playable solo or co-op, persistent shared world (see docs/10-game-design.md)
+- Perspective / camera: top-down, 4-direction characters
+- Target resolution: 640x360 base, integer-scaled 3x (1920x1080)
 
 ## Visual style
 
-- Medium: TBD (pixel art / hand-painted / low-poly / cel-shaded)
+- Medium: pixel art
 - Palette: TBD. Put the swatch PNG in `style/references/palette.png` and list hex codes here.
 - Line and shading: TBD (e.g. 1 px dark outline, 3-tone shading, no gradients)
 - Mood keywords: TBD (e.g. "warm, worn, hopeful")
@@ -26,12 +26,13 @@ this file once it is filled in. The reviewer rejects anything that drifts from i
 
 ## Characters
 
-- Proportions: TBD (e.g. 3 heads tall, chibi)
+- Proportions: TBD (owner to choose; 2-3 heads tall is typical for 16x16 tile games)
+- Sprite standard: 4 directions, 4-6 frames per walk/attack cycle, modular body + equipment layers
 - Reference sheet per character in `style/references/<name>-sheet.png` (front, side, back)
 
 ## Environments
 
-- Tile size: TBD (e.g. 16x16)
+- Tile size: 16x16
 - Lighting: TBD
 
 ## 3D (if applicable)

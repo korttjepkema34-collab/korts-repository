@@ -37,7 +37,7 @@ creative director and final QA.
 | 1 | Server stack up, worker pulls a stub job over Tailscale | The two machines cooperate |
 | 2 | Orchestrator turns a task file into jobs; coder creates a scene via Godot MCP | Planning + code loop |
 | 3 | 2D artist generates a sprite that passes the reviewer and lands in `assets/approved/` | Art loop with QA |
-| 4 | Playable prototype: one level, one character, one enemy, one track, one SFX set | End-to-end |
+| 4 | Playable prototype per docs/10-game-design.md: hub + one campaign map, two players over Tailscale on a dedicated server | End-to-end, including netcode |
 | 5 | Add 3D and animation workers | Full team |
 
 Start with **three workers** (orchestrator, coder, 2D artist). Add audio and 3D once milestone 4
