@@ -6,9 +6,9 @@ then leave it. Estimated time: an afternoon.
 ## Server (Windows)
 
 - [ ] Tailscale installed, hostname `server`, ACL applied (`scripts/tailscale-acl.example.json`).
-- [ ] Ollama native, env vars set per `docs/06-setup-server.md`, models pulled:
-      orchestrator, coder, reviewer (vision), escalation, embeddings. Verify tags first.
-      `ollama list` shows all of them. `ollama run <orchestrator> "say hi"` responds.
+- [ ] Ollama native, env vars set per `docs/06-setup-server.md`, models pulled with the
+      commands in `docs/04-models.md` (about 115 GB of downloads). `ollama list` shows all of
+      them. `ollama run qwen3.6:35b-a3b "say hi"` responds.
 - [ ] Docker Desktop with `.wslconfig` memory cap; `docker compose up -d` in `server/` brings up
       redis and forgejo; Forgejo admin user created; this repo pushed to it.
 - [ ] Godot 4 installed; path in `server/.env` as `GODOT_BIN`.
@@ -18,8 +18,9 @@ then leave it. Estimated time: an afternoon.
       `"%GODOT_BIN%" --path game -s res://scripts/dev/screenshot.gd -- res://scenes/main/main.tscn C:\studio\reports\test.png`
       produces a PNG.
 - [ ] Optional: a Godot MCP server installed on the server and `GODOT_MCP_CMD` set (docs/11).
-- [ ] gdUnit4 unzipped into `game/addons/gdUnit4` (from the Godot Asset Library or GitHub
-      releases). Optional but strongly recommended; without it the coder gate is only a load check.
+- [ ] gdUnit4: run `scripts\install_gdunit4.ps1` from the repo root. It is already enabled in
+      `project.godot`; `game/tests/test_smoke.gd` should pass headless afterwards:
+      `"%GODOT_BIN%" --headless --path game -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd --add res://tests --ignoreHeadlessMode`
 - [ ] Syncthing native, `assets/` folder shared with the gaming PC.
 - [ ] `server/.env` filled in: Tailscale IP, Redis password, model names, GPU MAC, broadcast.
 - [ ] `server/run-orchestrator.ps1` runs in a window and prints "orchestrator up".
@@ -37,8 +38,10 @@ then leave it. Estimated time: an afternoon.
 - [ ] Task Scheduler entry so the worker starts at logon.
 - [ ] Wake-on-LAN enabled in BIOS and the adapter; Fast Startup off.
 - [ ] Syncthing paired with the server.
-- [ ] Optional for now: ACE-Step and Stable Audio Open. Their handler fails cleanly until
-      the API wrapper in `worker/services/` exists, and the studio defers audio tasks.
+- [ ] Optional for now: audio. `worker/services/audio_api.py` wraps ACE-Step and Stable Audio
+      Open; install both per their READMEs into the venv `run-audio-api.ps1` creates, then
+      verify the two generate functions against the installed versions. Until then audio tasks
+      defer cleanly.
 
 ## Smoke test (10 minutes)
 

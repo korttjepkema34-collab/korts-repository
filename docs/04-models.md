@@ -1,17 +1,17 @@
 # 04 - Models
 
-**Verify tags before pulling.** Model names below come from mid-2026 roundups and this
-document's author's knowledge. Names and quantisation tags change; check the Ollama library or
-Hugging Face for the current tag and update this file plus `decisions.md`. Prefer Apache 2.0 or
-MIT licences.
+**Tags verified against the Ollama library on 2026-09-02** (via search results; the library
+site itself was not reachable from the scaffolding session). Re-check with `ollama pull` before
+the first run; if a tag has moved, update this file, `server/.env` and `decisions.md`. Prefer
+Apache 2.0 or MIT licences.
 
 ## Recommended picks by role
 
 | Role | Runs on | Primary pick | Why | Fallback |
 |---|---|---|---|---|
-| **Orchestrator** | server (CPU now, CPU+12 GB later) | **Qwen3.6-35B-A3B** (MoE, ~20 GB Q4, Apache 2.0) | Fast on CPU because only ~3B params are active per token. Good tool calling and planning. Fits RAM with room to spare. | **gpt-oss-120b** (MoE, ~60 GB mxfp4, Apache 2.0): smarter, slower on CPU, only viable because of 96 GB RAM. Becomes the pick once the 12 GB card lands and attention can sit on GPU. |
-| **Coder** | **server** (CPU now) | **Qwen3-Coder MoE** (30B-A3B class, ~18 GB Q4) | Runs on CPU at usable speed because only ~3B params are active; the coder is file-based and headless so it needs no GPU | **Escalation: gpt-oss-120b** (~60 GB, ~5-10 tok/s on CPU). Slow, but unattended runs do not care. Used for deferred tasks once a day. |
-| **Reviewer / QA** | server | **Qwen3-VL** small (~8B, ~6 GB Q4) | Sees the image, compares to style references, writes structured verdicts. Small enough to stay resident once the server GPU exists. | Same model on gpu box until then, or a larger VL model on CPU (slow). |
+| **Orchestrator** | server (CPU now, CPU+12 GB later) | **`qwen3.6:35b-a3b`** (MoE, ~20 GB, Apache 2.0) | Fast on CPU because only ~3B params are active per token. Good tool calling and planning. Fits RAM with room to spare. | **gpt-oss-120b** (MoE, ~60 GB mxfp4, Apache 2.0): smarter, slower on CPU, only viable because of 96 GB RAM. Becomes the pick once the 12 GB card lands and attention can sit on GPU. |
+| **Coder** | **server** (CPU now) | **`qwen3.6:35b-a3b-coding`** (same MoE, code-tuned) or `qwen3-coder:30b` | Runs on CPU at usable speed because only ~3B params are active; the coder is file-based and headless so it needs no GPU | **Escalation: gpt-oss-120b** (~60 GB, ~5-10 tok/s on CPU). Slow, but unattended runs do not care. Used for deferred tasks once a day. |
+| **Reviewer / QA** | server | **`qwen3-vl:8b`** (6.1 GB) | Sees the image, compares to style references, writes structured verdicts. Small enough to stay resident once the server GPU exists. | Same model on gpu box until then, or a larger VL model on CPU (slow). |
 | **2D artist** | gpu (server later) | **SDXL** + pixel-art / style LoRAs in **ComfyUI** | Fits 12 GB easily, huge LoRA ecosystem, IP-Adapter for reference consistency | **FLUX** GGUF Q8 for backgrounds and concept art when quality matters more than speed |
 | **Music** | gpu (server later) | **ACE-Step 1.5** (~8 GB) | Full track in seconds on a 3090-class card, lyrics support, diffusion so easy to steer | YuE 7B for vocal-heavy tracks |
 | **SFX** | gpu (server later) | **Stable Audio Open** | Built for short samples and effects | MusicGen for stingers |
@@ -35,13 +35,22 @@ MIT licences.
 ## Ollama pull list (verify tags first)
 
 ```bash
-# server
-ollama pull qwen3.6:35b-a3b          # orchestrator  (verify exact tag)
-ollama pull qwen3-vl:8b              # reviewer      (verify exact tag)
+# all on the server (native Ollama, Windows)
+ollama pull qwen3.6:35b-a3b          # orchestrator, MoE ~20 GB
+ollama pull qwen3.6:35b-a3b-coding   # coder, same family tuned for code
+ollama pull qwen3-vl:8b              # reviewer, vision, 6.1 GB
+ollama pull gpt-oss:120b             # escalation, ~65 GB, slow on CPU, fits in 96 GB
 ollama pull nomic-embed-text         # embeddings
-# gpu box (optional, when idle)
-ollama pull qwen3-coder:14b          # coder         (verify exact tag)
+# alternatives
+# ollama pull qwen3-coder:30b        # coder alternative, MoE 3B active, 19 GB
+# ollama pull gpt-oss:20b            # escalation fallback if RAM is tight, 13 GB
+# ollama pull qwen3-vl:4b            # smaller reviewer, 3.3 GB
 ```
+
+Total on disk for the primary set: roughly 115 GB. Ollama keeps at most two loaded
+(`OLLAMA_MAX_LOADED_MODELS=2`), so RAM use peaks around 85 GB when the escalation model and the
+reviewer are both resident. That fits 96 GB with little margin; if the box also runs Docker
+Desktop, keep the WSL2 cap at 16 GB or drop to `gpt-oss:20b`.
 
 ## Escalation is free too
 

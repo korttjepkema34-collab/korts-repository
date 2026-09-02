@@ -17,7 +17,7 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 
 ## Needs verifying (setup time, see docs/13-before-you-walk-away.md)
 
-- [ ] Exact Ollama tags for the Qwen MoE, Qwen3-Coder, Qwen3-VL and gpt-oss picks.
+- [ ] Confirm `gpt-oss:120b` loads alongside the reviewer within 96 GB; else use `gpt-oss:20b`.
 - [ ] Whether the vision reviewer model handles 4 candidate images plus 2 references in one call
       on CPU in reasonable time. If not, lower to 2 candidates in `reviewer.py`.
 - [ ] Stable Audio Open version and licence.
@@ -26,7 +26,7 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 ## Not started
 
 - [ ] Audio review (currently auto-approved on existence).
-- [ ] Audio API wrapper (`worker/services/`).
+- [ ] Verify `worker/services/audio_api.py` against the installed ACE-Step and stable-audio-tools versions (call signatures drift).
 - [ ] Nakama compose entry for scope rung 2.
 - [ ] Dedicated game server launch as a service on the Windows server.
 - [ ] Dashboard.

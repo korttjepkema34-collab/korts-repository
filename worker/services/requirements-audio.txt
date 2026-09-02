@@ -1,0 +1,6 @@
+fastapi>=0.110
+uvicorn>=0.29
+soundfile>=0.12
+# plus the two backends, installed per their own READMEs (CUDA torch first):
+# acestep            (github.com/ace-step/ACE-Step-1.5)
+# stable-audio-tools (github.com/Stability-AI/stable-audio-tools)
