@@ -36,10 +36,10 @@ game features beyond the design doc; fill it in.
 
 ## Decisions without a human
 
-If the style bible has a TBD you need (palette, proportions), pick a sensible default that fits
-"2D pixel-art online RPG", write it into the relevant task notes, and it will be logged. Prefer
-conventional choices (16-colour palette, 2.5-head proportions, warm fantasy) over novel ones.
-Never spend money. Never expose services. Never change the genre.
+The world bible (`docs/14-world-bible.md`) and style bible are filled in. Stay inside them. When
+you need something they do not cover (a new prop, a minor NPC, a sound), invent the smallest thing
+that fits the tone and naming rules, and return it in the plan's `decisions` list so it is logged.
+Never spend money. Never expose services. Never change the genre, the setting, or the palette.
 
 ## Style
 

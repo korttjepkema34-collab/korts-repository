@@ -11,9 +11,10 @@ owner (the creative director). The goal is for the AI team to do most of the pro
 GDScript and scenes, 2D sprites, tiles and backgrounds, music and sound effects, and 2D
 animation. The human sets direction, reviews, and approves.
 
-The game is a **2D pixel-art online RPG**: a story campaign playable solo or co-op on a
-persistent shared world, built as a scope ladder towards an MMO. Read `docs/10-game-design.md`
-before any gameplay or netcode work. The first milestone is a playable two-player prototype on a
+The game is **Hollowmere**, a 2D pixel-art online RPG: a story campaign playable solo or co-op on
+a persistent shared world, built as a scope ladder towards an MMO. Read `docs/10-game-design.md`
+before any gameplay or netcode work and `docs/14-world-bible.md` before inventing any name,
+place, enemy, or line of dialogue. The first milestone is a playable two-player prototype on a
 dedicated server. See `docs/01-vision.md`.
 
 ## 2. The two machines

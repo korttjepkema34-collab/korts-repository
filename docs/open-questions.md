@@ -6,8 +6,11 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 
 ## Owner may want to override on return
 
-- [ ] Style choices the orchestrator made automatically (palette, proportions). Check
-      `docs/decisions.md` for "(auto)" lines and `style/style-bible.md`.
+- [ ] The world and style the scaffold chose for you: `docs/14-world-bible.md` and
+      `style/style-bible.md`. Change anything before the first run; after that, changes mean
+      regenerating approved art.
+- [ ] Style choices the orchestrator made automatically during the run: "(auto)" lines in
+      `docs/decisions.md`.
 - [ ] Godot MCP choice for interactive sessions (docs/11-godot-mcp-options.md). Not needed for
       unattended runs.
 - [ ] Buy the RTX 3060 12 GB for the server now or after milestone 4?
