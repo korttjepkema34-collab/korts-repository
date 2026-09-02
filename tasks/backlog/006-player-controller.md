@@ -1,16 +1,16 @@
-# 006 Server-authoritative player controller
+# 006 Server-authoritative Reaper controller
 priority: 6
 roles: coder, reviewer
 depends_on: 003
 
 ## Goal
-`scenes/player/player.tscn` with 4-direction movement, run as server-authoritative: the client
-sends input vectors via RPC, the server moves the CharacterBody2D and syncs position with a
-MultiplayerSynchronizer. Solo play runs a local server peer.
+`scenes/player/reaper.tscn`: eight-direction movement, four-direction sprites, dodge roll with
+stamina, server-authoritative: clients send input vectors and action bits via RPC, the server moves
+the `CharacterBody2D` and syncs with `MultiplayerSynchronizer`. Solo runs a local server peer.
 
 ## Acceptance
-- `MultiplayerSpawner` spawns a player per peer in `saltreach.tscn`.
-- Movement speed, stamina cost in `data/player.json`.
-- Water tiles halve speed (read tile custom data).
-- Placeholder rectangle sprite until the player sheet is approved, then swap to AnimatedSprite2D with the 4-direction walk.
-- `run_scene_capture_output` shows "server: peer N spawned" when run with `--server`.
+- `MultiplayerSpawner` spawns a Reaper per peer in `keep.tscn`.
+- Speed, stamina, dodge cost and i-frames in `data/player.json`.
+- Water tiles halve speed (tile custom data). Y-sorted with feet origin.
+- Placeholder 32x48 rectangle until `reaper-sheet.png` is approved, then `AnimatedSprite2D` with the walk cycle.
+- `run_scene_capture_output` with `--server` prints "server: peer N spawned".

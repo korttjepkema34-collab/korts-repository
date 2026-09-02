@@ -1,4 +1,4 @@
-# Godot AI Game Dev Team
+# Reaper's Relics · AI game dev team
 
 A self-hosted, mostly-free "AI game studio" that builds a game in **Godot 4** using a team of
 specialised AI workers, running across two machines on a private Tailscale network.
@@ -9,9 +9,11 @@ specialised AI workers, running across two machines on a private Tailscale netwo
 
 ## The game
 
-A **2D pixel-art online RPG**: a story campaign you can play alone or with friends, on a
-persistent shared world, built step by step towards an MMO. Design and scope ladder in
-`docs/10-game-design.md`.
+**Reaper's Relics**, a 2.5D pixel-art online RPG. By day you scavenge and build. By night the
+Wired come in their hundreds. Survivor.io hordes, Stardew's look and daylight loop, Elden Ring
+bosses and stamina, Minecraft-style building, one day/night clock. Near-future feudal dystopia:
+medieval cyberpunk. Design in `docs/10-game-design.md`, world in `docs/14-world-bible.md`, the
+approved look in `style/references/mock-day.png` and `mock-night.png`.
 
 ## The idea in one paragraph
 

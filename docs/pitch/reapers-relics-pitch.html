@@ -1,0 +1,497 @@
+<title>Reaper's Relics</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #0d0c10;
+    --char: #1c1a22;
+    --ash-d: #2e2b33;
+    --ash: #4a4650;
+    --ash-l: #706a72;
+    --bone-d: #a39b93;
+    --bone: #d9cfbf;
+    --leather: #3a2a22;
+    --rust-d: #6b4a34;
+    --rust: #9c6a3c;
+    --gold: #c9a24a;
+    --blood-d: #5a1f22;
+    --blood: #8c2f2a;
+    --teal-d: #1f3a3a;
+    --copper: #3e7f76;
+    --glow: #7fd6d1;
+    --measure: 68ch;
+  }
+  body {
+    background: var(--ink);
+    color: var(--bone);
+    font-family: "Crimson Pro", Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 24px 96px; }
+  h1, h2, h3 { font-family: Cinzel, "Trajan Pro", Georgia, serif; font-weight: 700; text-wrap: balance; color: var(--bone); margin: 0; }
+  h1 { font-size: clamp(38px, 7vw, 64px); letter-spacing: 0.04em; line-height: 1; }
+  h2 { font-size: 24px; letter-spacing: 0.06em; margin-top: 64px; padding-bottom: 10px; border-bottom: 1px solid var(--ash-d); }
+  h3 { font-size: 17px; letter-spacing: 0.05em; font-weight: 500; color: var(--gold); margin-top: 28px; }
+  p { max-width: var(--measure); margin: 14px 0; }
+  .eyebrow, .mono { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ash-l); }
+  .eyebrow.glow { color: var(--glow); }
+  header { display: grid; gap: 14px; margin-bottom: 28px; }
+  header .sub { font-size: 20px; font-style: italic; color: var(--bone-d); max-width: var(--measure); }
+  .status { display: inline-flex; gap: 10px; align-items: center; padding: 6px 12px; border: 1px solid var(--rust-d); color: var(--gold); font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.1em; width: max-content; }
+  .status::before { content: ""; width: 7px; height: 7px; background: var(--gold); }
+
+  /* scene */
+  .scene { position: relative; background: var(--char); border: 1px solid var(--ash-d); margin: 20px -24px 0; }
+  @media (max-width: 1008px) { .scene { margin-left: 0; margin-right: 0; } }
+  .scene canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .scene .hud { position: absolute; left: 12px; bottom: 10px; display: grid; gap: 4px; font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--bone-d); }
+  .scene .hud .bar { display: grid; grid-template-columns: 52px 120px; align-items: center; gap: 8px; }
+  .scene .hud i { display: block; height: 6px; background: var(--ash-d); position: relative; }
+  .scene .hud i::after { content: ""; position: absolute; inset: 0; width: var(--w); background: var(--c); }
+  .scene .wave { position: absolute; right: 12px; top: 10px; font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.1em; color: var(--glow); }
+  .caption { font-size: 15px; color: var(--ash-l); margin-top: 8px; font-style: italic; }
+
+  /* palette */
+  .palettes { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 20px; }
+  @media (max-width: 720px) { .palettes { grid-template-columns: 1fr; } }
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .sw { aspect-ratio: 1 / 1; display: flex; align-items: flex-end; padding: 6px; font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.04em; color: rgba(255,255,255,0.75); text-shadow: 0 1px 0 rgba(0,0,0,0.8); }
+  .sw.light { color: rgba(0,0,0,0.7); text-shadow: none; }
+  .old .sw { opacity: 0.8; }
+  .uses { margin-top: 12px; font-size: 15px; color: var(--bone-d); display: grid; gap: 3px; }
+  .uses span b { color: var(--bone); font-weight: 500; }
+
+  /* pillars */
+  .pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--ash-d); border: 1px solid var(--ash-d); margin-top: 20px; }
+  @media (max-width: 720px) { .pillars { grid-template-columns: 1fr; } }
+  .pillar { background: var(--ink); padding: 20px 22px; }
+  .pillar .from { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash-l); }
+  .pillar .from b { color: var(--gold); font-weight: 500; }
+  .pillar h3 { margin-top: 6px; color: var(--bone); font-size: 19px; }
+  .pillar p { font-size: 16px; margin: 8px 0 0; }
+
+  /* loop */
+  .loop { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ash-d); margin-top: 20px; }
+  @media (max-width: 720px) { .loop { grid-template-columns: 1fr; } }
+  .loop > div { padding: 20px 22px; }
+  .loop .day { background: var(--ash-d); color: var(--bone); }
+  .loop .night { background: var(--char); }
+  .loop .t { font-family: Cinzel, serif; font-size: 18px; letter-spacing: 0.08em; }
+  .loop ul { margin: 10px 0 0; padding-left: 18px; font-size: 16px; }
+  .loop li { margin: 4px 0; }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 16px; font-size: 16px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--ash-d); vertical-align: top; }
+  th { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ash-l); font-weight: 500; }
+  td.k { color: var(--gold); font-family: Cinzel, serif; font-size: 14px; letter-spacing: 0.04em; white-space: nowrap; }
+  .tablewrap { overflow-x: auto; }
+
+  .changes { display: grid; gap: 10px; margin-top: 16px; }
+  .chg { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--ash-d); font-size: 16px; }
+  .chg .tag { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding-top: 4px; }
+  .chg .tag.rw { color: var(--blood); }
+  .chg .tag.ed { color: var(--gold); }
+  .chg .tag.kp { color: var(--copper); }
+  .chg .tag.nw { color: var(--glow); }
+
+  .ask { border: 1px solid var(--rust-d); padding: 22px 24px; margin-top: 20px; display: grid; gap: 14px; }
+  .ask .q { display: grid; grid-template-columns: 28px 1fr; gap: 12px; font-size: 16px; }
+  .ask .n { font-family: Cinzel, serif; color: var(--gold); }
+  .ask .q b { color: var(--bone); font-weight: 500; }
+  .ask .q em { color: var(--bone-d); }
+  .approve { margin-top: 28px; padding: 18px 22px; background: var(--char); border-left: 3px solid var(--gold); font-size: 17px; }
+  code { font-family: "JetBrains Mono", monospace; font-size: 0.85em; color: var(--bone-d); }
+  a { color: var(--glow); }
+  @media (prefers-reduced-motion: reduce) { .scene canvas { animation: none; } }
+</style>
+
+<div class="page">
+  <header>
+    <span class="eyebrow">Proposal for approval · replaces Hollowmere · nothing in the repo changes until you say so</span>
+    <h1>Reaper's Relics</h1>
+    <div class="sub">A 2.5D pixel-art online RPG. By day you scavenge and build. By night the Wired come in their hundreds. Somewhere out there a knight in dead armour is holding the one relic that would keep the lights on.</div>
+    <span class="status">Draft 6 · Near-future feudal dystopia · medieval cyberpunk · 2.5D</span>
+  </header>
+
+  <section>
+    <span class="eyebrow glow">Night frame · 960×540 pixel base, 32 px tiles, 30×17 tiles visible · lighting pass composited on top, HD-2D style · shown at half of 1080p size</span>
+    <div class="scene">
+      <canvas id="scene" width="960" height="540" aria-label="Mock in-game frame: a Reaper with a scythe stands before the Keep's wall at night while a horde of the Wired advances from the right under a dead broadcast tower"></canvas>
+      <div class="wave">NIGHT 3 · WAVE 2 / 5 · WIRED 120</div>
+      <div class="hud">
+        <div class="bar"><span>vigour</span><i style="--w:72%; --c:var(--blood)"></i></div>
+        <div class="bar"><span>stamina</span><i style="--w:45%; --c:var(--gold)"></i></div>
+        <div class="bar"><span>relic</span><i style="--w:90%; --c:var(--glow)"></i></div>
+      </div>
+    </div>
+    <div class="caption">Hand-built pixel mock, not generated art. The pixels underneath use only the 16 palette colours; moonlight, lamplight, eye-glow, fog and the edge blur are a separate lighting pass, exactly as they will be in Godot. Two Reapers hold the gate road in co-op. A Herald drone has marked the lead player and the horde is turning toward the light. The Castellan walks in the middle of them. The ditch on the left reflects the lamps. The single cold light colour is reserved for working tech.</div>
+  </section>
+
+  <h2>The palette</h2>
+  <p>Hollowmere was warm gold-hour. This is ash, leather, dried blood, tarnished gold and one cold glow, the Elden Ring register you asked for. Still 16 colours, still flat three-tone shading, so the Stardew-style tile craft carries over unchanged.</p>
+  <div class="palettes">
+    <div class="old">
+      <span class="eyebrow">Before · Hollowmere</span>
+      <div class="swatches" style="margin-top:10px">
+        <div class="sw" style="background:#1b1f2a">1b1f2a</div><div class="sw" style="background:#2e3a4f">2e3a4f</div><div class="sw" style="background:#3f6b7a">3f6b7a</div><div class="sw" style="background:#5fa8a0">5fa8a0</div>
+        <div class="sw light" style="background:#a8d8c8">a8d8c8</div><div class="sw" style="background:#4a3b2f">4a3b2f</div><div class="sw" style="background:#7a5c3e">7a5c3e</div><div class="sw light" style="background:#b08a5a">b08a5a</div>
+        <div class="sw light" style="background:#e0c48c">e0c48c</div><div class="sw" style="background:#6b6b66">6b6b66</div><div class="sw light" style="background:#9c9a8f">9c9a8f</div><div class="sw light" style="background:#c8c2b0">c8c2b0</div>
+        <div class="sw" style="background:#c9772e">c9772e</div><div class="sw light" style="background:#f2b64d">f2b64d</div><div class="sw" style="background:#8a3a3a">8a3a3a</div><div class="sw" style="background:#4f6b3a">4f6b3a</div>
+      </div>
+    </div>
+    <div>
+      <span class="eyebrow glow">After · Reaper's Relics</span>
+      <div class="swatches" style="margin-top:10px">
+        <div class="sw" style="background:#0d0c10">0d0c10</div><div class="sw" style="background:#1c1a22">1c1a22</div><div class="sw" style="background:#2e2b33">2e2b33</div><div class="sw" style="background:#4a4650">4a4650</div>
+        <div class="sw" style="background:#706a72">706a72</div><div class="sw light" style="background:#a39b93">a39b93</div><div class="sw light" style="background:#d9cfbf">d9cfbf</div><div class="sw" style="background:#3a2a22">3a2a22</div>
+        <div class="sw" style="background:#6b4a34">6b4a34</div><div class="sw" style="background:#9c6a3c">9c6a3c</div><div class="sw light" style="background:#c9a24a">c9a24a</div><div class="sw" style="background:#5a1f22">5a1f22</div>
+        <div class="sw" style="background:#8c2f2a">8c2f2a</div><div class="sw" style="background:#1f3a3a">1f3a3a</div><div class="sw" style="background:#3e7f76">3e7f76</div><div class="sw light" style="background:#7fd6d1">7fd6d1</div>
+      </div>
+      <div class="uses">
+        <span><b>1–5</b> night, shadow, ash, stone, fog</span>
+        <span><b>6–7</b> bone, skin, parchment, old paint</span>
+        <span><b>8–10</b> leather, rust, tarnished bronze</span>
+        <span><b>11</b> gold: relic trim, grace, stamina bar. Rare.</span>
+        <span><b>12–13</b> dried blood, fresh blood, a Thrall's eyes when close</span>
+        <span><b>14–15</b> deep teal shadow, corroded copper, moss</span>
+        <span><b>16</b> cold glow: working tech only. Never on the environment.</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>Four pillars, one game</h2>
+  <p>Each reference brings one system. The trick is that they share a clock: the day/night cycle is what makes hordes, building, bosses and cosy scavenging belong in the same game instead of four games.</p>
+  <div class="pillars">
+    <div class="pillar"><div class="from">From <b>Survivor.io</b></div><h3>The Wired come at night</h3><p>Waves in the hundreds, simple steering, one screen of threat. Relics picked up during the night grant upgrades that last until dawn. The wall you built by day, and the door you did or did not fix, decide whether you survive it.</p></div>
+    <div class="pillar"><div class="from">From <b>Stardew Valley</b></div><h3>The look, the movement, the daylight loop</h3><p>Three-quarter top-down, eight-direction movement, 32×32 tiles, 32×48 characters, dense hand-crafted tile detail with 2D lighting on top. Walk behind walls and trees and they hide you. Walk into a house and the roof fades. Days are for scavenging, crafting, tending your Hold and talking to the few people left in the Keep.</p></div>
+    <div class="pillar"><div class="from">From <b>Elden Ring</b></div><h3>Bosses, stamina, death that costs</h3><p>Telegraphed patterns, dodge roll, stamina on every swing. Die and your unbanked relics drop where you fell; get back to them or lose them. Hearths, the working power nodes, are where you rest and bank.</p></div>
+    <div class="pillar"><div class="from">From <b>Minecraft</b></div><h3>Your Hold</h3><p>A tile plot inside the Keep you wall, roof, door and wire with scavenged material. Persistent across sessions and visible to every other player. Walls and doors take horde damage and need repair; a broken door at night lets the Wired inside.</p></div>
+  </div>
+
+  <h2>The clock</h2>
+  <div class="loop">
+    <div class="day"><div class="t">DAY · 12 min</div><ul><li>Scavenge the Fallows for scrap, food, relic fragments</li><li>Build and repair your Hold; wire relic power to lamps and turrets</li><li>Trade, take contracts from Hesper the Reeve, follow the campaign</li><li>Enter a dungeon: bosses live in day-time instances</li></ul></div>
+    <div class="night"><div class="t" style="color:var(--glow)">NIGHT · 6 min</div><ul><li>The Wired move on any light. Five waves, count scales with party size</li><li>Relics dropped by the horde grant night-long upgrades</li><li>The Keep's wall holds if the shared lamps are powered; a broken door lets them in</li><li>Dawn: unbanked relics bank. Dead players respawn at the keep</li></ul></div>
+  </div>
+
+
+  <h2>2.5D, and which kind</h2>
+  <p>Your two references are two different techniques. Dragon Quest HD-2D puts pixel sprites inside a real 3D scene and lights it with bloom and depth-of-field blur. The Godot town is pure 2D pixel art at a large tile size with a three-quarter perspective and dense detail. What makes both feel alive is the same list: bigger tiles with more pixels each, lamps and windows that cast real light, shadows under everything, smoke and dust that move, and a soft blur at the top and bottom of the frame.</p>
+  <p><b style="color:var(--bone)">Recommendation: get there in 2D.</b> Godot's 2D lights with normal-mapped sprites, particles, a day/night tint and one post-process shader for glow and edge blur produce the HD-2D feel without a 3D scene. Every tool in the studio stays the same; the tiles just get bigger and the reviewer gets stricter. True HD-2D with 3D geometry remains open later, since the same sprites and tiles become its textures. The mock frames on this page are built that way: 16-colour pixels underneath, a lighting pass on top.</p>
+  <h2>Movement and the world you walk through</h2>
+  <p>Three-quarter top-down, like the reference town. You move in eight directions with four-direction sprites. Everything is sorted by its feet, so walking behind a wall, a fence or a tree hides you behind it. Our twist: buildings are part of the same map. Walk through a door and the roof fades to show the room. Doors open, close, lock, and break. At night, a broken door is an invitation.</p>
+  <span class="eyebrow glow">Day frame · the Keep · three-quarter view, building fronts, roof fade, shadows, smoke, crows · same palette under a daylight pass</span>
+  <div class="scene">
+    <canvas id="day" width="960" height="540" aria-label="Top-down day frame: the Reaper stands inside a house whose roof has faded, a Thrall shuffles behind a wall so only its head shows, a fence, a hearth and a lamp post on ash ground"></canvas>
+    <div class="wave" style="color:var(--gold)">DAY 4 · 07:40 · THE KEEP</div>
+  </div>
+  <div class="caption">The Keep at breakfast. The Reaper is inside the left house, so its roof has faded to show the room. Hesper the Reeve stands at the guild house door under the sign; Old Cutter leans on the garden fence. The transformer tower and the cooling pond are the substation the town was built in. Scrap piles are last night's repairs. A Thrall that got in stands behind the right house with only its head showing. Everything sorts by its feet and casts a shadow.</div>
+
+  <h2>The world</h2>
+  <p>The near future, forty years after the grid died. Nobody fixed it. What grew back was feudal: whoever holds a working reactor is a lord, whoever holds a printer is a priest, and everyone else farms, fights or scavenges. The old tech is not understood any more. It is venerated. A drone battery is a relic. A server rack is a shrine.</p>
+  <p><b style="color:var(--bone)">The Wired</b> are the grid's last users. When it fell, the implant network kept running on people instead of servers. They are still linked, still walking, still looking for signal. They are drawn to light and power. Nobody knows if anyone is still in there.</p>
+  <p><b style="color:var(--bone)">Reapers</b> are the outcasts who go into the dead fields to harvest relics from the Tithed and the ruins, because lords will pay in food and shelter for what a Reaper brings back. You are one. The lords do not let you inside their walls. So Reapers built their own, and called it the Keep.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Place</th><th>Role</th><th>Look</th></tr>
+    <tr><td class="k">The Keep</td><td>Shared hub. Every player's Hold sits inside its wall.</td><td>A settlement in a dead power substation. Car doors and highway barriers for walls. The transformer tower is the tower. Lamps on scavenged cable. Houses you can walk into.</td></tr>
+    <tr><td class="k">The Fallows</td><td>First open zone, day scavenging, night waves spill from here</td><td>Suburbs gone to meadow. Roofs under ivy, a rusted overpass, one cul-de-sac of intact houses the Wired still walk through in circles. Every house can be entered.</td></tr>
+    <tr><td class="k">The Undercroft</td><td>First dungeon and boss</td><td>A bank basement lit by a single working reactor. Marble, deposit boxes, gold-leafed cables. Someone made it a chapel.</td></tr>
+  </table></div>
+  <div class="tablewrap"><table>
+    <tr><th>Who</th><th>Role</th><th>Voice</th></tr>
+    <tr><td class="k">The Reaper</td><td>Player. Scythe (slow, wide), hook (fast, short), one relic slot for an active ability.</td><td>Silent.</td></tr>
+    <tr><td class="k">Hesper the Reeve</td><td>Keeps the Keep's ledger, gives contracts and the first quest</td><td>Tired, exact, secretly kind. Short sentences. Never says please.</td></tr>
+    <tr><td class="k">Old Cutter</td><td>Retired Reaper by the gate, tutorial hints. Named for the hook they never put down.</td><td>Rambling, cheerful, wrong about half of it.</td></tr>
+    <tr><td class="k">The Castellan</td><td>First boss. A lord's champion in augmented plate, sent to take the Undercroft reactor, never came back. Now they keep it.</td><td>Does not speak. The shield's siren sounds before each pattern.</td></tr>
+  </table></div>
+  <div class="tablewrap"><table>
+    <tr><th>Enemy</th><th>Behaviour</th><th>Threat</th></tr>
+    <tr><td class="k">Thrall</td><td>Horde unit. Walks toward the nearest light. Grabs on contact.</td><td>Low alone, lethal in fifty.</td></tr>
+    <tr><td class="k">Courser</td><td>Sprints at the player when the horde is engaged, flanks.</td><td>Medium. Forces movement.</td></tr>
+    <tr><td class="k">Herald</td><td>A drone. Hovers, marks a player, calls the horde to them.</td><td>Medium. Kill it first.</td></tr>
+    <tr><td class="k">The Castellan</td><td>Three patterns after a siren: shield sweep, charge, a call that pulls six Thralls into the arena.</td><td>Boss. The siren is the whole fight.</td></tr>
+  </table></div>
+  <h3>The first quest · "Keep the Lights On"</h3>
+  <p>The Keep's lamps are failing. Hesper knows there is a reactor in the Undercroft and knows who is standing on it. Get through the Fallows, get past the Castellan, bring the reactor home and wire it to the wall. The night after it goes in, the Wired come anyway, and they come toward the light. End of prototype.</p>
+  <h3>Naming and text rules</h3>
+  <p>The rule: medieval words that happen to describe the tech. Places are what they were for (the Keep, the Fallows, the Undercroft). Enemies are what the network made of people (Thrall, Courser, Herald, Castellan). Roles are old offices (Reeve, Reaper). Relics are old tech named as if holy (the Reactor, a Saint, the Rack). People get one short name and maybe a nickname (Hesper, Old Cutter). Dialogue: short, no exclamation marks, nobody explains the lore. UI: lowercase, terse. No elves, orcs, magic, purple glow or neon streets. Tech glows only when it works, and almost nothing works.</p>
+
+
+  <h2>Names, old to new</h2>
+  <div class="tablewrap"><table>
+    <tr><th>Was</th><th>Now</th><th>Why</th></tr>
+    <tr><td>Lowgate</td><td class="k">The Keep</td><td>You liked it. Plain, medieval, and it is literally what the Reapers keep.</td></tr>
+    <tr><td>The Tithed</td><td class="k">The Wired</td><td>Says what they are without explaining it. "Still wired in."</td></tr>
+    <tr><td>Tithed Walker</td><td class="k">Thrall</td><td>Medieval word for someone bound to a master. Their master is the network.</td></tr>
+    <tr><td>Tithed Runner</td><td class="k">Courser</td><td>A swift hunting horse. Fast, flanking, bred to run things down.</td></tr>
+    <tr><td>Watch-drone</td><td class="k">Herald</td><td>A herald announces. The drone broadcasts your position to the horde.</td></tr>
+    <tr><td>The Toll-Knight</td><td class="k">The Castellan</td><td>The officer who keeps a castle. They were sent to take the Undercroft and now keep it.</td></tr>
+    <tr><td>The Tithe Fields</td><td class="k">The Fallows</td><td>Farmland left to grow wild. Suburbs gone to meadow.</td></tr>
+    <tr><td>The Vault</td><td class="k">The Undercroft</td><td>The crypt beneath a church. A bank basement someone turned into a chapel.</td></tr>
+    <tr><td>Grace-point</td><td class="k">Hearth</td><td>A working power node is warmth and light. You rest and bank there.</td></tr>
+    <tr><td>Harvest blade / hook-cutter</td><td class="k">Scythe / hook</td><td>A Reaper carries a scythe. Say the obvious thing.</td></tr>
+    <tr><td>Ansel the Reeve</td><td class="k">Hesper the Reeve</td><td>Reeve stays: the medieval officer who kept the manor's accounts. Softer name for a hard person.</td></tr>
+    <tr><td>Brannoc</td><td class="k">Old Cutter</td><td>A nickname, not a name. Nobody in the Keep uses their old one.</td></tr>
+    <tr><td>Reaper, relic, Hold</td><td class="k">unchanged</td><td>Reaper is the title. Relic is the title. Hold is what you build.</td></tr>
+  </table></div>
+
+  <h2>What changes in the repo</h2>
+  <div class="changes">
+    <div class="chg"><span class="tag rw">Rewrite</span><span><code>docs/14-world-bible.md</code>: the world above, in full.</span></div>
+    <div class="chg"><span class="tag rw">Rewrite</span><span><code>style/style-bible.md</code> palette, prompt fragments, 32×32 tiles and 32×48 characters, three-quarter perspective rules, lighting rules (palette for pixels, free tint for lights), environment guides per zone; regenerate <code>palette.png</code>; save both mock frames as the first references.</span></div>
+    <div class="chg"><span class="tag nw">New</span><span>Rendering tasks: 2D lighting with normal maps for sprites and tiles, particles (smoke, dust, embers, fog), <code>CanvasModulate</code> day/night, post-process shader (glow, vignette, edge blur). Base resolution 960×540 scaled 2×.</span></div>
+    <div class="chg"><span class="tag ed">Edit</span><span><code>docs/10-game-design.md</code>: add the day/night clock, horde simulation rules (server-side flow-field steering, hard cap per instance), the Hold build system (tile diffs persisted per player), death and relic-banking rules. Scope ladder and server-authoritative rules stay.</span></div>
+    <div class="chg"><span class="tag rw">Rewrite</span><span><code>tasks/backlog/</code> 002–011 re-seeded: reference images, skeleton, Keep tileset with enterable houses and roof layer, Keep map, eight-direction Reaper controller with Y-sort, dodge and stamina, scythe and hook, Thrall horde with flow-field, night wave director, Hold build system with doors, the Fallows, the Undercroft and the Castellan, quest loop.</span></div>
+    <div class="chg"><span class="tag ed">Edit</span><span>Name, places and enemy names in <code>README.md</code>, <code>AGENTS.md</code>, <code>project.godot</code>; decision log entries for every choice on this page.</span></div>
+    <div class="chg"><span class="tag kp">Keep</span><span>Everything else: the two-machine layout, unattended loop, coder tools, reviewer, models, ComfyUI workflow, audio wrapper. This is a content change, not an architecture change.</span></div>
+    <div class="chg"><span class="tag nw">New risk</span><span>Hordes over the network. Hundreds of moving enemies per instance is the one system the previous design did not have. Mitigation is in question 2 below.</span></div>
+  </div>
+
+  <h2>Decisions I need from you</h2>
+  <div class="ask">
+    <div class="q"><span class="n">1</span><span><b>Name.</b> "Reaper's Relics" as written, apostrophe included. <em>Default: yes.</em></span></div>
+    <div class="q"><span class="n">2</span><span><b>Horde size.</b> Cap night waves at 150 Tithed per instance at prototype stage, simulated on the server with a shared flow field and sent to clients as compressed positions. Survivor.io's thousands come later, once the netcode is proven. <em>Default: cap at 150.</em></span></div>
+    <div class="q"><span class="n">3</span><span><b>Building scope.</b> Start with a fixed plot per player inside the Keep's wall, tile-based, persisted. Free-build anywhere in the world is rung 2. <em>Default: plot first.</em></span></div>
+    <div class="q"><span class="n">4</span><span><b>Scale and framing.</b> 32×32 tiles, 32×48 characters, 960×540 base scaled 2× to 1080p, so 30×17 tiles are on screen, the same framing as Stardew with twice the detail per tile. The camera zooms in for interiors and dialogue. <em>Default: as stated.</em></span></div>
+    <div class="q"><span class="n">5</span><span><b>Clock length.</b> 12 minute days, 6 minute nights. Tunable in <code>data/config.json</code>. <em>Default: as stated.</em></span></div>
+    <div class="q"><span class="n">6</span><span><b>Tone check.</b> Bleak but not hopeless: the Keep is home, people joke, the wall holds more nights than it falls. If you want it darker or lighter, say which way.</span></div>
+    <div class="q"><span class="n">7</span><span><b>Interiors.</b> Same map with fading roofs and breakable doors, so the horde can get in, rather than Stardew's separate indoor maps. <em>Default: same map.</em></span></div>
+    <div class="q"><span class="n">8</span><span><b>Names.</b> The set in the table above. Strike any you dislike and I will bring alternatives. <em>Default: as listed.</em></span></div>
+    <div class="q"><span class="n">9</span><span><b>2.5D technique.</b> 2D pixel art with Godot 2D lighting, particles and a post-process pass (this page's frames), keeping every tool we have. True HD-2D with 3D geometry is a later option, not the start. <em>Default: 2D with lighting.</em></span></div>
+  </div>
+  <div class="approve">Reply <b>approved</b> to apply everything above with the defaults, or list the numbers you want changed and how. I will then rewrite the world bible, style bible, design doc and backlog, regenerate the palette, and push.</div>
+</div>
+
+
+
+
+<script>
+(function () {
+  var P = ["#0d0c10","#1c1a22","#2e2b33","#4a4650","#706a72","#a39b93","#d9cfbf","#3a2a22","#6b4a34","#9c6a3c","#c9a24a","#5a1f22","#8c2f2a","#1f3a3a","#3e7f76","#7fd6d1"];
+  var IDX = "0123456789ABCDEF", W = 960, H = 540, T = 32;
+  var seed = 9; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  function rr(a, b) { return a + Math.floor(rnd() * (b - a + 1)); }
+  function layer(w, h) { var c = document.createElement("canvas"); c.width = w; c.height = h; var x = c.getContext("2d"); x.imageSmoothingEnabled = false; return [c, x]; }
+  function px(x, i, X, Y, w, h) { x.fillStyle = P[i]; x.fillRect(X, Y, w || 1, h || 1); }
+  function spr(x, rows, X, Y, sub) { for (var r = 0; r < rows.length; r++) for (var c = 0; c < rows[r].length; c++) { var ch = rows[r][c]; if (ch === ".") continue; if (ch === "X") ch = sub || "F"; x.fillStyle = P[IDX.indexOf(ch)]; x.fillRect(X + c, Y + r, 1, 1); } }
+  function cache(rows, sub) { var w = 0; rows.forEach(function (r) { w = Math.max(w, r.length); }); var l = layer(w, rows.length); spr(l[1], rows, 0, 0, sub); return l[0]; }
+  function swap(rows, map) { return rows.map(function (r) { return r.replace(/[0-9A-F]/g, function (ch) { return map[ch] || ch; }); }); }
+
+  // ---------- characters ----------
+  var REAPER = ["........00000000........",".......0111111110.......","......011222222110......","......012222222210......",".....01222222222210.....",".....01222222222210.....",".....01225555555210.....",".....01255555555210.....",".....01250555055210.....",".....01255555555210.....","......0125555552100.....","......0012555521000.....",".......001111110........","......00777777700.......",".....0778777778770......","....077787777787770.....","...07777877777877770....","...077777A7777777770....","...077777777777777770...","...077778777777877770...","...077777777777777770...","...077777777777777770...","...077787777777778770...","...077777777777777770...","...077777777787777770...","...077777777777777770...","...077778777777777770...","...077777777777777770...","...077777777777787770...","...077777777777777770...","...077777777777777770...","...078888888888888870...","...077777777777777770...","...077777777777777770...","....0333330..0333330....","....0322230..0322230....","....0322230..0322230....","....0111110..0111110....","....0000000..0000000....","........................"];
+  var SCYTHE = ["....00..................","...0880.................","...0880000000...........","...08805555550..........","...0880566666660........","....08.05566666660......","....08..00556666660.....","....08....00556666660...","....08......0055566660..","....08........00055660..","....08...........00000..","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....08..................","....00.................."];
+  var HOOK = ["..........","..........","..........","..........","..........","..........","..........","..........","..........","..........","..........","..........","..........","..........","..........","...0000...","..055550..","..05600...","..0560....","..0560....","..0560....","...08.....","...08.....","...08.....","...08.....","...08.....","...00....."];
+  var THRALL = [".......000000.......","......03333330......","......03333330......",".....0333333330.....",".....033X33X330.....",".....0333333330.....","......03333330......","......00333300......",".......0E0E00.......","....000222222000....","...02222222222220...","..0222E22222222220..","..022222222222222 0.".replace(" ","0"),"..02222222222222220.","..02222222222222220.","..02222222222222220.","..02222222222222220.","..02222222222222220.","..02222222222222220.","..02222222222222220.","..02222222222222220.","...022222222222220..","...022222222222220..","...022222222222220..","...022222222222220..","....0222220022220...","....0222220022220...","....0222220022220...","....0222220022220...","....0111110011110...","....0000000000000...","...................."];
+  var CASTELLAN = ["..............00000000..............",".............0333333330.............","............033444444330............","............034444444430............","............034CCCCCC430............","............033444444330............",".............0333333330.............","...........00033333333000...........","......000AA3333333333333AA000.......",".....0AAAA43333333333334AAAA0.......","....0AAAA4433333333333344AAAA0......","....0A9A44333333333333344A9A0.......","....0AAA0433344444443340AAA0........","....0A9A0333344AAA9443330A9A0.......","....0AAA033334A9A9A943330AAA0.......",".....000.03334AAAAAA43330.000.......","...0999..033344444443330............","..099990.033333333333330............","..09FF90.033333333333330............","..09FF90.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","..099990.033333333333330............","...0990..033344444443330............","....0....033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333333333330............",".........033333303333330............",".........033333303333330............",".........033333303333330............",".........033333303333330............",".........033333303333330............",".........033333303333330............",".........033333303333330............",".........034444404444430............",".........033333303333330............",".........033333303333330............",".........011111101111110............",".........000000000000000............"];
+  var HERALD = [".....0000.....","....033330....","...03344330...","..0334FF4330..","..0333FF3330..","...03344330...","....033330....",".....0000.....","......88......","......88......"];
+  var CROW = [["0......0",".00..00.","..0000..","...00..."],["........","00....00","..0000..","...00..."]];
+  var C = { reaper: cache(REAPER), reaper2: cache(swap(REAPER, {7:"3",8:"4",A:"F"})), scythe: cache(SCYTHE), hook: cache(HOOK),
+            hesper: cache(swap(REAPER, {7:"3",8:"4",2:"3",1:"2",A:"6"})), cutter: cache(swap(REAPER, {7:"8",8:"9",2:"5",1:"4"})),
+            thrallF: cache(THRALL, "F"), thrallC: cache(THRALL, "C"), castellan: cache(CASTELLAN), herald: cache(HERALD), crow0: cache(CROW[0]), crow1: cache(CROW[1]) };
+
+  // ---------- procedural tiles & props ----------
+  function tGround(x, X, Y, night) {
+    var base = night ? 1 : 2, dot = night ? 2 : 3, dark = night ? 0 : 1;
+    px(x, base, X, Y, T, T);
+    for (var i = 0; i < 22; i++) px(x, rnd() < 0.7 ? dot : dark, X + rr(0, 31), Y + rr(0, 31));
+    for (var k = 0; k < (rnd() < 0.5 ? 1 : 2); k++) { var gx = X + rr(1, 28), gy = Y + rr(2, 29); px(x, 13, gx, gy, 1, 3); px(x, rnd() < 0.35 ? 14 : 13, gx + 1, gy - 1, 1, 3); px(x, 13, gx + 2, gy + 1, 1, 2); }
+    if (!night && rnd() < 0.15) { var fx = X + rr(2, 28), fy = Y + rr(2, 28); px(x, 5, fx, fy, 2, 1); px(x, 6, fx, fy - 1, 1, 1); }
+    if (rnd() < 0.25) { var sx = X + rr(0, 24), sy = Y + rr(0, 24); px(x, dot, sx, sy, rr(3, 6), rr(2, 3)); px(x, night ? 3 : 4, sx, sy, 2, 1); }
+  }
+  function tCobble(x, X, Y, night) {
+    px(x, night ? 1 : 2, X, Y, T, T);
+    for (var j = 0; j < 4; j++) for (var i = 0; i < 4; i++) {
+      var sx = X + i * 8 + (j % 2) * 4 - 2 + rr(0, 1), sy = Y + j * 8 + rr(0, 1), w = rr(5, 8), h = rr(5, 7), c = night ? 2 : 3;
+      px(x, c, sx, sy, w, h); px(x, c + 1, sx, sy, w - 1, 1); px(x, c + 1, sx, sy, 1, h - 1); px(x, c - 1, sx + w - 1, sy + 1, 1, h - 1); px(x, c - 1, sx + 1, sy + h - 1, w - 1, 1);
+      if (rnd() < 0.1) px(x, 13, sx + rr(1, 4), sy + h - 1, 2, 1); if (!night && rnd() < 0.08) px(x, 5, sx + 1, sy + 1, 2, 1);
+    }
+  }
+  function tSoil(x, X, Y) { px(x, 7, X, Y, T, T); for (var j = 0; j < T; j += 8) { px(x, 8, X, Y + j + 2, T, 2); px(x, 1, X, Y + j + 6, T, 1); for (var i = 2; i < T; i += 8) { px(x, 14, X + i, Y + j, 1, 3); px(x, 13, X + i + 1, Y + j + 1, 1, 2); px(x, 14, X + i - 1, Y + j + 1, 1, 1); } } }
+  function tWater(x, X, Y, night, f) { px(x, night ? 1 : 13, X, Y, T, T); for (var d = 0; d < 6; d++) px(x, night ? 13 : 1, X + rr(0, 26), Y + rr(0, 28), rr(3, 8), rr(1, 2)); for (var i = 0; i < 7; i++) { var rx = X + rr(0, 26), ry = Y + ((rr(0, 30) + f * 2) % 32); px(x, 14, rx, ry, rr(2, 6), 1); if (rnd() < 0.3) px(x, night ? 15 : 5, rx + 1, ry - 1, 1, 1); } if (!night && rnd() < 0.5) px(x, 6, X + rr(0, 30), Y + rr(0, 30), 1, 1); }
+  function tBrick(x, X, Y, w, h, night) {
+    for (var j = 0; j < h; j += 6) for (var i = -10; i < w; i += 10) {
+      var off = ((j / 6) % 2) * 5, bx = X + i + off; if (bx + 9 <= X || bx >= X + w) continue;
+      var cw = Math.min(9, X + w - bx), cx = Math.max(bx, X), tone = rnd(), col = night ? (tone < 0.2 ? 2 : 3) : (tone < 0.15 ? 2 : (tone < 0.85 ? 3 : 4));
+      px(x, col, cx, Y + j, cw - (cx - bx), 5); px(x, night ? 3 : 4, cx, Y + j, cw - (cx - bx), 1); px(x, night ? 1 : 2, cx, Y + j + 4, cw - (cx - bx), 1);
+    }
+    for (var m = 0; m < w / 8; m++) if (rnd() < 0.5) px(x, 13, X + rr(0, w - 4), Y + h - rr(1, 5), rr(2, 4), 1);
+  }
+  function tRoof(x, X, Y, w, h, night) {
+    for (var j = 0; j < h; j += 5) for (var i = -7; i < w; i += 7) {
+      var off = ((j / 5) % 2) * 3, sx = X + i + off; if (sx + 7 <= X || sx >= X + w) continue;
+      var cx = Math.max(sx, X), cw = Math.min(sx + 7, X + w) - cx, tone = rnd(), col = night ? (tone < 0.1 ? 3 : 2) : (tone < 0.12 ? 3 : (tone < 0.92 ? 2 : 1));
+      px(x, col, cx, Y + j, cw, 5); px(x, night ? 0 : 1, cx, Y + j + 4, cw, 1); px(x, night ? 0 : 1, cx + cw - 1, Y + j, 1, 5); px(x, night ? 3 : 4, cx + 1, Y + j, Math.max(1, cw - 3), 1);
+    }
+    px(x, 4, X, Y, w, 2); px(x, 5, X, Y, w, 1);
+  }
+  function tPlank(x, X, Y, w, h) { px(x, 8, X, Y, w, h); for (var j = 0; j < h; j += 8) { var off = (j / 8 % 2) * 12; px(x, 9, X, Y + j, w, 1); px(x, 7, X, Y + j + 7, w, 1); for (var i = off; i < w; i += 28) px(x, 7, X + i, Y + j + 1, 1, 6); for (var g = 0; g < w / 10; g++) px(x, 7, X + rr(0, w - 5), Y + j + rr(2, 6), rr(2, 5), 1); } }
+  function windowLit(x, X, Y, lit) { px(x, 0, X - 1, Y - 1, 12, 14); px(x, 7, X, Y, 10, 12); px(x, lit ? 10 : 1, X + 1, Y + 1, 8, 10); px(x, 7, X + 5, Y + 1, 1, 10); px(x, 7, X + 1, Y + 6, 8, 1); if (lit) { px(x, 9, X + 2, Y + 2, 3, 4); px(x, 9, X + 6, Y + 7, 3, 3); } else { px(x, 3, X + 2, Y + 2, 2, 2); px(x, 2, X + 6, Y + 7, 2, 3); } px(x, 4, X - 1, Y + 12, 12, 1); }
+  function door(x, X, Y) { px(x, 0, X - 1, Y - 1, 14, 20); px(x, 8, X, Y, 12, 19); for (var i = 0; i < 12; i += 3) px(x, 9, X + i, Y, 1, 19); px(x, 7, X, Y + 9, 12, 1); px(x, 10, X + 9, Y + 10, 1, 1); px(x, 1, X + 1, Y + 1, 10, 2); }
+  function beam(x, X, Y, w, h) { px(x, 0, X, Y, w, h); px(x, 7, X + 1, Y + 1, w - 2, h - 2); px(x, 8, X + 1, Y + 1, w - 2, 1); }
+  var BARREL = ["..000000..",".08888880.","0899999980","0333333330","0899999980","0899999980","0333333330","0899999980",".08888880.","..000000.."];
+  var CRATE = ["000000000000","099999999990","098888888890","098799997890","098879978890","098887788890","098887788890","098879978890","098799997890","098888888890","099999999990","000000000000"];
+  var LAMP = ["....0000....","...099990...","..09A99A90..","..09XFFX90..","..09FFFF90..","..09A99A90..","...099990...","....0880....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....",".....88.....","....0880....","...087780...","..08777780..","..01111110..","...000000..."];
+  var LAMP_OFF = LAMP.map(function (r) { return r.replace(/F/g, "2").replace(/X/g, "3"); });
+  var HEARTH = ["....000000000000....","...03333333333330...","..0322222222222230..","..032FFFFFFFFFF230..","..032F22F22F22F230..","..032FFFFFFFFFF230..","..0322222222222230..","..0333333333333330..","..0A9999999999990...","..0999999999999990..","...000000000000000..","...0A00........0A0.."];
+  var SIGN = ["..000000000000..",".08999999999980.",".08966666666980.",".08966986669980.",".08999999999980.",".08966666666980.",".08999999999980.","..000000000000..","......0880......","......0880......","......0880......","......0880......","......0000......"];
+  var WELL = ["......0000000000......","....00333333333300....","...0333444444443330...","..03334444444444 3330.".replace(" ","4"),"..0333333333333333330.","..0334300000000034330.","..0334301111111034330.","..0334301111111034330.","..0334301111111034330.","..0334301111111034330.","..0333333333333333330.","...03333333333333330..","....0000000000000000.."];
+  C.barrel = cache(BARREL); C.crate = cache(CRATE); C.lamp = cache(LAMP, "A"); C.lampOff = cache(LAMP_OFF, "A"); C.hearth = cache(HEARTH); C.sign = cache(SIGN); C.well = cache(WELL);
+  function fenceCanvas(n) { var l = layer(n * 16 + 6, 20), x = l[1]; for (var i = 0; i <= n; i++) { px(x, 0, i * 16, 0, 5, 18); px(x, 8, i * 16 + 1, 1, 3, 16); px(x, 9, i * 16 + 1, 1, 1, 16); } px(x, 0, 0, 5, n * 16 + 4, 4); px(x, 8, 1, 6, n * 16 + 2, 2); px(x, 9, 1, 6, n * 16 + 2, 1); px(x, 0, 0, 12, n * 16 + 4, 4); px(x, 8, 1, 13, n * 16 + 2, 2); px(x, 9, 1, 13, n * 16 + 2, 1); return l[0]; }
+  function treeCanvas(night) { var l = layer(44, 60), x = l[1], cx = 22, cy = 26; var cl = [[0, -4, 17], [-10, 2, 12], [10, 2, 12], [-4, 10, 11], [6, 10, 11], [0, -12, 11]];
+    cl.forEach(function (c) { for (var yy = -c[2]; yy <= c[2]; yy++) for (var xx = -c[2]; xx <= c[2]; xx++) { var d = Math.sqrt(xx * xx + yy * yy * 1.2) + (rnd() - 0.5) * 2; if (d > c[2]) continue; px(x, d > c[2] - 1.2 ? 0 : (xx + yy < -c[2] * 0.6 ? 14 : 13), cx + c[0] + xx, cy + c[1] + yy); } });
+    for (var i = 0; i < 46; i++) px(x, 14, cx + rr(-16, 16), cy + rr(-20, 16), 2, 1);
+    spr(x, ["..0770..", ".078870.", ".078870.", ".078870.", ".078870.", "0788870.", "07888870", "00000000"], cx - 4, cy + 20); return l[0]; }
+  function scrapCanvas() { var l = layer(40, 26), x = l[1]; for (var i = 0; i < 5; i++) { var sx = rr(0, 18), sy = rr(4, 12), w = rr(14, 20), h = rr(8, 12); px(x, 0, sx, sy, w, h); px(x, 3, sx + 1, sy + 1, w - 2, h - 2); px(x, 4, sx + 1, sy + 1, w - 2, 1); px(x, 8, sx + rr(2, 8), sy + rr(2, 5), rr(3, 6), 2); px(x, 9, sx + rr(2, 8), sy + rr(2, 5), 2, 1); } px(x, 15, rr(4, 30), rr(6, 16), 2, 1); return l[0]; }
+  function towerCanvas(night) { var w = 64, h = 150, l = layer(w, h), x = l[1];
+    for (var yy = 0; yy < h; yy++) { var half = 8 + (yy / h) * 22; px(x, 1, 32 - half, yy, 2, 1); px(x, 1, 32 + half - 2, yy, 2, 1); if (yy % 14 === 0) { px(x, 2, 32 - half, yy, half * 2, 2); } if (yy % 14 === 7) { for (var k = -half; k < half; k += 2) { px(x, 2, 32 + k, yy + (k > 0 ? Math.floor(k / 3) : -Math.floor(k / 3)) % 7, 1, 1); } } }
+    px(x, 3, 20, 0, 24, 6); px(x, 4, 20, 0, 24, 1); px(x, night ? 15 : 3, 31, 2, 2, 2); px(x, 3, 12, 40, 40, 4); px(x, 2, 10, 44, 44, 2); return l[0]; }
+  function stallCanvas() { var l = layer(64, 48), x = l[1]; for (var i = 0; i < 64; i += 8) px(x, (i / 8) % 2 ? 12 : 6, i, 0, 8, 10); px(x, 0, 0, 10, 64, 1); px(x, 11, 0, 0, 64, 1); px(x, 0, 2, 11, 3, 30); px(x, 8, 3, 11, 1, 30); px(x, 0, 59, 11, 3, 30); px(x, 8, 60, 11, 1, 30); px(x, 0, 0, 30, 64, 14); px(x, 8, 1, 31, 62, 12); px(x, 9, 1, 31, 62, 1); px(x, 7, 1, 36, 62, 1); spr(x, ["0880","0990"], 8, 26); spr(x, ["0AA0","0990"], 20, 26); spr(x, ["05550","06650","05550"], 34, 25); spr(x, ["0F0","000"], 50, 27); return l[0]; }
+  function houseCanvas(w, wallH, roofH, night, opts) {
+    opts = opts || {}; var top = opts.chimney ? 10 : 0, l = layer(w + 8, roofH + wallH + top + 4), x = l[1], X = 4, Y = top;
+    tPlank(x, X, Y + roofH - T, w, T);
+    if (opts.interior) { spr(x, ["0000000000000000000000","0666666668888888888880","0665666668888888888880","0CCCCCCCCCCCCCCCCCCCC0","0CBCCCCCCCCCCCCCCBCCC0","0CCCCCCCCCCCCCCCCCCCC0","0BBBBBBBBBBBBBBBBBBBB0","0888888888888888888880","0000000000000000000000"], X + 8, Y + roofH - T + 4); spr(x, [".000000000000000000.",".099999999999999990.",".088888888888888880.",".000000000000000000.","..08............80..","..08............80..","..00............00.."], X + w - 34, Y + roofH - T + 12); spr(x, ["....0F0......0A0....",".000000000000000000.",".099999999999999990.",".000000000000000000."], X + w - 34, Y + roofH - T + 2); }
+    if (opts.inside) opts.inside(x, X, Y + roofH - T);
+    tBrick(x, X, Y + roofH, w, wallH, night); px(x, 4, X, Y + roofH, w, 1); px(x, 0, X, Y + roofH + wallH, w, 1);
+    px(x, 0, X - 1, Y + roofH, 1, wallH); px(x, 0, X + w, Y + roofH, 1, wallH);
+    beam(x, X + 2, Y + roofH + 4, w - 4, 3); beam(x, X + 2, Y + roofH + 2, 3, wallH - 2); beam(x, X + w - 5, Y + roofH + 2, 3, wallH - 2);
+    if (wallH > 70) { beam(x, X + 2, Y + roofH + 44, w - 4, 3); windowLit(x, X + 14, Y + roofH + 14, night); windowLit(x, X + w - 24, Y + roofH + 14, night); }
+    var wy = Y + roofH + (wallH > 70 ? 52 : 10); windowLit(x, X + 14, wy, night); windowLit(x, X + w - 24, wy, night); if (w > 150) windowLit(x, X + Math.floor(w / 2) + 20, wy, night);
+    door(x, X + Math.floor(w / 2) - 6, Y + roofH + wallH - 19);
+    x.globalAlpha = opts.roofAlpha == null ? 1 : opts.roofAlpha; tRoof(x, X - 4, Y, w + 8, roofH, night); if (opts.chimney) { px(x, 0, X + w - 24, 0, 12, 22); px(x, 3, X + w - 23, 1, 10, 20); px(x, 4, X + w - 23, 1, 10, 2); px(x, 2, X + w - 19, 3, 1, 17); } x.globalAlpha = 1;
+    if (opts.sign) x.drawImage(C.sign, X + w - 40, Y + roofH + 8);
+    return { c: l[0], ox: -4, oy: -top, foot: roofH + wallH };
+  }
+  function shadow(o, cx, cy, w, h, a) { o.fillStyle = "rgba(10,8,14," + (a || 0.4) + ")"; o.beginPath(); o.ellipse(cx, cy, w, h, 0, 0, Math.PI * 2); o.fill(); }
+  function light(o, cx, cy, r, rgb, a) { var g = o.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, "rgba(" + rgb + "," + a + ")"); g.addColorStop(0.45, "rgba(" + rgb + "," + (a * 0.4) + ")"); g.addColorStop(1, "rgba(" + rgb + ",0)"); o.fillStyle = g; o.beginPath(); o.arc(cx, cy, r, 0, Math.PI * 2); o.fill(); }
+  var EYE = (function () { var l = layer(14, 14), x = l[1]; var g = x.createRadialGradient(7, 7, 0, 7, 7, 7); g.addColorStop(0, "rgba(140,240,235,0.7)"); g.addColorStop(1, "rgba(140,240,235,0)"); x.fillStyle = g; x.fillRect(0, 0, 14, 14); return l[0]; })();
+  var EYER = (function () { var l = layer(14, 14), x = l[1]; var g = x.createRadialGradient(7, 7, 0, 7, 7, 7); g.addColorStop(0, "rgba(255,90,70,0.75)"); g.addColorStop(1, "rgba(255,90,70,0)"); x.fillStyle = g; x.fillRect(0, 0, 14, 14); return l[0]; })();
+
+  // ---------- compositor ----------
+  function run(outId, scene) {
+    var out = document.getElementById(outId), o = out.getContext("2d"), night = scene.night;
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var fog = []; for (var i = 0; i < (night ? 10 : 3); i++) fog.push({ x: rnd() * W, y: H * 0.5 + rnd() * H * 0.5, r: 90 + rnd() * 160, a: (night ? 0.04 : 0.015) + rnd() * (night ? 0.04 : 0.015), v: 0.1 + rnd() * 0.2 });
+    var motes = []; for (var m = 0; m < (night ? 50 : 30); m++) motes.push({ x: rnd() * W, y: rnd() * H, v: 0.2 + rnd() * 0.5, d: rnd() * 6.28 });
+    function frame(ts) {
+      var t = reduce ? 0 : ts;
+      o.imageSmoothingEnabled = false; o.globalCompositeOperation = "source-over";
+      o.drawImage(scene.ground(t), 0, 0);
+      var objs = scene.objects(t); objs.sort(function (a, b) { return a.foot - b.foot; });
+      o.imageSmoothingEnabled = true; objs.forEach(function (ob) { if (ob.shadow) shadow(o, ob.shadow[0], ob.shadow[1], ob.shadow[2], ob.shadow[3], night ? 0.5 : 0.35); });
+      o.imageSmoothingEnabled = false; objs.forEach(function (ob) { if (ob.alpha != null) o.globalAlpha = ob.alpha; o.drawImage(ob.c, Math.round(ob.x), Math.round(ob.y)); o.globalAlpha = 1; });
+      o.imageSmoothingEnabled = true;
+      // ambient
+      o.globalCompositeOperation = "multiply"; o.fillStyle = night ? "rgba(70,88,120,0.5)" : "rgba(240,228,205,0.22)"; o.fillRect(0, 0, W, H);
+      var g = o.createLinearGradient(night ? W : 0, 0, night ? W * 0.3 : W * 0.7, H); g.addColorStop(0, night ? "rgba(140,175,215,0.3)" : "rgba(255,228,175,0.42)"); g.addColorStop(1, "rgba(0,0,0,0)");
+      o.globalCompositeOperation = "screen"; o.fillStyle = g; o.fillRect(0, 0, W, H);
+      o.globalCompositeOperation = "lighter"; scene.lights(o, t, objs);
+      o.globalCompositeOperation = "screen"; fog.forEach(function (f) { var fx = (f.x + t * 0.02 * f.v) % (W + 300) - 150; var fg = o.createRadialGradient(fx, f.y, 0, fx, f.y, f.r); fg.addColorStop(0, "rgba(" + (night ? "90,120,135" : "180,170,160") + "," + f.a + ")"); fg.addColorStop(1, "rgba(0,0,0,0)"); o.fillStyle = fg; o.fillRect(fx - f.r, f.y - f.r, f.r * 2, f.r * 2); });
+      o.globalCompositeOperation = "lighter"; motes.forEach(function (p) { var mx = p.x + Math.sin(t * 0.0007 + p.d) * 14, my = ((p.y - t * 0.02 * p.v) % H + H) % H; o.fillStyle = night ? "rgba(255,190,110,0.5)" : "rgba(255,245,210,0.4)"; o.fillRect(Math.round(mx), Math.round(my), 2, 2); });
+      if (scene.particles) scene.particles(o, t);
+      o.globalCompositeOperation = "source-over";
+      o.filter = "blur(1.4px)"; o.drawImage(out, 0, 0, W, H * 0.11, 0, 0, W, H * 0.11); o.drawImage(out, 0, H * 0.94, W, H * 0.06, 0, H * 0.94, W, H * 0.06); o.filter = "none";
+      var v = o.createRadialGradient(W / 2, H / 2, H * 0.5, W / 2, H / 2, H * 1.05); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, night ? "rgba(6,5,12,0.5)" : "rgba(20,15,20,0.22)"); o.fillStyle = v; o.fillRect(0, 0, W, H);
+      if (!reduce) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  function sprite(c, x, y, footOffset, sh) { return { c: c, x: x, y: y, foot: y + (footOffset == null ? c.height : footOffset), shadow: sh }; }
+
+  // ================= DAY: the Keep =================
+  (function () {
+    var gl = layer(W, H), gx = gl[1], water = [layer(W, H), layer(W, H)];
+    for (var j = 0; j < 17; j++) for (var i = 0; i < 30; i++) {
+      var road = (i === 14 || i === 15) || (j === 9 && i >= 1 && i <= 28) || (j === 4 && i >= 8 && i <= 13);
+      var soil = (i >= 2 && i <= 5 && j >= 11 && j <= 12), pond = (i >= 22 && i <= 26 && j >= 2 && j <= 4);
+      if (pond) { seed = 77 + i * 3 + j; tWater(water[0][1], i * T, j * T, false, 0); seed = 77 + i * 3 + j; tWater(water[1][1], i * T, j * T, false, 1); px(gx, 13, i * T, j * T, T, T); }
+      else if (road) tCobble(gx, i * T, j * T, false); else if (soil) tSoil(gx, i * T, j * T); else tGround(gx, i * T, j * T, false);
+    }
+    // pond stone edge
+    for (var e = 22 * T - 6; e < 27 * T + 6; e += 8) { px(gx, 3, e, 2 * T - 6, 8, 6); px(gx, 4, e, 2 * T - 6, 7, 1); px(gx, 3, e, 5 * T, 8, 6); px(gx, 4, e, 5 * T, 7, 1); }
+    for (var e2 = 2 * T - 6; e2 < 5 * T + 6; e2 += 8) { px(gx, 3, 22 * T - 6, e2, 6, 8); px(gx, 3, 27 * T, e2, 6, 8); }
+    var hA = houseCanvas(192, 48, 92, false, { interior: true, roofAlpha: 0.16, inside: function (x, X, Y) { spr(x, REAPER, X + 60, Y - 26); spr(x, SCYTHE, X + 76, Y - 34); } });
+    var hB = houseCanvas(144, 92, 76, false, { chimney: true, sign: true });
+    var hC = houseCanvas(160, 48, 88, false, {});
+    var hD = houseCanvas(112, 48, 72, false, {});
+    var tree = treeCanvas(false), tree2 = treeCanvas(false), fence6 = fenceCanvas(6), fence4 = fenceCanvas(4), scrap = scrapCanvas(), scrap2 = scrapCanvas(), tower = towerCanvas(false), stall = stallCanvas();
+    function place(h, X, Y) { return { c: h.c, x: X + h.ox, y: Y + h.oy, foot: Y + h.foot, shadow: [X + h.c.width / 2 - 4, Y + h.foot + 2, h.c.width / 2 - 6, 6] }; }
+    var statics = [
+      place(hA, 48, 40), place(hB, 296, 8), place(hC, 560, 60), place(hD, 96, 300),
+      sprite(tower, 884, 8, 150, [916, 160, 26, 5]), sprite(stall, 600, 330, 44, [632, 376, 30, 5]), sprite(C.well, 520, 232, 12, [531, 246, 12, 3]),
+      sprite(fence6, 56, 430, 18), sprite(fence4, 760, 400, 18), sprite(fence4, 760, 470, 18),
+      sprite(scrap, 20, 250, 24, [40, 276, 18, 4]), sprite(scrap2, 780, 300, 24, [800, 326, 18, 4]),
+      sprite(tree, 190, 430, 56, [212, 488, 20, 5]), sprite(tree2, 700, 440, 56, [722, 498, 20, 5]), sprite(tree, 900, 190, 56, [922, 248, 20, 5]), sprite(tree2, 20, 120, 56, [42, 178, 20, 5]),
+      sprite(C.lampOff, 300, 200, 38, [306, 240, 5, 2]), sprite(C.lampOff, 640, 240, 38, [646, 280, 5, 2]), sprite(C.lampOff, 420, 400, 38, [426, 440, 5, 2]),
+      sprite(C.hearth, 470, 470, 12, [480, 484, 10, 3]),
+      sprite(C.barrel, 300, 176, 10), sprite(C.barrel, 312, 176, 10), sprite(C.crate, 700, 182, 12), sprite(C.crate, 560, 300, 12), sprite(C.barrel, 240, 500, 10),
+      sprite(C.hesper, 350, 180, 40, [362, 220, 11, 3]), sprite(C.cutter, 60, 392, 40, [72, 432, 11, 3]), sprite(C.hook, 84, 400, 32),
+      sprite(C.thrallC, 640, 6, 32) // behind house C, head above the roof
+    ];
+    // cables between lamp tops
+    function cable(x1, y1, x2, y2) { var mx = (x1 + x2) / 2, sag = 18; for (var i = 0; i <= 1; i += 0.005) { var xx = x1 + (x2 - x1) * i, yy = (1 - i) * (1 - i) * y1 + 2 * (1 - i) * i * (Math.max(y1, y2) + sag) + i * i * y2; px(gx, 0, Math.round(xx), Math.round(yy)); } }
+    cable(306, 204, 646, 244); cable(646, 244, 900, 34);
+    var wf = 0;
+    return run("day", { night: false,
+      ground: function (t) { var f = Math.floor(t / 500) % 2; var g2 = layer(W, H); g2[1].drawImage(gl[0], 0, 0); g2[1].drawImage(water[f][0], 0, 0); return g2[0]; },
+      objects: function (t) {
+        var objs = statics.slice();
+        for (var k = 0; k < 3; k++) { var cx = ((t * 0.04 + k * 320) % (W + 100)) - 50, cy = 40 + k * 26 + Math.sin(t * 0.003 + k) * 6; objs.push({ c: (Math.floor(t / 180 + k) % 2) ? C.crow0 : C.crow1, x: cx, y: cy, foot: 9999 }); }
+        return objs;
+      },
+      lights: function (o, t) { light(o, 481, 476, 70, "120,230,220", 0.4); light(o, 120, 60, 320, "255,235,190", 0.16); },
+      particles: function (o, t) { for (var k = 0; k < 7; k++) { var s = ((t * 0.0005) + k * 0.45) % 3; o.fillStyle = "rgba(210,205,200," + (0.2 - s * 0.055) + ")"; o.beginPath(); o.arc(418 + Math.sin(s * 2 + k) * 8, 8 - s * 24, 5 + s * 9, 0, 6.28); o.fill(); } }
+    });
+  })();
+
+  // ================= NIGHT: the gate road =================
+  (function () {
+    var gl = layer(W, H), gx = gl[1], water = [layer(W, H), layer(W, H)];
+    for (var j = 0; j < 17; j++) for (var i = 0; i < 30; i++) {
+      var road = (i === 14 || i === 15) && j >= 6, ditch = i <= 6 && j >= 13;
+      if (ditch) { seed = 31 + i * 5 + j; tWater(water[0][1], i * T, j * T, true, 0); seed = 31 + i * 5 + j; tWater(water[1][1], i * T, j * T, true, 1); px(gx, 13, i * T, j * T, T, T); }
+      else if (road) tCobble(gx, i * T, j * T, true); else tGround(gx, i * T, j * T, true);
+    }
+    for (var e = 0; e < 7 * T + 6; e += 8) { px(gx, 2, e, 13 * T - 6, 8, 6); px(gx, 3, e, 13 * T - 6, 7, 1); }
+    for (var e2 = 13 * T - 6; e2 < H; e2 += 8) { px(gx, 2, 7 * T, e2, 6, 8); }
+    // wall
+    var wallC = layer(W, 200), wx = wallC[1];
+    tBrick(wx, 0, 100, 416, 90, true); tBrick(wx, 544, 100, 416, 90, true);
+    for (var m2 = 0; m2 < W; m2 += 16) { if (m2 >= 400 && m2 < 560) continue; px(wx, 3, m2, 84, 10, 16); px(wx, 4, m2, 84, 10, 1); px(wx, 0, m2 + 10, 84, 6, 16); } px(wx, 5, 0, 98, 416, 2); px(wx, 5, 544, 98, 416, 2); px(wx, 0, 0, 190, W, 2);
+    for (var rp = 0; rp < 30; rp++) { var rx = rr(0, W - 20); if (rx > 380 && rx < 580) continue; px(wx, 8, rx, rr(110, 180), rr(6, 14), 3); px(wx, 9, rx + 2, rr(110, 180), 4, 1); }
+    tBrick(wx, 416, 44, 64, 146, true); tBrick(wx, 480, 44, 64, 146, true); px(wx, 5, 416, 42, 128, 2); for (var m3 = 416; m3 < 544; m3 += 16) { px(wx, 3, m3, 28, 10, 16); px(wx, 0, m3 + 10, 28, 6, 16); }
+    px(wx, 0, 452, 96, 56, 96); px(wx, 1, 454, 98, 52, 94); for (var bar = 0; bar < 52; bar += 6) px(wx, 3, 456 + bar, 98, 2, 94); px(wx, 4, 448, 90, 64, 6); px(wx, 5, 448, 90, 64, 1);
+    px(wx, 12, 426, 52, 10, 34); px(wx, 11, 426, 80, 10, 6); px(wx, 10, 429, 58, 4, 4); px(wx, 12, 524, 52, 10, 34); px(wx, 11, 524, 80, 10, 6); px(wx, 10, 527, 58, 4, 4);
+    for (var wn = 0; wn < 2; wn++) windowLit(wx, 432 + wn * 84, 64, true);
+    var lampsX = [120, 360, 600, 840];
+    var tree = treeCanvas(true), scrap = scrapCanvas();
+    var statics = [ { c: wallC[0], x: 0, y: 0, foot: 190 },
+      sprite(C.barrel, 40, 176, 10), sprite(C.barrel, 52, 176, 10), sprite(C.crate, 64, 174, 12), sprite(scrap, 880, 176, 24),
+      sprite(C.hearth, 300, 330, 12, [310, 344, 10, 3]), sprite(tree, 200, 250, 56, [222, 308, 20, 5]), sprite(tree, 820, 420, 56, [842, 478, 20, 5]) ];
+    lampsX.forEach(function (lx) { statics.push(sprite(C.lamp, lx, 150, 38, [lx + 6, 190, 5, 2])); });
+    var horde = []; for (var h = 0; h < 120; h++) { var side = rnd(); horde.push({ x: side < 0.75 ? 560 + rnd() * 420 : 720 + rnd() * 240, y: 200 + rnd() * 330, s: 0.12 + rnd() * 0.2, near: false }); }
+    var cast = { x: 760, y: 300 };
+    return run("scene", { night: true,
+      ground: function (t) { var f = Math.floor(t / 600) % 2; var g2 = layer(W, H); g2[1].drawImage(gl[0], 0, 0); g2[1].drawImage(water[f][0], 0, 0); return g2[0]; },
+      objects: function (t) {
+        var objs = statics.slice();
+        horde.forEach(function (m) { m.x -= m.s; if (m.x < 560) { m.x = 900 + rnd() * 60; m.y = 200 + rnd() * 330; } m.near = m.x < 660; objs.push({ c: m.near ? C.thrallC : C.thrallF, x: m.x, y: m.y, foot: m.y + 32, eye: [m.x + 9, m.y + 5, m.near], shadow: [m.x + 10, m.y + 32, 8, 3] }); });
+        objs.push({ c: C.castellan, x: cast.x, y: cast.y, foot: cast.y + 54, shadow: [cast.x + 17, cast.y + 55, 14, 4] });
+        objs.push(sprite(C.reaper, 448, 372, 40, [460, 412, 11, 3])); objs.push(sprite(C.scythe, 464, 364, 40));
+        objs.push(sprite(C.reaper2, 500, 396, 40, [512, 436, 11, 3])); objs.push(sprite(C.hook, 522, 402, 32));
+        var hy = 250 + Math.sin(t * 0.002) * 6; objs.push({ c: C.herald, x: 610 + Math.sin(t * 0.0012) * 20, y: hy, foot: 9999, herald: true });
+        return objs;
+      },
+      lights: function (o, t, objs) {
+        var fl = 1 + Math.sin(t * 0.005) * 0.05;
+        lampsX.forEach(function (lx) { light(o, lx + 6, 156, 150, "255,180,100", 0.5 * fl); });
+        light(o, 480, 150, 90, "255,190,120", 0.35); light(o, 310, 340, 90, "120,230,220", 0.45); light(o, 440, 420, 80, "150,200,230", 0.22);
+        light(o, 60, 470, 120, "255,180,100", 0.16); // lamp reflections in the ditch
+        objs.forEach(function (ob) { if (ob.eye) o.drawImage(ob.eye[2] ? EYER : EYE, ob.eye[0] - 7, ob.eye[1] - 7); if (ob.herald) { light(o, ob.x + 7, ob.y + 4, 40, "150,240,240", 0.6); o.fillStyle = "rgba(160,240,240,0.13)"; o.beginPath(); o.moveTo(ob.x + 7, ob.y + 8); o.lineTo(430, 420); o.lineTo(500, 430); o.closePath(); o.fill(); } });
+        light(o, 780, 320, 70, "140,180,220", 0.25);
+      }
+    });
+  })();
+})();
+</script>

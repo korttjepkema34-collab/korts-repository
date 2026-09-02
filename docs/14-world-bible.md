@@ -1,40 +1,45 @@
-# 14 - World bible
+# 14 - World bible: Reaper's Relics
 
 The creative constraints for everything the studio makes. Every role reads this. The
-orchestrator does not invent settings, factions, or names outside it; it fills it in.
-Choices here were made by the scaffold author on the owner's behalf and are reversible.
+orchestrator does not invent settings, factions, or names outside it; it fills it in. Approved
+by the owner on 2026-09-02 (docs/pitch/reapers-relics-pitch.html is the approved proposal).
 
 ## The pitch
 
-**Hollowmere** is a drowned valley kingdom. Once a generation the tide pulls back for a single
-season and the old towns surface: streets slick with weed, bells still hanging in flooded
-chapels, doors sealed with salt. People called **Tidewalkers** go down into the exposed ruins to
-salvage what they can before the water returns. You are one of them.
+**Reaper's Relics.** The near future, forty years after the grid died. Nobody fixed it. What grew
+back was feudal: whoever holds a working reactor is a lord, whoever holds a printer is a priest,
+and everyone else farms, fights or scavenges. The old tech is not understood any more. It is
+venerated. A drone battery is a relic. A server rack is a shrine.
 
-The tone is **warm melancholy with dry humour**. Think a fishing village at golden hour with
-something old and patient underneath the water. Not grimdark. Not cute. Weathered, lived-in,
-hopeful in a stubborn way.
+By day you scavenge and build. By night the Wired come in their hundreds. Somewhere out there a
+knight in dead armour is holding the one relic that would keep the lights on.
+
+**Tone: bleak but not hopeless.** The Keep is home. People joke. The wall holds more nights than
+it falls. Elden Ring's weight with Stardew's warmth underneath. Not grimdark, never cosy.
 
 ## The world in five facts
 
-1. The tide is not natural. Something under the valley breathes, slowly, and the water follows.
-   Nobody alive knows what it is. The campaign is about finding out.
-2. **Saltreach** is the last town above the waterline. Everything happens from here. It is the
-   multiplayer hub: all online players share it.
-3. Salvage is currency and status. The **Guild of the Low Tide** tallies what comes up and takes
-   a cut. They are bureaucrats, not villains.
-4. The **Drowned** are not undead. They are people who stayed below too long and were kept.
-   They are slow, sad, and dangerous in groups. Killing one is not a victory.
-5. Bells matter. Every sunken town had one. Ringing a recovered bell in Saltreach does something
-   to the tide. The first quest is to recover one.
+1. **The Wired** are the grid's last users. When it fell, the implant network kept running on
+   people instead of servers. They are still linked, still walking, still looking for signal.
+   They are drawn to light and power. Nobody knows if anyone is still in there.
+2. **Reapers** are the outcasts who go into the dead fields to harvest relics from the Wired and
+   the ruins. Lords pay in food and shelter for what a Reaper brings back, but do not let Reapers
+   inside their walls. So Reapers built their own, and called it the Keep.
+3. **Relics** are working old tech. They power lamps and walls, they slot into a Reaper's harness
+   for an active ability, and they are the currency the Keep runs on. Unbanked relics drop where
+   you die.
+4. **Hearths** are working power nodes. Resting at one banks your relics and restores you. They
+   are the only safe light at night.
+5. **Nights belong to the Wired.** They move on any light. The wall you built by day, and the
+   door you did or did not fix, decide whether you survive.
 
 ## Places
 
 | Place | Role | Look |
 |---|---|---|
-| Saltreach | Hub, shared by all players | Stilt houses, drying nets, a long wooden pier, lantern posts, one stone guild hall, a bell tower with no bell |
-| The Shallows | First campaign map, tutorial pacing | Exposed cobbled street, tide pools, kelp on everything, half-buried carts, one collapsed bridge |
-| The Sunken Chapel | First dungeon and boss | Stone interior, water knee-deep in places, stained glass casting coloured light on wet floors, the bell hanging above |
+| **The Keep** | Shared hub. Every player's Hold sits inside its wall. | A settlement in a dead power substation. Car doors and highway barriers for walls, a brick gatehouse with a portcullis and guild banners. The transformer tower is the tower. A cooling pond, cables strung between lamp posts, a guild house with a sign, a market stall, garden plots, scrap piles from last night's repairs. Houses you can walk into. |
+| **The Fallows** | First open zone. Day scavenging; night waves spill from here. | Suburbs gone to meadow. Roofs under ivy, a rusted overpass, one cul-de-sac of intact houses the Wired still walk through in circles. Every house can be entered. |
+| **The Undercroft** | First dungeon and boss. | A bank basement lit by a single working reactor. Marble, deposit boxes, gold-leafed cables. Someone made it a chapel. |
 
 Later regions (do not build yet): the Millrace, the Glass Market, the Deep Stair.
 
@@ -42,47 +47,54 @@ Later regions (do not build yet): the Millrace, the Glass Market, the Deep Stair
 
 | Name | Role | Voice |
 |---|---|---|
-| **The player** | A Tidewalker, class "Salvager" | Silent protagonist. Customisable at rung 2. |
-| **Marrow** | Guild clerk at Saltreach, gives the first quest | Tired, precise, secretly kind. Speaks in short sentences. Never says "please". |
-| **Old Pell** | Retired Tidewalker on the pier, tutorial hints | Rambling, cheerful, wrong about half of it. |
-| **The Chapel Warden** | First boss. A Drowned who was the chapel's bellringer and still guards the bell | Does not speak. Rings a cracked hand-bell before each attack pattern. |
+| **The Reaper** | Player. Scythe (slow, wide), hook (fast, short), one relic slot for an active ability. | Silent. |
+| **Hesper the Reeve** | Keeps the Keep's ledger, gives contracts and the first quest | Tired, exact, secretly kind. Short sentences. Never says please. |
+| **Old Cutter** | Retired Reaper by the garden fence, tutorial hints. Named for the hook they never put down. | Rambling, cheerful, wrong about half of it. |
+| **The Castellan** | First boss. A lord's champion in augmented plate, sent to take the Undercroft reactor, never came back. Now they keep it. | Does not speak. The shield's siren sounds before each pattern. |
 
 ## Enemies (prototype set)
 
 | Enemy | Behaviour | Threat |
 |---|---|---|
-| **Brinecrab** | Sidles, lunges when the player is in a straight line | Low. Tutorial enemy. Drops shell. |
-| **Drowned Wanderer** | Slow walk toward player, grabs on contact, holds for 1 s | Medium alone, high in threes. Cannot be outrun in water tiles. |
-| **Chapel Warden** (boss) | Three patterns telegraphed by bell rings: sweep, charge, summon two Wanderers | Boss. Bell audio cue is the whole fight. |
+| **Thrall** | Horde unit. Walks toward the nearest light. Grabs on contact. | Low alone, lethal in fifty. |
+| **Courser** | Sprints at the player when the horde is engaged, flanks. | Medium. Forces movement. |
+| **Herald** | A drone. Hovers, marks a player with a searchlight, calls the horde to them. | Medium. Kill it first. |
+| **The Castellan** (boss) | Three patterns after a siren: shield sweep, charge, a call that pulls six Thralls into the arena. | Boss. The siren is the whole fight. |
 
-## Player class: Salvager
+## Player: the Reaper
 
-- Melee: a salvage hook (short reach, quick), a heavy chain-swing (slow, wide).
-- Lantern: held up to reveal hidden salvage and to stun the Drowned briefly. Consumes oil.
-- Stats: health, stamina, oil. Three numbers on screen, no more in the prototype.
-- Progression in the prototype: none beyond gear found. Levels come at rung 2.
+- Scythe: slow, wide arc, stamina-heavy. Hook: fast, short, pulls small enemies.
+- Relic slot: one active ability from the equipped relic (a battery burst, a siren jammer).
+- Stats on screen: vigour, stamina, relic charge. Nothing else in the prototype.
+- Dodge roll costs stamina. Death drops unbanked relics where you fell; return to reclaim.
+- Progression in the prototype: gear found and relics equipped. Levels come at rung 2.
 
-## The first quest: "Bring Up the Bell"
+## The first quest: "Keep the Lights On"
 
-1. Marrow: the tide is out, the Chapel is exposed, the guild wants its bell. Go.
-2. The Shallows: learn to move, hook, lantern. Fight Brinecrabs. Meet Old Pell.
-3. The Sunken Chapel: Drowned Wanderers in the nave. The Warden at the bell.
-4. Return with the bell. Marrow hangs it. Ringing it makes the water pull back a little further
-   than it should. Nobody comments on that. End of prototype.
+1. Hesper: the Keep's lamps are failing. There is a reactor in the Undercroft. Someone is
+   standing on it. Go.
+2. The Fallows: learn to move, dodge, scythe, hook. Fight Thralls and a Courser. Meet Old Cutter.
+3. The Undercroft: Thralls in the nave, a Herald above. The Castellan at the reactor.
+4. Bring the reactor home and wire it to the wall. The night after it goes in, the Wired come
+   anyway, and they come toward the light. End of prototype.
 
-Solo or with a party: same maps, same quest, enemies scale by party size (health only).
+Solo or with a party: same maps, same quest, enemy count and health scale by party size.
 
 ## Naming and text rules
 
-- Place names: one or two plain English words, coastal or old-industrial (Saltreach, Millrace).
-- People: single short names, no titles, no apostrophes (Marrow, Pell).
-- Item names: material + object (Iron Hook, Whale-oil Lantern, Cracked Bell).
-- Dialogue: short. No exclamation marks. Nobody explains the lore; they mention it sideways.
-- UI text: lowercase labels, terse ("oil", "hook", "leave").
+The rule: **medieval words that happen to describe the tech.**
+
+- Places are what they were for: the Keep, the Fallows, the Undercroft, Substation Row.
+- Enemies are what the network made of people: Thrall, Courser, Herald, Castellan.
+- Roles are old offices: Reeve, Reaper.
+- Relics are old tech named as if holy: the Reactor, a Saint (a battery), the Rack.
+- People get one short name and maybe a nickname: Hesper, Old Cutter.
+- Dialogue: short, no exclamation marks, nobody explains the lore, they mention it sideways.
+- UI text: lowercase labels, terse ("vigour", "hook", "leave").
 
 ## Things this world is not
 
-- No elves, dwarves, orcs, or a chosen one.
-- No fire magic, no glowing purple. Light comes from lanterns, stained glass, and the sky.
-- No skeletons. The Drowned are people.
-- No shops in the prototype. Salvage is tallied, not sold.
+- No elves, dwarves, orcs, magic, or a chosen one.
+- No purple glow, no neon streets. Tech glows only when it works, and almost nothing works.
+- No skeletons. The Wired are people.
+- No shops in the prototype. Relics are tallied by the Reeve, not sold.

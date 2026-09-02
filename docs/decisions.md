@@ -32,3 +32,15 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-02 | Backlog seeded with tasks 002-011 in dependency order covering the whole first prototype | Better first week than self-planning from zero; self-planning takes over when these are done. |
 | 2026-09-02 | Model tags verified: qwen3.6:35b-a3b (orchestrator), qwen3.6:35b-a3b-coding (coder), qwen3-vl:8b (reviewer), gpt-oss:120b (escalation) | Confirmed against Ollama library listings via search. |
 | 2026-09-02 | gdUnit4 installed by script on the server, not vendored; plugin pre-enabled in project.godot with a smoke test | Keeps the repo small; the scaffolding session could not download GitHub archives. |
+| 2026-09-02 | Game renamed **Reaper's Relics**; Hollowmere retired | Owner's redesign, approved from docs/pitch/reapers-relics-pitch.html. |
+| 2026-09-02 | Concept: Survivor.io night hordes + Stardew look and day loop + Elden Ring bosses/stamina/death + Minecraft-style Hold building, unified by a 12 min day / 6 min night clock | Approved (decisions 1, 5). |
+| 2026-09-02 | Setting: near-future feudal dystopia, medieval cyberpunk. Tone bleak but not hopeless | Approved (decision 6). |
+| 2026-09-02 | Names: the Keep, the Wired (Thrall, Courser, Herald), the Castellan, the Fallows, the Undercroft, Hearth, scythe/hook, Hesper the Reeve, Old Cutter. Rule: medieval words that describe the tech | Approved (decision 8). |
+| 2026-09-02 | Palette replaced: ash, leather, dried blood, tarnished gold, one cold glow; Elden Ring register. Pixel layer only; lighting layer is free | Approved. |
+| 2026-09-02 | Hordes capped at 150 per instance at rung 1, server-side flow field, compressed positions to clients | Approved (decision 2). |
+| 2026-09-02 | Hold building: fixed plot per player inside the Keep at rung 1; free-build is rung 2 | Approved (decision 3). |
+| 2026-09-02 | Scale: 32x32 tiles, 32x48 characters, 960x540 base scaled 2x, 30x17 tiles on screen, camera zoom for interiors/dialogue | Approved (decision 4). Stardew framing with double the detail per tile. |
+| 2026-09-02 | Interiors on the same map: fading roofs, doors that open/lock/break, horde can enter | Approved (decision 7). |
+| 2026-09-02 | 2.5D via 2D: Godot 2D lights with normal maps, particles, CanvasModulate clock, one post-process shader. True HD-2D 3D geometry deferred | Approved (decision 9). Keeps every tool in the studio. |
+| 2026-09-02 | Night readability rule: every enemy identifiable at any distance; lamps light ground, not air | Scaffold author's pushback, accepted with approval. |
+| 2026-09-02 | Mock frames saved as reviewer references; pitch page archived in docs/pitch | So the artist and reviewer have a fixed target from day one. |

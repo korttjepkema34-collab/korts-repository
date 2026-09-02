@@ -11,7 +11,7 @@ Inputs: the file, its sidecar JSON, `style/style-bible.md`, the references in
 Check, in order:
 
 1. Does it match the job spec (subject, size, view, transparency, format)?
-2. Does it match the style bible (palette, line style, mood)?
+2. Does it match the style bible (16-colour palette on the pixel layer, 1 px outlines, flat 3-tone shading, 32 px scale, three-quarter perspective)? Compare against `style/references/mock-day.png` / `mock-night.png`.
 3. Is it consistent with existing approved assets of the same kind?
 4. Any artefacts: text, watermarks, extra limbs, seams, clipping, noise, wrong aspect?
 5. Licence recorded in the sidecar and acceptable for shipping?
@@ -34,7 +34,7 @@ Inputs: the diff, the headless test output, `docs/09-godot-conventions.md`.
 
 1. Tests must pass. No test, no merge.
 2. Scan for Godot 3 syntax. Any hit is a rejection.
-3. Check static typing, naming, no magic numbers, assets imported only from `approved/`.
+3. Check static typing, naming, no magic numbers, assets imported only from `approved/`, `y_sort_enabled` on level roots, lighting kept on the lighting layer (no baked light in pixel assets), the night readability rule in the style bible.
 4. Check the change does what the job asked and nothing more.
 
 Verdict format is the same. Rejections must quote the offending line.

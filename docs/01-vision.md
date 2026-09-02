@@ -2,6 +2,8 @@
 
 ## The pitch
 
+**Reaper's Relics**: a 2.5D pixel-art online RPG. By day you scavenge and build; by night the Wired come in their hundreds. Design in `docs/10-game-design.md`, world in `docs/14-world-bible.md`.
+
 Run a game studio where the staff are AI models. One orchestrator acts as studio lead and has a
 handful of specialised workers under it, each possibly a different model, each with access to the
 right generative tool for its job. The studio builds a game in Godot 4 with the human owner as
@@ -37,7 +39,7 @@ creative director and final QA.
 | 1 | Server stack up, worker pulls a stub job over Tailscale | The two machines cooperate |
 | 2 | Orchestrator turns a task file into jobs; coder creates a scene via Godot MCP | Planning + code loop |
 | 3 | 2D artist generates a sprite that passes the reviewer and lands in `assets/approved/` | Art loop with QA |
-| 4 | Playable prototype per docs/10-game-design.md: hub + one campaign map, two players over Tailscale on a dedicated server | End-to-end, including netcode |
+| 4 | Playable prototype per docs/10-game-design.md: the Keep, the Fallows, the Undercroft, hordes, a Hold, the Castellan, two players on a dedicated server | End-to-end, including netcode and the lighting layer |
 | 5 | Add audio worker and 2D animation pipeline | Full team |
 
 Start with **three workers** (orchestrator, coder, 2D artist). Add audio once milestone 4 is

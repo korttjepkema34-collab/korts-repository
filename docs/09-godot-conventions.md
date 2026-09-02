@@ -35,10 +35,18 @@ game/
   `godot --headless -s addons/gdUnit4/bin/GdUnitCmdTool.gd --add tests/`.
 - A branch does not merge with a failing or missing test.
 
+## Rendering
+
+- Base resolution 960x540, `window/stretch/mode="viewport"`, integer scale. Camera2D zoom 1x world, 1.5x indoors, 3x dialogue.
+- Every level root has `y_sort_enabled = true`. Buildings, props and characters sort by their feet (offset the sprite so the origin is at the feet).
+- Roof tiles live on their own `TileMapLayer` named `Roofs`; fade it when a player is inside the building footprint.
+- Lighting layer: `CanvasModulate` for the clock, `PointLight2D` with normal maps, `GPUParticles2D`, one post-process `ColorRect` shader. Pixel assets never bake lighting in.
+- Palette: pixel assets use only the 16 colours in `style/style-bible.md`.
+
 ## Assets
 
 - Import only from `assets/approved/`. Never from `incoming/`.
-- Sprites: PNG, power-of-two sheets when animated, filter off for pixel art.
+- Sprites: PNG, 32x48 characters, 32x32 tiles, power-of-two sheets when animated, filter off for pixel art, a normal map per sheet for lighting.
 - Audio: OGG Vorbis for music, WAV for short SFX.
 
 ## Commits

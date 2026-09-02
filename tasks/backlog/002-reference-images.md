@@ -3,15 +3,16 @@ priority: 2
 roles: artist-2d, reviewer
 
 ## Goal
-Produce the three reference images every later art job cites, matching the style bible palette.
+Produce the reference images every later art job cites, matching the palette and the approved
+mock frames in `style/references/`.
 
 ## Acceptance
-- `saltreach-mood.png`: the pier at golden hour, stilt houses, lantern posts, bell tower without a bell. 1024x576 then nearest-neighbour to 640x360.
-- `player-sheet.png`: Salvager front/side/back on one row, transparent, 16x24 scale (generate at 8x and downscale).
-- `drowned-sheet.png`: Drowned Wanderer front/side/back, same layout.
-- All three approved by the reviewer and copied into `style/references/`.
+- `keep-mood.png`: the Keep's gatehouse and lamps at dusk, three-quarter view, 960x540 then nearest-neighbour check at 1x.
+- `reaper-sheet.png`: the Reaper front/side/back on one row, transparent, 32x48 each (generate at 8x and downscale).
+- `thrall-sheet.png`: Thrall front/side/back, same layout.
+- All three approved and copied into `style/references/`.
 
 ## Notes
-Prompt subject first, then the verbatim positive suffix from the style bible. Cite
-`style/references/palette.png` as a reference. Generate 4 candidates each. The reviewer should
-be strict on palette and proportions and lenient on detail.
+Subject first, then the verbatim positive suffix from the style bible. Cite `palette.png` and
+`mock-night.png`. Generate 4 candidates each. Reviewer: strict on palette, outline weight and
+proportions; lenient on detail.

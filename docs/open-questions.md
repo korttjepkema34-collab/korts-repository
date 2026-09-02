@@ -6,9 +6,6 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 
 ## Owner may want to override on return
 
-- [ ] The world and style the scaffold chose for you: `docs/14-world-bible.md` and
-      `style/style-bible.md`. Change anything before the first run; after that, changes mean
-      regenerating approved art.
 - [ ] Style choices the orchestrator made automatically during the run: "(auto)" lines in
       `docs/decisions.md`.
 - [ ] Godot MCP choice for interactive sessions (docs/11-godot-mcp-options.md). Not needed for
@@ -24,6 +21,9 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 - [ ] Server case clearance and PSU headroom for a full-size GPU.
 
 ## Not started
+
+- [ ] Normal-map generation for sprites and tiles (a ComfyUI workflow or a small script) so 2D lights have direction.
+- [ ] Post-process shader (vignette, glow, edge blur) as a reusable `.gdshader`.
 
 - [ ] Audio review (currently auto-approved on existence).
 - [ ] Verify `worker/services/audio_api.py` against the installed ACE-Step and stable-audio-tools versions (call signatures drift).

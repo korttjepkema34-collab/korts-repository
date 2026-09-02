@@ -1,0 +1,10 @@
+{
+  "server_port": 7777,
+  "max_players": 8,
+  "day_seconds": 720,
+  "night_seconds": 360,
+  "waves_per_night": 5,
+  "horde_cap": 150,
+  "flow_field_interval": 0.5,
+  "camera_zoom": { "world": 1.0, "indoors": 1.5, "dialogue": 3.0 }
+}

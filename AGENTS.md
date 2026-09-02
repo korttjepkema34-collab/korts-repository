@@ -8,13 +8,15 @@ take, and the rules that apply to every role.
 
 A small studio made of AI workers, coordinated by one orchestrator model, supervised by a human
 owner (the creative director). The goal is for the AI team to do most of the production work:
-GDScript and scenes, 2D sprites, tiles and backgrounds, music and sound effects, and 2D
-animation. The human sets direction, reviews, and approves.
+GDScript and scenes, 32 px sprites, tiles and buildings, the 2D lighting layer, music and
+sound effects, and sprite animation. The human sets direction, reviews, and approves.
 
-The game is **Hollowmere**, a 2D pixel-art online RPG: a story campaign playable solo or co-op on
-a persistent shared world, built as a scope ladder towards an MMO. Read `docs/10-game-design.md`
-before any gameplay or netcode work and `docs/14-world-bible.md` before inventing any name,
-place, enemy, or line of dialogue. The first milestone is a playable two-player prototype on a
+The game is **Reaper's Relics**, a 2.5D pixel-art online RPG: day scavenging and building,
+night hordes, Elden Ring-style bosses, a persistent shared hub called the Keep, built as a scope
+ladder towards an MMO. Near-future feudal dystopia, medieval cyberpunk. Read
+`docs/10-game-design.md` before any gameplay, rendering or netcode work, `docs/14-world-bible.md`
+before inventing any name, place, enemy or line of dialogue, and `style/style-bible.md` before
+making or judging any art. The approved look is `style/references/mock-day.png` and `mock-night.png`. The first milestone is a playable two-player prototype on a
 dedicated server. See `docs/01-vision.md`.
 
 ## 2. The two machines
