@@ -24,6 +24,8 @@ tools:
   kohya_dir: C:/studio/training/sd-scripts
   # SDXL base checkpoint the LoRA trains against; same file ComfyUI uses.
   sdxl_checkpoint: C:/ComfyUI/models/checkpoints/sd_xl_base_1.0.safetensors
+  # Where scripts/activate_model.py sdxl_lora copies a finished LoRA so ComfyUI can load it.
+  comfyui_loras_dir: C:/ComfyUI/models/loras
 
 # Gaming mode: if this file exists the worker finishes its current job, frees VRAM, and idles.
 gaming_mode_file: GAMING_MODE

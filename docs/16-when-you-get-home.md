@@ -13,6 +13,20 @@ minutes a week grading pictures. Ordered by payoff. Tick as you go.
 - You **grade** the reviewer's calls with `scripts/override.py session` when you feel like it.
   That is the only human labour in the whole loop.
 
+## How to run the scripts
+
+Every `python scripts\...` and `training\...` command in this file is run **on the server from
+the repo root** through `studio.ps1`, which uses the orchestrator's venv and loads `server\.env`:
+
+```powershell
+cd C:\studio
+.\studio.ps1 scripts\override.py stats
+```
+
+On the gaming PC the same scripts run with `worker\.venv\Scripts\python.exe` (the two that run
+there are `scripts\activate_model.py sdxl_lora` and `training\serve_reviewer.py`; the latter
+uses `training\.venv`).
+
 ## 1. Server (30 minutes, do first)
 
 - [ ] Pull this branch on the server and reinstall the orchestrator deps (Pillow was added):
@@ -25,17 +39,15 @@ minutes a week grading pictures. Ordered by payoff. Tick as you go.
 - [ ] Give the coder its reference library (needs internet, ~40 MB; then a few minutes of CPU):
       ```powershell
       ollama pull nomic-embed-text
-      python scripts\fetch_godot_docs.py
-      python scripts\build_rag_index.py
+      .\studio.ps1 scripts\fetch_godot_docs.py
+      .\studio.ps1 scripts\build_rag_index.py
       ```
-      Test it: `python scripts\build_rag_index.py --query "connect a signal in Godot 4"` prints doc chunks.
+      Test it: `.\studio.ps1 scripts\build_rag_index.py --query "connect a signal in Godot 4"` prints doc chunks.
 - [ ] Get the public Godot 4 code for the coder fine-tune (needs git + internet; 5 minutes):
-      `python training\collect_godot4_code.py`
+      `.\studio.ps1 training\collect_godot4_code.py`
 - [ ] Baseline the current coder so later fine-tunes have something to beat (runs 8 small
       tasks through the real coder loop; an hour or two on CPU, unattended):
-      ```powershell
-      cd server ; .\.venv\Scripts\python.exe ..\training\eval_coder.py --model qwen3.6:35b-a3b-coding
-      ```
+      `.\studio.ps1 training\eval_coder.py --model qwen3.6:35b-a3b-coding`
       Result row lands in `reports\eval-coder.md`.
 - [ ] Restart the orchestrator. Look for `search_docs` in coder logs and files appearing under
       `data\traces\` after the first coder run and first review.
@@ -57,36 +69,36 @@ Needs 30-50 images in `assets\approved\`. If task 002 (reference images) and the
 have run, you have them. If not, hand-pick: anything you would put in the game goes in
 `assets\approved\<name>\`; quick way is `scripts\override.py session` (next section).
 
-- [ ] On the server: `python scripts\enqueue_train.py sdxl_lora`
+- [ ] On the server: `.\studio.ps1 scripts\enqueue_train.py sdxl_lora`
       It builds the dataset, prints the image count, and queues the job. The worker picks it up
       when the gaming PC is on and not in gaming mode. 45-90 minutes.
 - [ ] When `assets\training\models\sdxl_lora-<date>\manifest.json` exists, on the gaming PC:
-      `python scripts\activate_model.py sdxl_lora`
+      `worker\.venv\Scripts\python.exe scripts\activate_model.py sdxl_lora`
       This copies the LoRA into ComfyUI, adds a `STYLE_LORA` node to `worker\workflows\default.json`,
       and adds the trigger word `rrstyle` to the style bible. Commit those two files.
-- [ ] Judge the next ten generated images yourself. Worse? `python scripts\activate_model.py rollback sdxl_lora`.
+- [ ] Judge the next ten generated images yourself. Worse? `worker\.venv\Scripts\python.exe scripts\activate_model.py rollback sdxl_lora`.
       Try `--strength 0.6` before giving up on it.
 
 ## 4. Ten minutes a week: grade the reviewer
 
 ```powershell
-python scripts\override.py session
+.\studio.ps1 scripts\override.py session
 ```
 Opens each recent image in your viewer, shows what the machine decided, asks `y` / `n` / `s`.
 Agreeing is a label too. Disagreeing moves the file to the right folder immediately, so this
-is also how you fix wrong calls. `python scripts\override.py stats` shows the counts.
+is also how you fix wrong calls. `.\studio.ps1 scripts\override.py stats` shows the counts.
 At 100 of your decisions the reviewer recipe becomes worth running.
 
 ## 5. Later: coder and reviewer fine-tunes
 
 - [ ] Coder, once `scripts\override.py stats` shows 150+ `coder_passed` (or sooner using the
       public code alone; it will still fix Godot 3 habits):
-      `python scripts\enqueue_train.py coder`  (2-6 hours on the 3080 Ti)
-      then on the server `python scripts\activate_model.py coder` (imports into Ollama as
-      `reapers-coder`), then **measure**: `training\eval_coder.py --model reapers-coder`.
+      `.\studio.ps1 scripts\enqueue_train.py coder`  (2-6 hours on the 3080 Ti)
+      then on the server `.\studio.ps1 scripts\activate_model.py coder` (imports into Ollama as
+      `reapers-coder`), then **measure**: `.\studio.ps1 training\eval_coder.py --model reapers-coder`.
       Better than the baseline row? Set `CODER_MODEL=reapers-coder` in `.env`, restart.
 - [ ] Reviewer, once 100+ of your verdicts exist:
-      `python scripts\enqueue_train.py reviewer`, then `python scripts\activate_model.py reviewer`
+      `.\studio.ps1 scripts\enqueue_train.py reviewer`, then `.\studio.ps1 scripts\activate_model.py reviewer`
       prints the serve command for the gaming PC and the two `.env` lines.
 - [ ] Set `AUTO_TRAIN=1` when you trust the loop. The daily pass then queues a retrain whenever
       a recipe's data has grown past its threshold. Activation stays manual.
