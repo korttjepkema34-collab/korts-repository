@@ -6,6 +6,9 @@ depends_on: 002, 006
 ## Goal
 The horde units and their server-side steering.
 
+## Notes
+Walk cycles: prefer `flux2_klein_walkcycle` if that workflow exists; else `character_sheet` frame by frame.
+
 ## Acceptance
 - Sprites: Thrall 32x48 (walk 6, grab 2), Courser (walk 6, sprint 4), approved and matching `thrall-sheet.png`.
 - Flow field on a 32 px grid toward the nearest powered light or marked player, recomputed every 0.5 s on the server; Thralls sample it, Coursers path directly when a player is within 8 tiles.

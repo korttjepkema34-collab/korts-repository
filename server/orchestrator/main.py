@@ -226,6 +226,20 @@ def run_code_jobs(st: State, escalate: bool = False) -> None:
         if ok:
             st.set_job(jid, "ok", summary=msg)
             if tf: append_log(tf, f"MERGED {jid}: {msg[:300]}")
+            if meta.get("notes"):  # it failed before and now passed: distil the lesson for future coders
+                lesson = f"- {failure_signature(str(meta['notes']))[:100]} -> {msg[:160]}"
+                with (REPO / "docs" / "lessons.md").open("a") as f:
+                    f.write(lesson.replace("\n", " ") + "\n")
+            proof = meta.get("spec", {}).get("proof")
+            if proof and isinstance(proof, dict) and proof.get("scene"):
+                try:
+                    from . import vision
+                    verdict = vision.proof_check(REPO, proof)
+                    if tf: append_log(tf, f"PROOF {jid}: {verdict[:300]}")
+                    if verdict.startswith("FAIL"):
+                        st.set_job(jid, "pending", notes=f"merged, but the playtest proof failed: {verdict[:800]}")
+                except Exception as e:
+                    log.warning("proof check failed to run: %s", e)
         else:
             note_failure(st, msg)
             st.set_job(jid, "pending", notes=msg[:1500]) if runs + 1 < MAX_CODER_RUNS_PER_TASK else st.set_job(jid, "failed", error=msg[:1500])

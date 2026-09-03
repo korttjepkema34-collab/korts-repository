@@ -3,6 +3,12 @@
 The studio cannot install its own tools. Do this once on each machine, run the smoke test,
 then leave it. Estimated time: an afternoon.
 
+## Fast path
+
+`scripts\bootstrap_server.ps1` (after Ollama, Docker Desktop and Godot are installed) and
+`scripts\bootstrap_gpu.ps1` (gaming PC) do most of the lists below. Read the lists anyway; tick what the
+scripts did not.
+
 ## Server (Windows)
 
 - [ ] Tailscale installed, hostname `server`, ACL applied (`scripts/tailscale-acl.example.json`).
@@ -30,6 +36,9 @@ then leave it. Estimated time: an afternoon.
 - [ ] Power plan: never sleep.
 
 ## Gaming PC (Windows)
+
+- [ ] Optional but strongly recommended: `ollama pull qwen3.6:27b`, set `OLLAMA_HOST=0.0.0.0:11434`, and put
+      this PC's Tailscale URL in the server's `CODER_BASE_URL_GPU`. Code jobs then use the GPU whenever the PC is on.
 
 - [ ] Tailscale installed, hostname `gpu`.
 - [ ] ComfyUI installed with an SDXL checkpoint, at least one pixel-art LoRA, and the IP-Adapter

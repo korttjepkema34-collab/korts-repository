@@ -95,6 +95,12 @@ def main() -> None:
             time.sleep(cfg.get("poll_timeout_s", 30))
             continue
 
+        if r.exists("gpu:llm_lock"):  # the coder is using this GPU's LLM; do not load an image model on top of it
+            if current_kind is not None:
+                HANDLERS[current_kind].unload(cfg); current_kind = None
+            q.heartbeat(r, name, "llm-lock")
+            time.sleep(10)
+            continue
         q.heartbeat(r, name, "idle")
         # Prefer the kind whose model is already loaded to avoid thrashing.
         order = ([current_kind] if current_kind else []) + [k for k in kinds if k != current_kind]

@@ -36,18 +36,100 @@ def plan_jobs(repo: Path, task_path: Path, escalate: bool = False) -> list[Job]:
         "when the task asks you to fill it in.",
     ])
     task_id = task_path.stem.split("-")[0]
-    data = llm.chat_json(system, user, model=llm.escalation_model() if escalate else None)
+    model = llm.escalation_model() if escalate else None
+    data = llm.chat_json(system, user, model=model)
+    for attempt in range(2):
+        try:
+            return _jobs_from_plan(repo, task_path, task_id, data)
+        except Exception as e:  # validation repair loop: show the model its own error once
+            if attempt == 1:
+                raise
+            data = llm.chat_json(system, user + f"\n\nYour previous plan failed validation: {e}\n"
+                                 "Return the corrected JSON only.", model=model)
+    return []
+
+
+def _jobs_from_plan(repo: Path, task_path: Path, task_id: str, data) -> list[Job]:
     raw = data["jobs"] if isinstance(data, dict) else data
+    if not isinstance(raw, list) or not raw:
+        raise ValueError("plan has no jobs list")
     if isinstance(data, dict):
         record_side_effects(repo, task_path, data)
     jobs: list[Job] = []
     for rj in raw[:MAX_JOBS_PER_TASK]:
+        if not isinstance(rj, dict):
+            raise ValueError("job entries must be objects")
         slug = re.sub(r"[^a-z0-9]+", "-", str(rj.pop("slug", "job")).lower()).strip("-")[:30] or "job"
         for k in ("id", "task_id", "created_at", "attempt"):
             rj.pop(k, None)
         rj.setdefault("output_dir", f"assets/incoming/{task_id}-{slug}")
+        normalize_job(repo, rj)
         jobs.append(Job(id=make_job_id(task_id, slug), task_id=task_id, **rj))
     return jobs
+
+
+# Fill-in-the-blank templates: the planner names the asset type and subject; the mechanics
+# (workflow, sizes, postprocess, references, acceptance boilerplate) come from here.
+ASSET_TYPES = {
+    "character": {"workflow": "character_sheet", "width": 1024, "height": 512, "downscale": 8, "final": (96, 48), "transparent_bg": True, "normal_map": True},
+    "sheet":     {"workflow": "character_sheet", "width": 1024, "height": 1024, "downscale": 8, "final": (128, 128), "transparent_bg": True, "normal_map": True},
+    "tile":      {"workflow": "tileset", "width": 1024, "height": 256, "downscale": 8, "final": (128, 32), "transparent_bg": False, "normal_map": True},
+    "prop":      {"workflow": "tileset", "width": 512, "height": 512, "downscale": 8, "final": (64, 64), "transparent_bg": True, "normal_map": True},
+    "building":  {"workflow": "tileset", "width": 1024, "height": 1024, "downscale": 4, "final": (256, 256), "transparent_bg": True, "normal_map": True},
+    "background": {"workflow": "default", "width": 1920, "height": 1080, "downscale": 2, "final": (960, 540), "transparent_bg": False, "normal_map": False},
+    "ui":        {"workflow": "tileset", "width": 512, "height": 512, "downscale": 8, "final": (64, 64), "transparent_bg": True, "normal_map": False},
+    "icon":      {"workflow": "tileset", "width": 256, "height": 256, "downscale": 16, "final": (16, 16), "transparent_bg": True, "normal_map": False},
+}
+POSITIVE_SUFFIX = ("pixel art, 32px tiles, three-quarter top-down RPG, 16 colour limited palette, 1px dark outline, "
+                   "flat 3-tone shading, no anti-aliasing, weathered post-collapse medieval, scavenged technology, "
+                   "ash and rust and tarnished gold, transparent background")
+NEGATIVE = ("photo, realistic, blurry, text, watermark, signature, gradient, 3d render, extra limbs, anime, chibi, "
+            "purple glow, neon, skeleton, smooth shading, jpeg artifacts, bright saturated colours")
+
+
+def normalize_job(repo: Path, rj: dict) -> None:
+    spec = rj.setdefault("spec", {})
+    kind = rj.get("kind")
+    if kind == "image":
+        at = ASSET_TYPES.get(str(spec.get("asset_type", "")).lower())
+        if at:
+            spec.setdefault("workflow", at["workflow"])
+            spec.setdefault("width", at["width"]); spec.setdefault("height", at["height"])
+            pp = spec.setdefault("postprocess", {})
+            pp.setdefault("palette", True); pp.setdefault("downscale", at["downscale"])
+            pp.setdefault("transparent_bg", at["transparent_bg"]); pp.setdefault("normal_map", at["normal_map"])
+            fw, fh = spec.get("final_width"), spec.get("final_height")
+            pp.setdefault("final_width", fw or at["final"][0]); pp.setdefault("final_height", fh or at["final"][1])
+            spec.setdefault("final_width", pp["final_width"]); spec.setdefault("final_height", pp["final_height"])
+            spec.setdefault("transparent_bg", at["transparent_bg"])
+        prompt = str(spec.get("prompt", ""))
+        if "pixel art" not in prompt.lower():
+            spec["prompt"] = prompt.rstrip(", ") + ", " + POSITIVE_SUFFIX
+        spec.setdefault("negative_prompt", NEGATIVE)
+        spec.setdefault("count", 4)
+        refs = spec.setdefault("references", [])
+        for default in ("style/references/palette.png", "style/references/mock-day.png"):
+            if default not in refs and (repo / default).exists():
+                refs.append(default)
+        if spec.get("workflow") == "character_sheet" and not any("sheet" in r for r in refs):
+            sheet = repo / "style" / "references" / "reaper-sheet.png"
+            if sheet.exists():
+                refs.insert(0, "style/references/reaper-sheet.png")
+    elif kind == "code":
+        rj["output_dir"] = "game"
+        acc = spec.setdefault("acceptance", [])
+        if isinstance(acc, str):
+            acc = spec["acceptance"] = [acc]
+        if not any("headless" in str(a).lower() for a in acc):
+            acc.append("project loads headless with no script errors")
+        if not any("test" in str(a).lower() for a in acc):
+            acc.append("a gdUnit4 test covers the new logic")
+        if spec.get("scene") and not spec.get("proof"):
+            spec["proof"] = {"scene": spec["scene"], "seconds": 4, "actions": ["move_right", "move_down"],
+                             "expect": str(spec.get("goal", ""))[:200]}
+        # GameCraft-Bench lesson: mechanics without visual feedback read as broken. Ask for it.
+        if not any("visual" in str(a).lower() or "feedback" in str(a).lower() for a in acc):
+            acc.append("every state change the player causes has visible feedback on screen")
 
 
 def next_task_id(repo: Path) -> str:

@@ -28,6 +28,9 @@ tools:
   # Where scripts/activate_model.py sdxl_lora copies a finished LoRA so ComfyUI can load it.
   comfyui_loras_dir: C:/ComfyUI/models/loras
 
+# The coder may borrow this PC's Ollama (server/.env CODER_BASE_URL_GPU). While it does, a Redis key
+# gpu:llm_lock exists and this worker waits instead of loading an image model on top of it.
+
 # Gaming mode: if this file exists the worker finishes its current job, frees VRAM, and idles.
 gaming_mode_file: GAMING_MODE
 poll_timeout_s: 30

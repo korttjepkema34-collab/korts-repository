@@ -5,7 +5,7 @@ This repository's instructions for AI models live in **AGENTS.md**. Read it firs
 Then, depending on what you are doing:
 
 - Planning or architecture work: `docs/03-architecture.md`, `docs/decisions.md`
-- Choosing or configuring models: `docs/04-models.md`
+- Choosing or configuring models: `docs/04-models.md` and `docs/20-research-notes.md`
 - Writing Godot code: `docs/09-godot-conventions.md` and `agents/coder.md`
 - The approved look: `style/references/mock-day.png`, `mock-night.png`, and `docs/pitch/`
 - Generating art or audio: `style/style-bible.md`, `docs/14-world-bible.md` and the matching `agents/*.md`

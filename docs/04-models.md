@@ -61,6 +61,15 @@ Total on disk for the primary set: roughly 115 GB. Ollama keeps at most two load
 reviewer are both resident. That fits 96 GB with little margin; if the box also runs Docker
 Desktop, keep the WSL2 cap at 16 GB or drop to `gpt-oss:20b`.
 
+## Coder on the GPU when it is online (2026-09-03)
+
+`CODER_BASE_URL_GPU` + `CODER_MODEL_GPU=qwen3.6:27b`: Ollama on the gaming PC, bound to its
+Tailscale IP. The orchestrator probes it every minute; when it answers, code jobs run there on the
+current best local coder (dense 27B, partially offloaded on 12 GB) and a Redis lock makes the GPU
+worker wait before loading image models. When the gaming PC is off, the CPU MoE takes over. Same
+thing for escalated code jobs. Set it up: `ollama pull qwen3.6:27b` on the gaming PC and
+`OLLAMA_HOST=0.0.0.0:11434` there; firewall the port to the tailnet. Research: `docs/20-research-notes.md`.
+
 ## Escalation is free too
 
 Decision: strictly free. When the fast model fails a task (caps hit, task deferred), the daily

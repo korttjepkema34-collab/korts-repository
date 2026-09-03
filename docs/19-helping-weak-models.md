@@ -33,6 +33,13 @@ studio uses is local.
 | 13 | Same API mistake three times | Orchestrator tracks failure classes; after 3 in 24 h every code job goes to the escalation model until the class stops recurring. |
 | 14 | Flat lighting on sprites | `worker/normalmap.py` writes `<name>.n.png` when a job asks for `postprocess.normal_map`; cookbook shows `CanvasTexture`. |
 
+| 15 | Holistic verdicts are unreliable | Reviewer answers 8 yes/no rubric questions; verdict computed by rule; candidates upscaled nearest-neighbour first |
+| 16 | Planner over-thinks mechanics | Asset-type templates fill workflow, sizes, postprocess, references; code jobs get boilerplate acceptance; validation errors go back once (repair loop) |
+| 17 | Same mistake next week | `docs/lessons.md` auto-distilled from failure-then-success, fed to the coder |
+| 18 | Success claimed from a clean compile | `proof_run` tool and post-merge proof check: replayed input, per-second screenshots, vision judgement |
+| 19 | CPU coder too weak | GPU routing to `qwen3.6:27b` on the gaming PC when online, with a VRAM lock the worker respects |
+| 20 | Setup is the real blocker | `scripts/bootstrap_server.ps1`, `scripts/bootstrap_gpu.ps1` |
+
 ## What would help next (not done)
 
 - Real eval cases from the first week of output, replacing the synthetic seeds.

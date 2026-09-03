@@ -61,3 +61,10 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-03 | Items are generated from a stat budget by scripts/gen_items.py; JSON is never hand-edited | An unattended AI team cannot hand-balance 25x10x12. docs/17 §8. |
 | 2026-09-03 | Weak-model support: engine class-reference search tool, code-built tile maps, written skeleton, mechanical palette/size checks and worker quantization, few-shot examples, JSON text tool-call fallback, gdtoolkit in the gate, repo skills for Claude Code | docs/19-helping-weak-models.md. |
 | 2026-09-03 | Reviewer eval harness with 20 seed cases; IP-Adapter character workflow; failure-class escalation (3 in 24 h); normal maps from the worker | docs/19 rows 11-14. Seeds are synthetic and to be replaced with real assets. |
+| 2026-09-03 | Coder routes to `qwen3.6:27b` on the gaming PC's GPU when online (VRAM lock for the worker); CPU MoE otherwise | Best local coder is dense; only usable on the GPU. docs/20. |
+| 2026-09-03 | Reviewer: binary rubric with rule-based verdict, nearest-neighbour upscale before the vision call | Small VLMs answer yes/no reliably, holistic verdicts not. |
+| 2026-09-03 | Planner: asset-type templates, boilerplate acceptance (incl. visible feedback), one-shot validation repair | Take mechanics away from the model. GameCraft-Bench: visual feedback is where agents fail. |
+| 2026-09-03 | Proof over claims: `proof_run` tool and post-merge proof check on code jobs with a scene | From godogen / GameCraft-Bench verification. |
+| 2026-09-03 | `docs/lessons.md` auto-distilled from failure-then-success runs, fed to the coder | Cheapest form of learning; needs no GPU. |
+| 2026-09-03 | FLUX.2 klein 4B + pixel-art, walk-cycle and 4-view LoRAs recommended as the image upgrade; SDXL stays default until the workflow is exported | Fits 12 GB; the walk-cycle LoRA targets animation consistency. |
+| 2026-09-03 | Bootstrap scripts for both machines | Setup was the last real blocker to hands-off. |

@@ -90,6 +90,7 @@ Model picks and alternatives: `docs/04-models.md`.
 
 ## 6. Where things are
 
+- Research behind the model picks and the prior art we learned from: `docs/20-research-notes.md`
 - Godot snippets that are known to work: `docs/18-godot4-cookbook.md`; exact API lookup via the coder's `search_godot_api`
 - How the repo helps small models, and the Claude Code skills in `.claude/skills/`: `docs/19-helping-weak-models.md`
 - Gameplay systems (loop rules, building, weapons, armor, classes, workers): `docs/17-gameplay-systems.md`

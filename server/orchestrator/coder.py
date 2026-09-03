@@ -47,6 +47,8 @@ TOOLS = [
         "parameters": {"type": "object", "properties": {"scene": {"type": "string"}, "seconds": {"type": "integer"}}, "required": ["scene"]}}},
     {"type": "function", "function": {"name": "search_godot_api", "description": "Exact signatures from the installed engine's own class reference (methods, properties, signals, constants). Use for any API you are not certain of; search_docs covers tutorials and this project's code.",
         "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}}},
+    {"type": "function", "function": {"name": "proof_run", "description": "Playtest proof: run a scene with simulated input for a few seconds, screenshot each second, and have the vision model say whether the expected behaviour is visible. Use before finish on any gameplay change.",
+        "parameters": {"type": "object", "properties": {"scene": {"type": "string"}, "actions": {"type": "array", "items": {"type": "string"}}, "expect": {"type": "string"}, "seconds": {"type": "integer"}}, "required": ["scene", "expect"]}}},
     {"type": "function", "function": {"name": "finish", "description": "Call when done. Summarise what you changed and why.",
         "parameters": {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}}},
 ]
@@ -67,6 +69,8 @@ def _exec(game: Path, name: str, args: dict, mcp=None) -> str:
         return rag.search(game.parent, args.get("query", ""), k=5) or "(no index built; run scripts/build_rag_index.py on the server)"
     if name == "search_godot_api":
         return docsearch.search(args.get("query", ""))
+    if name == "proof_run":
+        return vision.proof_check(game.parent, {"scene": args["scene"], "actions": args.get("actions") or ["move_right", "move_down"], "expect": args.get("expect", ""), "seconds": args.get("seconds", 4)})
     if name == "visual_check":
         return vision.visual_check(game.parent, args["scene"], args.get("expectation", ""))
     if name == "run_scene_capture_output":
@@ -100,7 +104,15 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
     gitops.new_branch(repo, branch, base)
     mcp = mcp_bridge.connect_if_configured(str(game))
     tools = TOOLS + (mcp.tools if mcp else [])
-    model = llm.escalation_model() if escalate else llm.coder_model()
+    model, oai, on_gpu = llm.coder_route(escalate)
+    lock = None
+    if on_gpu:  # keep the GPU worker from loading an image model while the coder holds the VRAM
+        try:
+            from shared import queue as _q
+            lock = _q.connect()
+            lock.set("gpu:llm_lock", job_id, ex=900)
+        except Exception:
+            lock = None
     messages: list[dict] = []
     summary = None
     steps = 0
@@ -121,8 +133,11 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
         return (True, summary or "merged") if merged else (False, "merge conflict; branch kept")
 
     try:
+        lessons_path = repo / "docs" / "lessons.md"
+        lessons = "\n".join(lessons_path.read_text().splitlines()[-30:]) if lessons_path.exists() else ""
         system = (llm.load_role(repo, "coder") + "\n\n" + (repo / "docs" / "09-godot-conventions.md").read_text()
-                  + "\n\n" + (repo / "docs" / "18-godot4-cookbook.md").read_text())
+                  + "\n\n" + (repo / "docs" / "18-godot4-cookbook.md").read_text()
+                  + ("\n\n## Lessons from earlier runs in this project\n" + lessons if lessons.strip() else ""))
         goal = str(spec.get("goal", spec))
         # Retrieval: the most relevant docs/code chunks for this goal, if an index exists.
         refs = rag.search(repo, goal + "\n" + "\n".join(str(a) for a in spec.get("acceptance", [])), k=6)
@@ -135,7 +150,10 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
         for step in range(MAX_STEPS):
             steps = step + 1
-            resp = llm.client(llm.slot_for(model)).chat.completions.create(model=model, messages=messages, tools=tools, temperature=0.1)
+            if lock is not None:
+                try: lock.expire("gpu:llm_lock", 900)
+                except Exception: pass
+            resp = oai.chat.completions.create(model=model, messages=messages, tools=tools, temperature=0.1)
             msg = resp.choices[0].message
             messages.append({"role": "assistant", "content": msg.content or "", "tool_calls": [tc.model_dump() for tc in (msg.tool_calls or [])]})
             if not msg.tool_calls:
@@ -183,6 +201,9 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
             log.exception("could not write coder trace")
         return ok, msg
     finally:
+        if lock is not None:
+            try: lock.delete("gpu:llm_lock")
+            except Exception: pass
         if mcp:
             mcp.close()
         gitops.checkout(repo, base)

@@ -6,6 +6,10 @@ depends_on: 017
 ## Goal
 The nine weapon classes as distinct verbs with their own attack animations on the modular rig.
 
+## Notes
+If the FLUX.2 klein walk-cycle LoRA workflow exists (`worker/workflows/README.md`), use it for the
+4-direction cycles: one sheet per character, then the reviewer compares frames.
+
 ## Acceptance
 - Held-item layer sprites for all 25 weapons (4 directions, idle + 4 attack frames) matching `docs/17-gameplay-systems.md` §4. Approved.
 - Per-class attack behaviour from `weapons.json`: aps, reach, stamina, noise; spear thrusts through barred doors; hammer breaks doors; whip pulls; bow and guns spawn projectiles; throwables arc.

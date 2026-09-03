@@ -45,6 +45,41 @@ def slot_for(model: str) -> str:
     return "default"
 
 
+# ---- GPU-hosted coder: use the gaming PC's Ollama when it is online; fall back to the CPU MoE ----
+_gpu_probe = {"t": 0.0, "ok": False}
+
+
+def gpu_coder_available() -> bool:
+    """CODER_BASE_URL_GPU reachable (cached 60 s)."""
+    import time
+    import urllib.request
+    url = os.environ.get("CODER_BASE_URL_GPU")
+    if not url:
+        return False
+    if time.time() - _gpu_probe["t"] < 60:
+        return _gpu_probe["ok"]
+    ok = False
+    try:
+        with urllib.request.urlopen(url.rstrip("/") + "/models", timeout=3) as r:
+            ok = r.status == 200
+    except Exception:
+        ok = False
+    _gpu_probe.update(t=time.time(), ok=ok)
+    return ok
+
+
+def coder_route(escalate: bool = False) -> tuple[str, OpenAI, bool]:
+    """(model, client, on_gpu). GPU wins when reachable: a dense 27B on the 3080 Ti beats the CPU
+    MoE for code. Escalation without a GPU uses ESCALATION_MODEL on the CPU."""
+    if gpu_coder_available():
+        model = os.environ.get("CODER_MODEL_GPU") or coder_model()
+        if "gpu" not in _clients:
+            _clients["gpu"] = OpenAI(base_url=os.environ["CODER_BASE_URL_GPU"], api_key=os.environ.get("LLM_API_KEY", "ollama"), timeout=3600)
+        return model, _clients["gpu"], True
+    model = escalation_model() if escalate else coder_model()
+    return model, client(slot_for(model)), False
+
+
 def load_role(repo_root: Path, role: str) -> str:
     return (repo_root / "agents" / f"{role}.md").read_text()
 

@@ -15,6 +15,10 @@ server. Your tools:
   A scene that loads but shows nothing is a failure you will only catch this way.
 - `search_godot_api(query)`: the installed engine's exact class reference. **Call it before any
   API you are not certain of.** Wrong signatures are the most common reason branches fail.
+- `proof_run(scene, actions, expect)`: runs the scene with simulated input, screenshots each second, and
+  the vision model says whether the expected behaviour is visible. **Call it before finish on any gameplay
+  change.** A clean compile is not proof; a screenshot of the thing happening is.
+- `search_docs(query)`: Godot tutorials and this project's own code (retrieval index).
 - `mcp_*` tools, when present: a live Godot editor (run project, read runtime errors, inspect
   the scene tree). Prefer them for scene structure questions; fall back to files if they error.
 
