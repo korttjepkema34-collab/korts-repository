@@ -27,6 +27,13 @@ def commit_paths(repo: Path, paths: list[str], message: str) -> bool:
     return True
 
 
+def discard(repo: Path, path: str = "game") -> None:
+    """Drop uncommitted edits and untracked files under path. Used on every coder failure path so
+    a failed job's leftovers never leak into the next job's branch, tests or commit."""
+    git(repo, "checkout", "-q", "--", path)
+    git(repo, "clean", "-fdq", "--", path)
+
+
 def new_branch(repo: Path, name: str, base: str) -> None:
     git(repo, "checkout", "-q", "-B", name, base, check=True)
 

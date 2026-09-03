@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from pathlib import Path
 
@@ -101,6 +102,7 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
     game = repo / "game"
     branch = f"coder/{job_id}"
     base = gitops.current_branch(repo)
+    gitops.discard(repo, "game")  # never start from another job's leftovers
     gitops.new_branch(repo, branch, base)
     mcp = mcp_bridge.connect_if_configured(str(game))
     tools = TOOLS + (mcp.tools if mcp else [])
@@ -109,8 +111,15 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
     if on_gpu:  # keep the GPU worker from loading an image model while the coder holds the VRAM
         try:
             from shared import queue as _q
+            from shared.jobs import status_key
             lock = _q.connect()
-            lock.set("gpu:llm_lock", job_id, ex=900)
+            worker = os.environ.get("GPU_WORKER_NAME", "gpu")
+            if str(lock.get(status_key(worker)) or "").startswith("busy"):
+                # the worker is mid-job on that GPU; do not fight it for VRAM this run
+                lock = None
+                model, oai, on_gpu = llm.coder_route(escalate, allow_gpu=False)
+            else:
+                lock.set("gpu:llm_lock", job_id, ex=900)
         except Exception:
             lock = None
     messages: list[dict] = []
@@ -206,4 +215,8 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
             except Exception: pass
         if mcp:
             mcp.close()
-        gitops.checkout(repo, base)
+        try:
+            gitops.discard(repo, "game")   # failed or conflicted runs leave nothing behind; a merged run is already clean
+            gitops.checkout(repo, base)
+        except Exception:
+            log.exception("could not return to %s after coder run", base)

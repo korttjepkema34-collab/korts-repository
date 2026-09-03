@@ -68,10 +68,10 @@ def gpu_coder_available() -> bool:
     return ok
 
 
-def coder_route(escalate: bool = False) -> tuple[str, OpenAI, bool]:
+def coder_route(escalate: bool = False, allow_gpu: bool = True) -> tuple[str, OpenAI, bool]:
     """(model, client, on_gpu). GPU wins when reachable: a dense 27B on the 3080 Ti beats the CPU
     MoE for code. Escalation without a GPU uses ESCALATION_MODEL on the CPU."""
-    if gpu_coder_available():
+    if allow_gpu and gpu_coder_available():
         model = os.environ.get("CODER_MODEL_GPU") or coder_model()
         if "gpu" not in _clients:
             _clients["gpu"] = OpenAI(base_url=os.environ["CODER_BASE_URL_GPU"], api_key=os.environ.get("LLM_API_KEY", "ollama"), timeout=3600)
