@@ -66,7 +66,7 @@ All traffic goes over Tailscale. Nothing is exposed to the internet.
 ### Wake-on-LAN
 
 The server and gaming PC share a LAN. When the queue has jobs and no worker heartbeat has been
-seen for N minutes, the orchestrator runs `scripts/wake-gpu.sh`. The worker is set to start on
+seen for N minutes, the orchestrator sends a magic packet (`server/orchestrator/wake.py`; `scripts/wake_gpu.py` does the same by hand). The worker is set to start on
 boot. Gaming mode is a manual toggle so a wake never interrupts a game already running.
 
 ## Data flow for one art job

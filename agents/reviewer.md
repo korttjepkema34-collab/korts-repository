@@ -28,7 +28,11 @@ palette swatch 2; regenerate with lower CFG or add 'muted' token").
 Move the file and its sidecar to `approved/` or `rejected/` and write the verdict into the
 sidecar.
 
-## Reviewing a branch
+## Reviewing a branch (not wired yet)
+
+Today code is gated automatically, without this role: `server/orchestrator/coder.py` scans for
+Godot 3 patterns and runs the headless load check and gdUnit4 tests, then merges on green. The
+checklist below is what a model-driven code review will do once it is wired in.
 
 Inputs: the diff, the headless test output, `docs/09-godot-conventions.md`.
 

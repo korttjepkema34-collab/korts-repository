@@ -26,7 +26,7 @@ Install each as its own app with its own venv. The worker talks to them over HTT
 | Tool | Install | Port | Handler |
 |---|---|---|---|
 | ComfyUI | github.com/comfyanonymous/ComfyUI, add SDXL checkpoint + LoRAs + IP-Adapter nodes | 8188 | `handlers/comfyui.py` |
-| ACE-Step 1.5 | github.com/ace-step/ACE-Step-1.5, has its own API server | 8190 | `handlers/acestep.py` |
+| ACE-Step 1.5 + Stable Audio Open | install both per their READMEs into the venv `worker\services\run-audio-api.ps1` creates; that script starts the studio's own wrapper `worker/services/audio_api.py` on :8190, which is what the handler calls | 8190 | `handlers/acestep.py` |
 | Godot 4 + MCP server | Godot from godotengine.org; pick a Godot MCP server (see docs/03) and note it in decisions.md | per server | coder agent uses this directly |
 
 Put the ComfyUI workflow JSON files in `worker/workflows/` (export from ComfyUI with "Save (API
@@ -44,7 +44,8 @@ cd C:\studio\worker
 ```
 
 It connects to Redis over Tailscale, sends a heartbeat every 30 s, and blocks waiting for jobs of
-the kinds listed in `config.yaml`.
+the kinds listed in `config.yaml`. For audio jobs also start `worker\services\run-audio-api.ps1`
+(optional until milestone 5; audio tasks defer cleanly without it).
 
 ## 6. Start on boot
 

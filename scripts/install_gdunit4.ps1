@@ -15,5 +15,5 @@ if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
 New-Item (Split-Path $dest) -ItemType Directory -Force | Out-Null
 Copy-Item (Join-Path $src.FullName "addons\gdUnit4") $dest -Recurse
 Write-Host "gdUnit4 $($rel.tag_name) installed to $dest"
-Write-Host "Now enable it once: open game/ in the Godot editor > Project > Project Settings > Plugins > gdUnit4, or add"
-Write-Host '  [editor_plugins] enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")  to game/project.godot'
+Write-Host "The plugin is already enabled in game/project.godot. Verify headless:"
+Write-Host '  "$env:GODOT_BIN" --headless --path game -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd --add res://tests --ignoreHeadlessMode'

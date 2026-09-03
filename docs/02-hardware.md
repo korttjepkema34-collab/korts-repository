@@ -10,7 +10,7 @@
 | RAM | 96 GB DDR4 |
 | GPU | None today. **Planned: 12 GB Nvidia card, RTX 3060 12 GB preferred.** |
 | Platform | Z490-era, PCIe 3.0 |
-| OS | Linux with Docker (assumed; if it is Windows or unRAID, note it in `decisions.md`) |
+| OS | Windows. Ollama, Syncthing and the orchestrator run natively; Redis and Forgejo in Docker Desktop (`docs/06-setup-server.md`) |
 
 What it is good at: holding large models in RAM, running 24/7, git, queue, headless Godot.
 What it is bad at: CPU inference is slow at **reading** long inputs (prompt processing is
@@ -32,7 +32,7 @@ Rough CPU inference expectations (DDR4, dual channel):
 | CPU | AMD Ryzen 9 7900X, 12 cores / 24 threads |
 | RAM | 32 GB DDR5 |
 | GPU | Nvidia RTX 3080 Ti, **12 GB VRAM** |
-| OS | Windows (assumed) |
+| OS | Windows |
 
 What fits in 12 GB, one at a time:
 

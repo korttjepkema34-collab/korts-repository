@@ -12,5 +12,6 @@ here makes it better over time.
 | `godot-docs/` | `scripts/fetch_godot_docs.py` | retrieval index |
 | `godot4-code/` | `training/collect_godot4_code.py` | coder fine-tune (public MIT Godot 4 code) |
 | `training/state.json` | `server/orchestrator/training.py` | what was trained when, and on how much |
+| `training/latest.json` | `server/orchestrator/training.py` after a train job finishes | you: every finished model and where it is |
 
 Back it up with the server: `traces/` is the only copy of the studio's labelled history.

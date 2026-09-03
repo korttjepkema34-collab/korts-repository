@@ -3,7 +3,8 @@
 Both are expected behind one small local API at cfg.tools.acestep:
   POST /music {prompt, duration_s, bpm?, lyrics?, seed?} -> {"files": [...], "model": "..."}
   POST /sfx   {prompt, duration_s, count?, seed?}         -> {"files": [...], "model": "..."}
-That wrapper is not written yet (docs/open-questions.md). This handler fails clearly until it is.
+That wrapper is worker/services/audio_api.py (start it with run-audio-api.ps1). This handler
+fails clearly if it is not running.
 """
 from __future__ import annotations
 

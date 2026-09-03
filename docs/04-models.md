@@ -31,9 +31,10 @@ Apache 2.0 or MIT licences.
 
 1. **The orchestrator must be a MoE model** while the server has no GPU. Dense models are too
    slow on DDR4.
-2. **The coder should run on the GPU box when the GPU is idle** because it reads a lot of code
-   (prompt processing) and that is where CPU inference hurts most. Fall back to the server MoE
-   model when the GPU is busy generating assets.
+2. **The coder agent always runs on the server**; only its model can live elsewhere. When the
+   GPU box is idle, point `CODER_BASE_URL` at an Ollama there so prompt processing (reading a lot
+   of code, where CPU inference hurts most) is fast; leave it empty to use the server's own
+   Ollama, which is the default and what happens whenever the GPU is busy or off.
 3. **Only one generative model resident on the 3080 Ti at a time.** The worker groups jobs by
    kind so it does not thrash.
 4. **Once the server has a 12 GB card**, move the reviewer there permanently, move SDXL and
