@@ -33,7 +33,11 @@ ollama pull qwen3-vl:8b          # reviewer
 ollama pull nomic-embed-text
 ```
 
-Windows Firewall: allow inbound 11434 on the Tailscale adapter only.
+Windows Firewall: allow inbound 11434 on the Tailscale adapter only. Do the same for 6379 (Redis)
+and 3000 (Forgejo): Docker Desktop's port proxy does not always honour the host IP in a
+`ip:port:port` binding, so after `docker compose up -d` run `netstat -ano | findstr :6379` in
+PowerShell and, if it shows `0.0.0.0:6379`, add firewall rules that allow those two ports on the
+Tailscale adapter only and block them elsewhere. The compose binding is not the security boundary.
 
 ## 3. Docker Desktop (Redis + Forgejo)
 

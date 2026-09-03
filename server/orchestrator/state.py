@@ -21,6 +21,37 @@ class State:
             self.data["tasks"][task_id]["jobs"].append(job_id)
         self.save()
 
+    def supersede(self, task_id: str, old_id: str, new_id: str, kind: str, attempt: int) -> None:
+        """A retry replaces its predecessor in the task's job list; the old entry stays in `jobs`
+        for history but no longer counts towards the task's outcome."""
+        self.data["jobs"].setdefault(old_id, {})["status"] = "superseded"
+        self.data["jobs"][new_id] = {"task": task_id, "kind": kind, "status": "pending", "attempt": attempt}
+        lst = self.data["tasks"].setdefault(task_id, {"jobs": [], "planned_at": None, "coder_runs": 0})["jobs"]
+        if old_id in lst:
+            lst.remove(old_id)
+        if new_id not in lst:
+            lst.append(new_id)
+        self.save()
+
+    def reset_task(self, task_id: str) -> None:
+        """Re-planning a task (from deferred/) starts its bookkeeping over: old jobs are marked
+        superseded so a stale failure cannot keep the task out of done/, and the coder-run cap resets."""
+        t = self.data["tasks"].setdefault(task_id, {"jobs": [], "planned_at": None, "coder_runs": 0})
+        for jid in t.get("jobs", []):
+            j = self.data["jobs"].get(jid)
+            if j and j.get("status") not in ("approved", "ok"):
+                j["status"] = "superseded"
+        t["jobs"] = []
+        t["coder_runs"] = 0
+        self.save()
+
+    def meta(self, key: str, default=None):
+        return self.data.setdefault("meta", {}).get(key, default)
+
+    def set_meta(self, key: str, value) -> None:
+        self.data.setdefault("meta", {})[key] = value
+        self.save()
+
     def set_job(self, job_id: str, status: str, **extra) -> None:
         j = self.data["jobs"].setdefault(job_id, {})
         j["status"] = status

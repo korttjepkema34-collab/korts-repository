@@ -6,7 +6,11 @@ worker/GAMING_MODE
 # generated assets are synced with Syncthing, not git
 assets/**
 !assets/README.md
+!assets/*/
 !assets/*/.gitkeep
+!assets/training/
+!assets/training/*/
+!assets/training/*/.gitkeep
 
 # training data captured by the studio (traces, retrieval index, fetched docs, cloned repos)
 data/**

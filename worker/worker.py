@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,12 +51,24 @@ def run_job(job: Job, cfg: dict) -> Result:
         outputs, sidecar = handler.run(job, out_dir, cfg)
         return Result(job_id=job.id, status=ResultStatus.OK, worker=cfg["worker_name"],
                       started_at=started,
-                      outputs=[str(Path(p).relative_to(cfg["repo_root"])) for p in outputs],
-                      sidecar=str(Path(sidecar).relative_to(cfg["repo_root"])) if sidecar else None)
+                      outputs=[Path(p).relative_to(cfg["repo_root"]).as_posix() for p in outputs],
+                      sidecar=Path(sidecar).relative_to(cfg["repo_root"]).as_posix() if sidecar else None)
     except Exception as e:  # handlers raise on tool errors, OOM, timeouts
         log.exception("job %s failed", job.id)
         return Result(job_id=job.id, status=ResultStatus.ERROR, worker=cfg["worker_name"],
                       started_at=started, error=f"{type(e).__name__}: {e}")
+
+
+def run_job_with_heartbeat(r, name: str, job: Job, cfg: dict) -> Result:
+    """Jobs run for minutes (images) to hours (training); keep the heartbeat alive meanwhile so
+    the orchestrator does not think the machine is off and send wake packets at it."""
+    box: dict = {}
+    t = threading.Thread(target=lambda: box.__setitem__("result", run_job(job, cfg)), daemon=True)
+    t.start()
+    while t.is_alive():
+        q.heartbeat(r, name, f"busy:{job.kind.value}")
+        t.join(timeout=30)
+    return box["result"]
 
 
 def main() -> None:
@@ -93,7 +106,7 @@ def main() -> None:
         current_kind = job.kind
         q.heartbeat(r, name, f"busy:{job.kind.value}")
         log.info("running %s (%s)", job.id, job.kind.value)
-        result = run_job(job, cfg)
+        result = run_job_with_heartbeat(r, name, job, cfg)
         q.complete(r, job, result)
         log.info("done %s -> %s", job.id, result.status.value)
 

@@ -64,7 +64,9 @@ def _exec(game: Path, name: str, args: dict, mcp=None) -> str:
     if name == "visual_check":
         return vision.visual_check(game.parent, args["scene"], args.get("expectation", ""))
     if name == "run_scene_capture_output":
-        code, out = godot.run(["--quit-after", str(int(args.get("seconds", 3)) * 60), args["scene"]], game, timeout_s=120)
+        secs = max(1, min(int(args.get("seconds", 3)), 60))
+        # --quit-after counts frames, and headless runs unthrottled; run_scene.gd waits real seconds
+        code, out = godot.run(["-s", "res://scripts/dev/run_scene.gd", "--", args["scene"], str(secs)], game, timeout_s=secs + 90)
         return f"exit {code}\n{out}"
     if name == "list_files":
         base = _safe(game, args.get("subdir") or ".")

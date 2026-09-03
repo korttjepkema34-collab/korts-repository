@@ -41,8 +41,6 @@ MIN_FREE_GB = float(os.environ.get("MIN_FREE_GB", "20"))
 LOOP_S = int(os.environ.get("LOOP_SECONDS", "20"))
 
 EVENTS: list[str] = []
-_generated_today = {"day": "", "n": 0}
-_last_daily = 0.0
 
 
 def ev(msg: str) -> None:
@@ -91,7 +89,10 @@ def reap_stale(r, st: State) -> None:
                 if job.attempt < job.max_attempts:
                     job.attempt += 1
                     job.notes = (job.notes or "") + " | previous attempt timed out on the worker"
-                    q.enqueue(r, job); st.add_job(job.task_id, job.id, job.kind.value, job.attempt)
+                    q.enqueue(r, job)
+                    # same id, so merge into the existing record (add_job would drop spec/job/max_attempts)
+                    st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts,
+                               attempt=job.attempt, task=job.task_id, kind=job.kind.value, notes=job.notes, claimed_at=None)
                     ev(f"re-queued stale job {job.id} (attempt {job.attempt})")
                 else:
                     st.set_job(job.id, "failed", error="stale after max attempts")
@@ -137,10 +138,11 @@ def _retry_or_fail(r, st: State, job_id: str, meta: dict, why: str, tf: Path | N
         job = Job.from_json(job_json)
         job.attempt = attempt + 1
         job.notes = ((job.notes + " | ") if job.notes else "") + why[:400]
-        st.set_job(job_id, "failed", error=why)  # old id closes
-        st.add_job(job.task_id, job.id + f"-r{job.attempt}", job.kind.value, job.attempt)
-        job.id = job.id + f"-r{job.attempt}"
-        st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts, attempt=job.attempt, task=job.task_id, kind=job.kind.value)
+        new_id = job.id + f"-r{job.attempt}"
+        st.supersede(job.task_id, job_id, new_id, job.kind.value, job.attempt)  # old id drops out of the task's outcome
+        st.set_job(job_id, "superseded", error=why)
+        job.id = new_id
+        st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts, attempt=job.attempt, task=job.task_id, kind=job.kind.value, notes=job.notes)
         q.enqueue(r, job)
         if tf: append_log(tf, f"RETRY {job.id} (attempt {job.attempt}): {why[:200]}")
     else:
@@ -211,6 +213,7 @@ def plan_next(r, st: State, escalate: bool = False, source: Path = None) -> None
         append_log(dest, f"DEFERRED: planning failed: {e}")
         shutil.move(str(dest), DEFERRED / dest.name); ev(f"planning failed for {dest.name}: {e}")
         return
+    st.reset_task(task_id)  # a re-plan (deferred/) must not inherit old failed jobs or the coder-run cap
     st.mark_planned(task_id, stamp())
     for job in jobs:
         st.add_job(task_id, job.id, job.kind.value)
@@ -223,17 +226,19 @@ def plan_next(r, st: State, escalate: bool = False, source: Path = None) -> None
 
 
 # ---------------------------------------------------------------- 6. backlog
-def refill_backlog() -> None:
+def refill_backlog(st: State) -> None:
     day = time.strftime("%Y-%m-%d")
-    if _generated_today["day"] != day:
-        _generated_today.update(day=day, n=0)
-    if list(BACKLOG.glob("*.md")) or _generated_today["n"] >= MAX_GENERATED_TASKS_PER_DAY:
+    gen = st.meta("generated_today", {"day": "", "n": 0})  # persisted so a restart cannot reset the cap
+    if gen.get("day") != day:
+        gen = {"day": day, "n": 0}
+    if list(BACKLOG.glob("*.md")) or gen["n"] >= MAX_GENERATED_TASKS_PER_DAY:
         return
     if list(IN_PROGRESS.glob("*.md")):
         return  # finish what is open first
     try:
         created = planner.generate_backlog(REPO, count=3)
-        _generated_today["n"] += len(created)
+        gen["n"] += len(created)
+        st.set_meta("generated_today", gen)
         ev(f"generated backlog: {[p.name for p in created]}")
     except Exception as e:
         ev(f"backlog generation failed: {e}")
@@ -241,10 +246,9 @@ def refill_backlog() -> None:
 
 # ---------------------------------------------------------------- 7. daily
 def daily(r, st: State) -> None:
-    global _last_daily
-    if time.time() - _last_daily < 86400:
+    if time.time() - float(st.meta("last_daily", 0.0)) < 86400:
         return
-    _last_daily = time.time()
+    st.set_meta("last_daily", time.time())
     # retry one deferred task with the escalation model
     deferred = sorted(DEFERRED.glob("*.md"), key=task_priority)
     if deferred:
@@ -275,7 +279,7 @@ def cycle(r, st: State) -> None:
     run_code_jobs(st)
     close_tasks(st)
     plan_next(r, st)
-    refill_backlog()
+    refill_backlog(st)
     daily(r, st)
     depth = sum(q.queue_depths(r).values())
     if wake.maybe_wake(depth, q.worker_alive(r, WORKER)):

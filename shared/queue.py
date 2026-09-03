@@ -30,16 +30,12 @@ def claim(r: redis.Redis, kinds: list[JobKind], timeout_s: int = 30) -> Optional
         raw = r.rpoplpush(f"jobs:{kind.value}", f"jobs:{kind.value}:processing")
         if raw:
             return Job.from_json(raw)
-    # Nothing waiting: block on the first kind only (Redis has no multi-key BRPOPLPUSH).
-    # The worker loops, so other kinds get checked every timeout_s.
-    keys = [f"jobs:{k.value}" for k in kinds]
-    popped = r.brpop(keys, timeout=timeout_s)
-    if not popped:
-        return None
-    _, raw = popped
-    job = Job.from_json(raw)
-    r.lpush(job.processing_key, raw)
-    return job
+    # Nothing waiting: block on the first kind only (Redis has no multi-key blocking move).
+    # BLMOVE pops and pushes atomically, so a crash mid-claim cannot lose the job. The worker
+    # loops, so other kinds get checked every timeout_s.
+    k = kinds[0].value
+    raw = r.blmove(f"jobs:{k}", f"jobs:{k}:processing", timeout_s, "RIGHT", "LEFT")
+    return Job.from_json(raw) if raw else None
 
 
 def complete(r: redis.Redis, job: Job, result: Result) -> None:
