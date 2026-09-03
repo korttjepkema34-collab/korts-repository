@@ -73,8 +73,11 @@ reviewer on its own approved work using the gaming PC. Nothing activates itself.
 
 ## Status
 
-**Scaffold stage, unattended loop implemented.** The architecture, docs, role definitions, job schema, queue, worker loop
-and orchestrator skeleton exist. Model tags need verifying against the current Ollama library,
-the ComfyUI / ACE-Step handlers are thin wrappers that need real workflows wired in,
-and the Godot project is a minimal skeleton (main scene, screenshot helper, gdUnit4 smoke test)
-until task 003 adds the full layout. See `docs/open-questions.md`.
+**Ready for first run, pending setup.** The unattended loop, the file-based coder with a headless
+gate and playtest proofs, the rubric reviewer with deterministic checks, the GPU worker with
+palette post-processing, retrieval over the engine reference and Godot docs, traces, the training
+recipes, the world and style bibles, the item generator, the eval set and the bootstrap scripts
+are all in the repo. Nothing has run against a real Godot or ComfyUI yet: task 001 (queue smoke
+test) and task 003 (verify the skeleton) exist to prove them. Setup order: `docs/13-before-you-walk-away.md`,
+then `docs/16-when-you-get-home.md` for the learning loop. Research and reasoning behind the
+choices: `docs/20-research-notes.md`.
