@@ -19,5 +19,15 @@ Before exporting, set these node titles (right-click a node > Title) so the hand
 Add a pixel-art LoRA by inserting a `LoraLoader` between node 1 and nodes 2/3/5 in ComfyUI, then
 re-export; keep the titles.
 
-Planned next: `character_sheet.json` with an IP-Adapter `REFERENCE` node for consistency,
-`tileset.json` at 512x512 with a tiling LoRA.
+Three workflows ship:
+
+| File | Use | Needs |
+|---|---|---|
+| `default.json` | plain SDXL text-to-image | a checkpoint |
+| `tileset.json` | tiles and props, pixel-art LoRA at 0.9 | checkpoint + a pixel-art LoRA in `models/loras/` (edit `lora_name` in node 10) |
+| `character_sheet.json` | characters and anything that must match a reference: LoRA + IP-Adapter on the `REFERENCE` image | checkpoint + LoRA + the **ComfyUI_IPAdapter_plus** custom nodes (node classes `IPAdapterUnifiedLoader`, `IPAdapter`) and their model files |
+
+The handler uploads the first `spec.references` entry and sets it on the `REFERENCE` node. Jobs
+pick a workflow with `spec.workflow`. If a custom node is missing, ComfyUI returns a validation
+error and the job fails cleanly; install the node pack or use `tileset.json`. Node ids and titles
+are the contract; re-export from ComfyUI freely as long as the titles survive.

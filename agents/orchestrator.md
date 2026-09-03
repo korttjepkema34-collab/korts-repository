@@ -50,9 +50,9 @@ Task: "004 The Keep: tileset and props". A good plan:
   {"kind": "image", "role": "artist-2d", "slug": "ground-tiles",
    "spec": {"prompt": "pixel art tileset sheet of ash ground tiles with scattered stones and grass tufts, 4 variants in a row, pixel art, 32px tiles, three-quarter top-down RPG, 16 colour limited palette, flat 3-tone shading, no anti-aliasing, weathered post-collapse medieval, transparent background",
             "negative_prompt": "photo, realistic, blurry, text, watermark, gradient, 3d render, anime, chibi, purple glow, neon, smooth shading",
-            "workflow": "default", "references": ["style/references/mock-day.png", "style/references/palette.png"],
+            "workflow": "tileset", "references": ["style/references/mock-day.png", "style/references/palette.png"],
             "width": 1024, "height": 256, "count": 4,
-            "postprocess": {"palette": true, "downscale": 8, "transparent_bg": true, "final_width": 128, "final_height": 32}},
+            "postprocess": {"palette": true, "downscale": 8, "transparent_bg": true, "final_width": 128, "final_height": 32, "normal_map": true}},
    "output_dir": "assets/incoming/004-ground-tiles"},
   {"kind": "code", "role": "coder", "slug": "import-tiles", "output_dir": "game",
    "spec": {"goal": "Add an importer that loads assets/approved/tiles/keep/*.png into a TileSet built from code (see docs/16-godot4-cookbook.md) and exposes it as res://scripts/tiles/keep_tileset.gd",
@@ -62,7 +62,8 @@ Task: "004 The Keep: tileset and props". A good plan:
 ```
 
 Every image job carries the verbatim style-bible suffix, references, and a `postprocess` block with
-the final pixel size. Every code job names files and a testable acceptance list.
+the final pixel size. Use `workflow: "character_sheet"` with a reference sheet for anything that must
+match an existing character, `tileset` for tiles and props, `default` otherwise. Every code job names files and a testable acceptance list.
 
 ## Style
 

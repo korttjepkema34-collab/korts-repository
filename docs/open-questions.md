@@ -22,7 +22,6 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 
 ## Not started
 
-- [ ] Normal-map generation for sprites and tiles (a ComfyUI workflow or a small script) so 2D lights have direction.
 - [ ] Post-process shader (vignette, glow, edge blur) as a reusable `.gdshader`.
 
 - [ ] Audio review (currently auto-approved on existence).

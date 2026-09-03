@@ -28,12 +28,12 @@ studio uses is local.
 - Run `scripts/dump_godot_docs.ps1` once after installing Godot (and again after upgrading it).
 - `pip install -r worker/requirements.txt` on the gaming PC now includes `pillow`.
 
+| 11 | Reviewer changes are felt, not measured | `eval/reviewer/` + `scripts/eval_reviewer.py`: 20 labelled cases, accuracy and misses per run. Replace seeds with real assets over time. |
+| 12 | Characters drift between generations | `worker/workflows/character_sheet.json`: pixel-art LoRA + IP-Adapter on the `REFERENCE` image. `tileset.json` for tiles. |
+| 13 | Same API mistake three times | Orchestrator tracks failure classes; after 3 in 24 h every code job goes to the escalation model until the class stops recurring. |
+| 14 | Flat lighting on sprites | `worker/normalmap.py` writes `<name>.n.png` when a job asks for `postprocess.normal_map`; cookbook shows `CanvasTexture`. |
+
 ## What would help next (not done)
 
-- **A small evaluation set**: 10 approved and 10 rejected assets with reasons, so reviewer prompt
-  changes can be measured instead of felt.
-- **Normal-map generation** for sprites so 2D lights have direction (task list in open-questions).
-- **A ComfyUI workflow with an IP-Adapter reference node** (`worker/workflows/README.md`) for
-  character consistency; `default.json` has no reference node yet.
-- **Escalation on repeat failure classes**: if three code jobs fail on the same API, route the
-  next one to the escalation model immediately instead of waiting for the daily pass.
+- Real eval cases from the first week of output, replacing the synthetic seeds.
+- A second reviewer pass for animation frames (frame-to-frame consistency), once task 018 exists.

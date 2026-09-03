@@ -34,7 +34,9 @@ then leave it. Estimated time: an afternoon.
 - [ ] Tailscale installed, hostname `gpu`.
 - [ ] ComfyUI installed with an SDXL checkpoint, at least one pixel-art LoRA, and the IP-Adapter
       nodes. At least one workflow exported in API format into `worker/workflows/` with the node
-      titles from `worker/workflows/README.md`. Name the first one `default.json`.
+      titles from `worker/workflows/README.md`. `default.json`, `tileset.json` and
+      `character_sheet.json` are included; set the checkpoint and LoRA filenames, and install the
+      ComfyUI_IPAdapter_plus node pack for the character workflow.
 - [ ] `worker/config.yaml` filled in; `worker/run.ps1` runs and prints "worker gpu up".
 - [ ] Task Scheduler entry so the worker starts at logon.
 - [ ] Wake-on-LAN enabled in BIOS and the adapter; Fast Startup off.

@@ -150,6 +150,42 @@ def _retry_or_fail(r, st: State, job_id: str, meta: dict, why: str, tf: Path | N
         if tf: append_log(tf, f"FAILED {job_id}: {why[:300]}")
 
 
+# ---------------------------------------------------------------- failure classes
+FAIL_SIG_THRESHOLD = int(os.environ.get("FAIL_SIG_THRESHOLD", "3"))
+FAIL_SIG_WINDOW_S = int(os.environ.get("FAIL_SIG_WINDOW_S", "86400"))
+
+
+def failure_signature(msg: str) -> str:
+    """Collapse an error into a class: the first line that names a script error, parse error,
+    invalid call or missing member, with numbers and paths stripped."""
+    for line in msg.splitlines():
+        l = line.strip()
+        if any(k in l for k in ("SCRIPT ERROR", "Parse Error", "Invalid call", "Nonexistent function", "not found in base", "Cannot find member", "gdlint", "Godot 3 pattern")):
+            l = re.sub(r"res://\S+|\d+", "", l)
+            return l[:120]
+    first = (msg.strip().splitlines() or [""])[0]
+    return re.sub(r"\d+", "", first)[:120]
+
+
+def note_failure(st: State, msg: str) -> None:
+    sig = failure_signature(msg)
+    if not sig:
+        return
+    sigs = st.data.setdefault("failure_sigs", {})
+    entry = sigs.setdefault(sig, {"count": 0, "last": 0})
+    if time.time() - entry["last"] > FAIL_SIG_WINDOW_S:
+        entry["count"] = 0
+    entry["count"] += 1; entry["last"] = time.time()
+    st.save()
+    if entry["count"] == FAIL_SIG_THRESHOLD:
+        ev(f"failure class repeated {FAIL_SIG_THRESHOLD}x, escalating code jobs: {sig}")
+
+
+def should_escalate(st: State) -> bool:
+    now = time.time()
+    return any(e["count"] >= FAIL_SIG_THRESHOLD and now - e["last"] < FAIL_SIG_WINDOW_S for e in st.data.get("failure_sigs", {}).values())
+
+
 # ---------------------------------------------------------------- 3. code jobs
 def run_code_jobs(st: State, escalate: bool = False) -> None:
     for jid, meta in list(st.data["jobs"].items()):
@@ -164,10 +200,10 @@ def run_code_jobs(st: State, escalate: bool = False) -> None:
             continue
         st.data["tasks"][task_id]["coder_runs"] = runs + 1; st.save()
         st.set_job(jid, "running")
+        escalate = escalate or bool(meta.get("escalate")) or should_escalate(st)
         ev(f"coder start {jid}" + (" (escalation model)" if escalate else ""))
         try:
-            ok, msg = coder.run_code_job(REPO, task_id, jid, meta.get("spec", {}), meta.get("notes"),
-                                         escalate or bool(meta.get("escalate")))
+            ok, msg = coder.run_code_job(REPO, task_id, jid, meta.get("spec", {}), meta.get("notes"), escalate)
         except Exception as e:
             ok, msg = False, f"coder crashed: {e}"
             log.exception("coder crashed")
@@ -175,6 +211,7 @@ def run_code_jobs(st: State, escalate: bool = False) -> None:
             st.set_job(jid, "ok", summary=msg)
             if tf: append_log(tf, f"MERGED {jid}: {msg[:300]}")
         else:
+            note_failure(st, msg)
             st.set_job(jid, "pending", notes=msg[:1500]) if runs + 1 < MAX_CODER_RUNS_PER_TASK else st.set_job(jid, "failed", error=msg[:1500])
             if tf: append_log(tf, f"CODER FAIL {jid} (run {runs + 1}): {msg[:300]}")
         return  # one coder run per cycle; they are long

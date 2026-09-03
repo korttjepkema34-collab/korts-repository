@@ -69,4 +69,7 @@ def process(path: Path, repo_root: Path, opts: dict) -> Path:
                 px[x, y] = (n[0], n[1], n[2], 255)
     out = path.with_name(path.stem + ".px.png")
     im.save(out)
+    if opts.get("normal_map"):
+        from normalmap import normal_map
+        normal_map(out, float(opts.get("normal_strength", 2.0)))
     return out

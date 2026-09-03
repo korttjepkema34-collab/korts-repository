@@ -211,3 +211,15 @@ func test_it() -> void:
 `connect("sig", self, "m")` -> `sig.connect(m)`; `instance()` -> `instantiate()`;
 `KinematicBody2D` -> `CharacterBody2D`; `change_scene(` -> `change_scene_to_file(`;
 `.empty()` -> `.is_empty()`; `PoolStringArray` -> `PackedStringArray`; `TileMap` -> `TileMapLayer`.
+
+## Normal maps for 2D lights
+
+Approved sprites and tiles come with a `<name>.n.png` normal map when the job asked for
+`postprocess.normal_map: true`. Use it so lamps light faces, not just colours:
+
+```gdscript
+var tex: CanvasTexture = CanvasTexture.new()
+tex.diffuse_texture = preload("res://assets/approved/tiles/keep/wall.px.png")
+tex.normal_texture = preload("res://assets/approved/tiles/keep/wall.px.n.png")
+sprite.texture = tex          # Sprite2D / AnimatedSprite2D frames / TileSetAtlasSource.texture
+```

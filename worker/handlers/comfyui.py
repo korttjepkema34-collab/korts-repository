@@ -93,6 +93,8 @@ def run(job: Job, out_dir: Path, cfg: dict) -> tuple[list[str], str | None]:
         try:
             from postprocess import process
             outputs = [str(process(Path(o), Path(cfg["repo_root"]), pp)) for o in outputs]
+            if pp.get("normal_map"):
+                outputs += [o.replace(".px.png", ".px.n.png") for o in outputs]
         except Exception as e:
             raise RuntimeError(f"postprocess failed: {e}") from e
 

@@ -1,0 +1,182 @@
+[
+  {
+    "file": "seed-ok-house-front.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-reaper-inside.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-guild-house.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-stall-and-well.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-gate-house.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-horde-edge.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-castellan.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-tree-and-fence.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-pond-tower.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-ok-lamp-post.png",
+    "expect": "approved",
+    "why": "palette-pure crop of the approved mock frame",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-offpalette.png",
+    "expect": "rejected",
+    "why": "lighting baked in: pixels off the 16-colour palette",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-blurry.png",
+    "expect": "rejected",
+    "why": "blurred, smooth shading, no crisp pixels",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-text.png",
+    "expect": "rejected",
+    "why": "text rendered inside the image",
+    "spec": {
+      "max_off_palette": 0.5
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-purple.png",
+    "expect": "rejected",
+    "why": "purple/neon tint, forbidden by the style bible",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-upscaled.png",
+    "expect": "rejected",
+    "why": "upscaled with smoothing",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-opaque-sprite.png",
+    "expect": "rejected",
+    "why": "sprite job with no transparent background",
+    "spec": {
+      "transparent_bg": true,
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-wrongsize.png",
+    "expect": "rejected",
+    "why": "wrong final size",
+    "spec": {
+      "final_width": 96,
+      "final_height": 48
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-white-border.png",
+    "expect": "rejected",
+    "why": "white frame around the image, off-palette",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  },
+  {
+    "file": "seed-bad-empty.png",
+    "expect": "rejected",
+    "why": "fully transparent output",
+    "spec": {},
+    "seed": true
+  },
+  {
+    "file": "seed-bad-glow.png",
+    "expect": "rejected",
+    "why": "baked lamp glow; lighting belongs on the lighting layer",
+    "spec": {
+      "max_off_palette": 0.02
+    },
+    "seed": true
+  }
+]
