@@ -1,0 +1,15 @@
+# Training venv for the GPU box (training/setup.ps1 creates it). Heavy; keep it separate from worker/.venv.
+# torch is installed first by setup.ps1 from the CUDA index; these come after.
+unsloth
+unsloth_zoo
+trl>=0.15
+peft>=0.13
+datasets>=2.20
+transformers>=4.45
+bitsandbytes>=0.44
+accelerate>=0.34
+pillow>=10.0
+# reviewer serving
+fastapi>=0.110
+uvicorn>=0.29
+# kohya sd-scripts has its own requirements.txt, installed by setup.ps1 into the same venv

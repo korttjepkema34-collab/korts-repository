@@ -1,4 +1,4 @@
-# 16 - Godot 4 cookbook (known-good snippets for the coder)
+# 18 - Godot 4 cookbook (known-good snippets for the coder)
 
 Read this before writing any GDScript. Every snippet targets Godot 4.3+. When in doubt, call
 `search_godot_api` (the coder tool backed by the engine's own class reference dump) instead of

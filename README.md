@@ -42,11 +42,14 @@ agents/              <- one markdown file per team role (system prompts / subage
 shared/              <- job schema shared by orchestrator and worker
 server/              <- docker-compose + orchestrator for the always-on server
 worker/              <- GPU worker daemon for the gaming PC
-game/                <- the Godot 4 project (placeholder until the first prototype)
+game/                <- the Godot 4 project (minimal skeleton; task 003 adds the full layout)
 style/               <- style bible + reference images every art prompt must include
 tasks/               <- file-based task board: backlog / in-progress / done
 assets/              <- generated assets: incoming / approved / rejected (synced, not in git)
-scripts/             <- wake-on-LAN, Tailscale ACL example, helpers
+                        plus training/datasets and training/models (same sync)
+data/                <- traces, retrieval index, fetched docs (server-only, not in git)
+training/            <- dataset builders, fine-tune recipes, eval, reviewer server
+scripts/             <- wake-on-LAN, Tailscale ACL example, override/train/activate helpers
 ```
 
 ## Quick start
@@ -61,9 +64,17 @@ Turn it on and walk away. The orchestrator plans, delegates, reviews, retries, d
 its own backlog, and writes a daily report to `PROGRESS.md`. Nothing waits for a human. Setup
 checklist: `docs/13-before-you-walk-away.md`. Contract: `docs/12-autonomy.md`.
 
+## Self-improvement
+
+The studio records every coder run (with its gate result) and every reviewer verdict, gives
+the coder a retrieval tool over the Godot 4 docs, and can fine-tune a style LoRA, a coder and a
+reviewer on its own approved work using the gaming PC. Nothing activates itself. How it works:
+`docs/15-training.md`. What to do: `docs/16-when-you-get-home.md`.
+
 ## Status
 
 **Scaffold stage, unattended loop implemented.** The architecture, docs, role definitions, job schema, queue, worker loop
 and orchestrator skeleton exist. Model tags need verifying against the current Ollama library,
 the ComfyUI / ACE-Step handlers are thin wrappers that need real workflows wired in,
-and the Godot project has not been created yet. See `docs/open-questions.md`.
+and the Godot project is a minimal skeleton (main scene, screenshot helper, gdUnit4 smoke test)
+until task 003 adds the full layout. See `docs/open-questions.md`.

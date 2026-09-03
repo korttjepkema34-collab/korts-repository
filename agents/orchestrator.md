@@ -55,7 +55,7 @@ Task: "004 The Keep: tileset and props". A good plan:
             "postprocess": {"palette": true, "downscale": 8, "transparent_bg": true, "final_width": 128, "final_height": 32, "normal_map": true}},
    "output_dir": "assets/incoming/004-ground-tiles"},
   {"kind": "code", "role": "coder", "slug": "import-tiles", "output_dir": "game",
-   "spec": {"goal": "Add an importer that loads assets/approved/tiles/keep/*.png into a TileSet built from code (see docs/16-godot4-cookbook.md) and exposes it as res://scripts/tiles/keep_tileset.gd",
+   "spec": {"goal": "Add an importer that loads assets/approved/tiles/keep/*.png into a TileSet built from code (see docs/18-godot4-cookbook.md) and exposes it as res://scripts/tiles/keep_tileset.gd",
             "acceptance": ["project loads headless", "keep_tileset.gd returns a TileSet with source id 0", "a gdUnit4 test asserts the tile count"]}}
 ],
  "decisions": ["Ground tiles come in 4 variants; more variety is a later job."]}

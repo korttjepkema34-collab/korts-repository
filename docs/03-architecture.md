@@ -60,11 +60,13 @@ All traffic goes over Tailscale. Nothing is exposed to the internet.
 | ACE-Step / Stable Audio API wrapper | Music and SFX | 8190 |
 | Godot editor + MCP server | Coder agent's hands inside the editor | per MCP server |
 | gaming-mode toggle | A file (`worker/GAMING_MODE`) or tray script; worker pauses and frees VRAM | none |
+| training venv | `train` jobs: kohya SDXL LoRA, Unsloth QLoRA for coder and reviewer (`training/`) | none |
+| serve_reviewer.py | Optional, once a reviewer fine-tune exists: OpenAI-compatible endpoint | 8191 |
 
 ### Wake-on-LAN
 
 The server and gaming PC share a LAN. When the queue has jobs and no worker heartbeat has been
-seen for N minutes, the orchestrator runs `scripts/wake-gpu.sh`. The worker is set to start on
+seen for N minutes, the orchestrator sends a magic packet (`server/orchestrator/wake.py`; `scripts/wake_gpu.py` does the same by hand). The worker is set to start on
 boot. Gaming mode is a manual toggle so a wake never interrupts a game already running.
 
 ## Data flow for one art job
@@ -81,6 +83,17 @@ boot. Gaming mode is a manual toggle so a wake never interrupts a game already r
 7. If rejected, orchestrator re-queues with the reviewer's notes appended to the prompt, up to a
    retry limit. Then it escalates to the human.
 8. If approved, the coder gets a follow-up job to import it into the Godot project.
+
+## Data flow for self-improvement
+
+1. Every coder run writes its transcript and gate result to `data/traces/coder/`; every verdict
+   goes to `data/traces/reviewer/verdicts.jsonl`; your corrections (`scripts/override.py`) to
+   `overrides.jsonl`.
+2. Daily, with `AUTO_TRAIN=1` (or by hand with `scripts/enqueue_train.py`), the server builds a
+   dataset into `assets/training/datasets/<name>/` and queues a `train` job.
+3. The GPU worker runs the recipe, writes the model to `assets/training/models/<name>/`.
+4. The orchestrator records it and logs a decision. You activate it (`scripts/activate_model.py`)
+   after `training/eval_coder.py` or your own eyes say it is better. See `docs/15-training.md`.
 
 ## Failure handling
 

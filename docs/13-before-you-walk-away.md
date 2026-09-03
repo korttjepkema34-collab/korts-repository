@@ -57,7 +57,9 @@ then leave it. Estimated time: an afternoon.
    `tasks/done/`.
 6. Check `PROGRESS.md` exists.
 
-If all six pass, walk away. Everything after this is the studio's job.
+If all six pass, walk away. Optional but recommended before you do: the server half of
+`docs/16-when-you-get-home.md` (docs download + retrieval index, 30 minutes), so the coder has
+its reference library from day one. Everything after this is the studio's job.
 
 ## What to expect when you return
 

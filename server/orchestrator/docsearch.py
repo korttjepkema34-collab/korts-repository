@@ -76,7 +76,7 @@ def search(query: str, k: int = 8) -> str:
         build_index()
     if not _INDEX:
         return ("Godot class reference dump not found at %s. Run scripts/dump_godot_docs on the server. "
-                "Fall back to docs/16-godot4-cookbook.md." % docs_dir())
+                "Fall back to docs/18-godot4-cookbook.md." % docs_dir())
     q = _tokens(query)
     n = len(_INDEX)
     avg = sum(len(e["toks"]) for e in _INDEX) / max(1, n)

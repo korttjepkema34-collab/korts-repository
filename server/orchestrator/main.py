@@ -25,7 +25,7 @@ from pathlib import Path
 from shared import queue as q
 from shared.jobs import Job, JobKind, ResultStatus
 
-from . import checks, coder, gitops, planner, report, reviewer, wake
+from . import checks, coder, gitops, planner, report, reviewer, training, wake
 from .state import State
 
 log = logging.getLogger("orchestrator")
@@ -41,8 +41,6 @@ MIN_FREE_GB = float(os.environ.get("MIN_FREE_GB", "20"))
 LOOP_S = int(os.environ.get("LOOP_SECONDS", "20"))
 
 EVENTS: list[str] = []
-_generated_today = {"day": "", "n": 0}
-_last_daily = 0.0
 
 
 def ev(msg: str) -> None:
@@ -84,12 +82,17 @@ def reap_stale(r, st: State) -> None:
         for raw in r.lrange(key, 0, -1):
             job = Job.from_json(raw)
             started = st.job(job.id).get("claimed_at") or now
-            if now - started > STALE_JOB_S:
+            # training jobs legitimately run for hours; they say so in spec.stale_after_s
+            limit = max(STALE_JOB_S, int(job.spec.get("stale_after_s", 0) or 0))
+            if now - started > limit:
                 r.lrem(key, 1, raw)
                 if job.attempt < job.max_attempts:
                     job.attempt += 1
                     job.notes = (job.notes or "") + " | previous attempt timed out on the worker"
-                    q.enqueue(r, job); st.add_job(job.task_id, job.id, job.kind.value, job.attempt)
+                    q.enqueue(r, job)
+                    # same id, so merge into the existing record (add_job would drop spec/job/max_attempts)
+                    st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts,
+                               attempt=job.attempt, task=job.task_id, kind=job.kind.value, notes=job.notes, claimed_at=None)
                     ev(f"re-queued stale job {job.id} (attempt {job.attempt})")
                 else:
                     st.set_job(job.id, "failed", error="stale after max attempts")
@@ -110,21 +113,33 @@ def handle_results(r, st: State) -> None:
         tf = task_file(task_id)
         spec = job_meta.get("spec", {})
         if res.status == ResultStatus.OK and job_meta.get("kind") in ("image", "music", "sfx"):
-            verdict, reason = "approved", ""
+            # Deterministic checks first (size, palette, transparency); the vision model only sees what passes.
+            failed: dict[str, str] = {}
             if job_meta.get("kind") == "image":
                 for rel in res.outputs:
                     ok, why = checks.check_image(REPO, REPO / rel, spec)
                     if not ok:
-                        verdict, reason = "rejected", f"auto-check {Path(rel).name}: {why}"
-                        break
-            if verdict == "approved":
-                verdict, reason = reviewer.review_result(REPO, res, spec)
-            moved = reviewer.file_verdict(REPO, res, verdict, reason)
+                        failed[rel] = f"auto-check: {why}"
+            if failed and len(failed) == len(res.outputs):
+                verdict, reason = "rejected", next(iter(failed.values()))
+                per_output = {rel: ("rejected", why) for rel, why in failed.items()}
+            else:
+                res_ok = res.model_copy(update={"outputs": [o for o in res.outputs if o not in failed]}) if failed else res
+                verdict, reason, per_output = reviewer.review_result(REPO, res_ok, spec)
+                for rel, why in failed.items():
+                    per_output[rel] = ("rejected", why)
+                if per_output and not any(v == "approved" for v, _ in per_output.values()):
+                    verdict, reason = "rejected", "no candidate passed checks and review; " + reason
+            moved = reviewer.file_verdict(REPO, res, verdict, reason, per_output)
             if verdict == "approved":
                 st.set_job(res.job_id, "approved", outputs=moved)
                 if tf: append_log(tf, f"APPROVED {res.job_id}: {reason} -> {moved[:3]}")
             else:
                 _retry_or_fail(r, st, res.job_id, job_meta, f"reviewer: {reason}", tf)
+        elif res.status == ResultStatus.OK and job_meta.get("kind") == "train":
+            st.set_job(res.job_id, "ok", outputs=res.outputs)
+            training.on_trained(REPO, spec, res.outputs, ev)
+            if tf: append_log(tf, f"TRAINED {res.job_id}: {res.outputs[:3]}")
         elif res.status == ResultStatus.OK:
             st.set_job(res.job_id, "ok", outputs=res.outputs)
             if tf: append_log(tf, f"ok {res.job_id}: {res.outputs}")
@@ -139,10 +154,11 @@ def _retry_or_fail(r, st: State, job_id: str, meta: dict, why: str, tf: Path | N
         job = Job.from_json(job_json)
         job.attempt = attempt + 1
         job.notes = ((job.notes + " | ") if job.notes else "") + why[:400]
-        st.set_job(job_id, "failed", error=why)  # old id closes
-        st.add_job(job.task_id, job.id + f"-r{job.attempt}", job.kind.value, job.attempt)
-        job.id = job.id + f"-r{job.attempt}"
-        st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts, attempt=job.attempt, task=job.task_id, kind=job.kind.value)
+        new_id = job.id + f"-r{job.attempt}"
+        st.supersede(job.task_id, job_id, new_id, job.kind.value, job.attempt)  # old id drops out of the task's outcome
+        st.set_job(job_id, "superseded", error=why)
+        job.id = new_id
+        st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts, attempt=job.attempt, task=job.task_id, kind=job.kind.value, notes=job.notes)
         q.enqueue(r, job)
         if tf: append_log(tf, f"RETRY {job.id} (attempt {job.attempt}): {why[:200]}")
     else:
@@ -171,19 +187,19 @@ def note_failure(st: State, msg: str) -> None:
     sig = failure_signature(msg)
     if not sig:
         return
-    sigs = st.data.setdefault("failure_sigs", {})
+    sigs = st.meta("failure_sigs", {})
     entry = sigs.setdefault(sig, {"count": 0, "last": 0})
     if time.time() - entry["last"] > FAIL_SIG_WINDOW_S:
         entry["count"] = 0
     entry["count"] += 1; entry["last"] = time.time()
-    st.save()
+    st.set_meta("failure_sigs", sigs)
     if entry["count"] == FAIL_SIG_THRESHOLD:
         ev(f"failure class repeated {FAIL_SIG_THRESHOLD}x, escalating code jobs: {sig}")
 
 
 def should_escalate(st: State) -> bool:
     now = time.time()
-    return any(e["count"] >= FAIL_SIG_THRESHOLD and now - e["last"] < FAIL_SIG_WINDOW_S for e in st.data.get("failure_sigs", {}).values())
+    return any(e["count"] >= FAIL_SIG_THRESHOLD and now - e["last"] < FAIL_SIG_WINDOW_S for e in st.meta("failure_sigs", {}).values())
 
 
 # ---------------------------------------------------------------- 3. code jobs
@@ -250,6 +266,7 @@ def plan_next(r, st: State, escalate: bool = False, source: Path = None) -> None
         append_log(dest, f"DEFERRED: planning failed: {e}")
         shutil.move(str(dest), DEFERRED / dest.name); ev(f"planning failed for {dest.name}: {e}")
         return
+    st.reset_task(task_id)  # a re-plan (deferred/) must not inherit old failed jobs or the coder-run cap
     st.mark_planned(task_id, stamp())
     for job in jobs:
         st.add_job(task_id, job.id, job.kind.value)
@@ -262,17 +279,19 @@ def plan_next(r, st: State, escalate: bool = False, source: Path = None) -> None
 
 
 # ---------------------------------------------------------------- 6. backlog
-def refill_backlog() -> None:
+def refill_backlog(st: State) -> None:
     day = time.strftime("%Y-%m-%d")
-    if _generated_today["day"] != day:
-        _generated_today.update(day=day, n=0)
-    if list(BACKLOG.glob("*.md")) or _generated_today["n"] >= MAX_GENERATED_TASKS_PER_DAY:
+    gen = st.meta("generated_today", {"day": "", "n": 0})  # persisted so a restart cannot reset the cap
+    if gen.get("day") != day:
+        gen = {"day": day, "n": 0}
+    if list(BACKLOG.glob("*.md")) or gen["n"] >= MAX_GENERATED_TASKS_PER_DAY:
         return
     if list(IN_PROGRESS.glob("*.md")):
         return  # finish what is open first
     try:
         created = planner.generate_backlog(REPO, count=3)
-        _generated_today["n"] += len(created)
+        gen["n"] += len(created)
+        st.set_meta("generated_today", gen)
         ev(f"generated backlog: {[p.name for p in created]}")
     except Exception as e:
         ev(f"backlog generation failed: {e}")
@@ -280,14 +299,24 @@ def refill_backlog() -> None:
 
 # ---------------------------------------------------------------- 7. daily
 def daily(r, st: State) -> None:
-    global _last_daily
-    if time.time() - _last_daily < 86400:
+    if time.time() - float(st.meta("last_daily", 0.0)) < 86400:
         return
-    _last_daily = time.time()
+    st.set_meta("last_daily", time.time())
     # retry one deferred task with the escalation model
     deferred = sorted(DEFERRED.glob("*.md"), key=task_priority)
     if deferred:
         plan_next(r, st, escalate=True, source=DEFERRED)
+    # Self-improvement: when enough new labelled data has accumulated, queue a training job
+    # for the GPU worker (off by default; AUTO_TRAIN=1 in server/.env). See docs/15-training.md.
+    try:
+        for job in training.auto_jobs(REPO, st):
+            st.add_job(job.task_id, job.id, job.kind.value)
+            st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts,
+                       attempt=1, task=job.task_id, kind=job.kind.value)
+            q.enqueue(r, job)
+            ev(f"queued training job {job.id} ({job.spec.get('recipe')})")
+    except Exception:
+        log.exception("auto-train check failed")
     report.write(REPO, st, q.queue_depths(r), q.worker_alive(r, WORKER), EVENTS)
     if gitops.commit_paths(REPO, ["tasks", "reports", "PROGRESS.md", "docs", "style"], f"studio: daily checkpoint {time.strftime('%Y-%m-%d')}"):
         gitops.push(REPO, gitops.current_branch(REPO))
@@ -303,7 +332,7 @@ def cycle(r, st: State) -> None:
     run_code_jobs(st)
     close_tasks(st)
     plan_next(r, st)
-    refill_backlog()
+    refill_backlog(st)
     daily(r, st)
     depth = sum(q.queue_depths(r).values())
     if wake.maybe_wake(depth, q.worker_alive(r, WORKER)):

@@ -52,7 +52,7 @@ Later regions (do not build yet): the Millrace, the Glass Market, the Deep Stair
 A class is a starting kit, a signature relic, and a talent tree. Reaper, Warden, Gunner, Hunter,
 Shade, Wright, Linker, Cantor, Physician, Tinker. Nothing is magic: the Wright channels a reactor
 pack, the Linker re-links Thralls to their own signal, the Cantor broadcasts through a relic
-speaker. Full table in `docs/15-gameplay-systems.md` §6.
+speaker. Full table in `docs/17-gameplay-systems.md` §6.
 
 ## People
 

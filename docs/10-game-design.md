@@ -2,7 +2,7 @@
 
 Approved 2026-09-02. The proposal page with the mock frames is archived at
 `docs/pitch/reapers-relics-pitch.html`; the frames are in `style/references/`. Post-prototype
-systems (loop rules, Holdfasts, weapons, armor, classes, workers) are in `docs/15-gameplay-systems.md`.
+systems (loop rules, Holdfasts, weapons, armor, classes, workers) are in `docs/17-gameplay-systems.md`.
 
 ## Four pillars, one clock
 
@@ -57,7 +57,7 @@ Build rung 1 designed so rung 2 is an addition, not a rewrite.
 - One fixed plot per player inside the Keep's wall (12x8 tiles) at rung 1.
 - **Holdfasts** (rung 1.5): each party claims one abandoned site in the world and fortifies it.
   The Palworld-style base: workers, turrets, farms, the Reliquary. Same building code as the plot
-  with the map unfixed. Free-build anywhere is rung 2. Full rules: `docs/15-gameplay-systems.md` §3.
+  with the map unfixed. Free-build anywhere is rung 2. Full rules: `docs/17-gameplay-systems.md` §3.
 - Tile-based: wall, door, window, roof, lamp, workbench. Pieces from `data/build.json` with cost,
   health, and what they block.
 - Persisted as a tile diff per player on the server (`user://saves/<name>.hold.json`).
@@ -72,7 +72,7 @@ Build rung 1 designed so rung 2 is an addition, not a rewrite.
   Doors are tiles that open, close, lock, and break. Walls block movement and horde pathing.
 - The camera zooms: 1x in the world (30x17 tiles), 1.5x indoors, 3x for dialogue.
 
-## The loop rules (summary; full text in `docs/15-gameplay-systems.md` §1)
+## The loop rules (summary; full text in `docs/17-gameplay-systems.md` §1)
 
 - Survival is a decision, never a dice roll. Distance from powered light is danger.
 - Dusk bell two minutes before night (prototype). Holdouts (bar a door) and wild Hearths (burn a

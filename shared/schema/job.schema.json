@@ -4,9 +4,10 @@
       "enum": [
         "stub",
         "image",
-        "model3d",
         "music",
-        "sfx"
+        "sfx",
+        "code",
+        "train"
       ],
       "title": "JobKind",
       "type": "string"
@@ -16,9 +17,9 @@
         "orchestrator",
         "coder",
         "artist-2d",
-        "artist-3d",
         "audio",
-        "reviewer"
+        "reviewer",
+        "trainer"
       ],
       "title": "Role",
       "type": "string"

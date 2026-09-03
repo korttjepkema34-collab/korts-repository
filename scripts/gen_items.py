@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generate game/data/{weapons,armor,classes,rarities}.json from the stat budget in
-docs/15-gameplay-systems.md section 8. Edit the tables here, never the JSON.
+docs/17-gameplay-systems.md section 8. Edit the tables here, never the JSON.
 Run from the repo root: python scripts/gen_items.py"""
 from __future__ import annotations
 import json

@@ -9,12 +9,24 @@ redis:
 
 # Which job kinds this worker accepts, in priority order. The worker groups by kind so only one
 # generative model is resident at a time.
-kinds: [stub, image, music, sfx]
+kinds: [stub, image, music, sfx, train]
 
 # Local tool endpoints (each tool runs as its own app on this machine).
 tools:
   comfyui: http://127.0.0.1:8188
+  # comfyui_output_dir: C:/ComfyUI/output   # optional: copy outputs from disk instead of HTTP /view
   acestep: http://127.0.0.1:8190
+  # Training (docs/15-training.md). Python of the training venv made by training/setup.ps1.
+  training_python: C:/studio/training/.venv/Scripts/python.exe
+  # If you train inside WSL2 instead, use a command prefix and the repo path as WSL sees it:
+  # training_cmd: ["wsl", "-e", "/home/you/train/.venv/bin/python"]
+  # training_repo_root: /mnt/c/studio
+  # kohya sd-scripts checkout for the SDXL LoRA recipe (training/setup.ps1 clones it here).
+  kohya_dir: C:/studio/training/sd-scripts
+  # SDXL base checkpoint the LoRA trains against; same file ComfyUI uses.
+  sdxl_checkpoint: C:/ComfyUI/models/checkpoints/sd_xl_base_1.0.safetensors
+  # Where scripts/activate_model.py sdxl_lora copies a finished LoRA so ComfyUI can load it.
+  comfyui_loras_dir: C:/ComfyUI/models/loras
 
 # Gaming mode: if this file exists the worker finishes its current job, frees VRAM, and idles.
 gaming_mode_file: GAMING_MODE

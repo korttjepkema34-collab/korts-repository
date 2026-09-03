@@ -1,11 +1,11 @@
-# 17 - Helping weaker models do a better job
+# 19 - Helping weaker models do a better job
 
 What was done, in priority order, so a small local model can ship. Each item is live in the repo.
 
 | # | Problem weak models have | What the repo does about it |
 |---|---|---|
 | 1 | Hallucinated Godot APIs | `search_godot_api` coder tool over the installed engine's own class reference (`scripts/dump_godot_docs`, `server/orchestrator/docsearch.py`). Exact version, no network. |
-| 2 | Cannot write tile map / TileSet scene text | Convention: build tile sets and maps from code and JSON. Snippets in `docs/16-godot4-cookbook.md`. |
+| 2 | Cannot write tile map / TileSet scene text | Convention: build tile sets and maps from code and JSON. Snippets in `docs/18-godot4-cookbook.md`. |
 | 3 | Bad starts from an empty project | Skeleton written: `Config`, `Net`, `Clock` autoloads, server/client/solo split, two tests. Task 003 verifies instead of creates. |
 | 4 | Palette and size drift in art | Worker `postprocess.py` quantizes to the 16 colours, downsamples, cuts backgrounds. Orchestrator `checks.py` auto-rejects off-palette, wrong size, missing transparency before the vision model looks. |
 | 5 | Follow examples, not rules | Worked examples in `agents/orchestrator.md` (a full plan) and `agents/reviewer.md` (verdicts). |

@@ -5,8 +5,9 @@ vision-language model for assets and a code reader plus test-runner for branches
 
 ## Reviewing an asset
 
-Inputs: the file, its sidecar JSON, `style/style-bible.md`, the references in
-`style/references/`, and the original job spec.
+Inputs: one candidate image, its sidecar JSON, `style/style-bible.md`, the references in
+`style/references/`, and the original job spec. A job with several candidates gets one call per
+candidate; each moves to `approved/` or `rejected/` on its own verdict.
 
 Check, in order:
 
@@ -41,7 +42,11 @@ Example verdicts:
 {"verdict": "rejected", "reason": "Reads as pure top-down (no building front visible); style bible requires three-quarter. Regenerate with 'three-quarter top-down, front walls visible' added and cite mock-day.png", "by": "qwen3-vl"}
 ```
 
-## Reviewing a branch
+## Reviewing a branch (not wired yet)
+
+Today code is gated automatically, without this role: `server/orchestrator/coder.py` scans for
+Godot 3 patterns and runs the headless load check and gdUnit4 tests, then merges on green. The
+checklist below is what a model-driven code review will do once it is wired in.
 
 Inputs: the diff, the headless test output, `docs/09-godot-conventions.md`.
 

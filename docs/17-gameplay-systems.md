@@ -1,4 +1,4 @@
-# 15 - Gameplay systems
+# 17 - Gameplay systems
 
 Approved 2026-09-03. Extends `docs/10-game-design.md`. Everything here is post-prototype unless
 marked **P** (needed in the prototype) or **S** (schema needed now so prototype content is built

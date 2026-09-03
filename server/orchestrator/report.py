@@ -4,7 +4,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from . import gitops
+from . import gitops, traces
 
 
 def write(repo: Path, state, queue_depths: dict, worker_alive: bool, events: list[str]) -> None:
@@ -18,6 +18,7 @@ def write(repo: Path, state, queue_depths: dict, worker_alive: bool, events: lis
     inprog = sorted(p.name for p in (repo / "tasks" / "in-progress").glob("*.md"))
     approved = sum(1 for p in (repo / "assets" / "approved").rglob("*") if p.is_file() and p.suffix != ".json" and not p.name.startswith("."))
     _, log = gitops.git(repo, "log", "--since=1.day", "--oneline")
+    tc = traces.counts(repo)
     body = f"""# Progress report {day}
 
 | | |
@@ -29,6 +30,7 @@ def write(repo: Path, state, queue_depths: dict, worker_alive: bool, events: lis
 | Tasks done | {len(done)} |
 | Tasks in progress | {len(inprog)} |
 | Tasks deferred | {len(deferred)} |
+| Training data | coder runs {tc['coder_runs']} ({tc['coder_passed']} passed), reviewer verdicts {tc['verdicts']}, your verdicts {tc['overrides']} |
 
 ## Done
 {chr(10).join('- ' + d for d in done) or '- none yet'}

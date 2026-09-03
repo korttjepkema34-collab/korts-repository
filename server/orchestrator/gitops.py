@@ -42,6 +42,7 @@ def merge(repo: Path, branch: str, into: str, message: str) -> bool:
     if code != 0:
         git(repo, "merge", "--abort")
         return False
+    git(repo, "branch", "-D", branch)  # merged; keep the branch list from growing for days
     return True
 
 

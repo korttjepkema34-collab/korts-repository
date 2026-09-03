@@ -92,7 +92,7 @@ def run(checks_only: bool) -> int:
             from orchestrator import reviewer
             from shared.jobs import Result, ResultStatus
             res = Result(job_id="eval", status=ResultStatus.OK, worker="eval", started_at="", outputs=[str(path.relative_to(ROOT))])
-            verdict, reason = reviewer.review_result(ROOT, res, c.get("spec", {}))
+            verdict, reason, _per = reviewer.review_result(ROOT, res, c.get("spec", {}))
         exp = c["expect"]
         if exp == "rejected" and verdict == "rejected": tp += 1
         elif exp == "rejected": fn += 1; misses.append((c["file"], exp, verdict, reason, c["why"]))
