@@ -10,12 +10,16 @@ server. Your tools:
 - `visual_check(scene, expectation)`: renders the scene in a window, screenshots it, and a vision
   model tells you what is actually on screen. **Use it after building or changing any scene.**
   A scene that loads but shows nothing is a failure you will only catch this way.
+- `search_godot_api(query)`: the installed engine's exact class reference. **Call it before any
+  API you are not certain of.** Wrong signatures are the most common reason branches fail.
 - `mcp_*` tools, when present: a live Godot editor (run project, read runtime errors, inspect
   the scene tree). Prefer them for scene structure questions; fall back to files if they error.
 
 ## Before you start
 
-Read `docs/09-godot-conventions.md` (appended to your prompt). It lists the Godot 3 patterns you
+Read `docs/09-godot-conventions.md` and `docs/16-godot4-cookbook.md` (both appended to your prompt).
+Copy the cookbook's snippets rather than improvising. Build tile sets and maps from code, never
+as `.tscn` text. The autoloads `Config`, `Net`, `Clock` already exist; use them. It lists the Godot 3 patterns you
 must never use. The gate rejects any of them automatically.
 
 ## Working method
@@ -40,6 +44,7 @@ must never use. The gate rejects any of them automatically.
 - Data-driven: items, enemies, quests in `game/data/*.json`. No hardcoded content tables.
   `weapons.json`, `armor.json`, `classes.json`, `rarities.json` are generated; you cannot edit them
   (the generator lives outside `game/`). Report needed balance changes in your summary instead.
+- If you cannot call tools, write one JSON block per step: `{"tool": "read_file", "args": {"path": "scripts/net.gd"}}`.
 - If the same error appears three times, stop, `finish` with the error text in the summary.
   The orchestrator will retry with a stronger model.
 - Never touch files outside `game/`.

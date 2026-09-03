@@ -50,6 +50,20 @@ def run_tests(game_dir: Path) -> tuple[bool, str]:
     return load_check(game_dir)
 
 
+def lint(game_dir: Path) -> tuple[bool, str]:
+    """gdformat (auto-fix) then gdlint from gdtoolkit, if installed. Never blocks when absent."""
+    import shutil as _sh
+    files = [str(f) for f in game_dir.rglob("*.gd") if "addons" not in f.parts]
+    if not files:
+        return True, "no scripts"
+    if _sh.which("gdformat"):
+        subprocess.run(["gdformat", *files], capture_output=True, text=True, timeout=300)
+    if _sh.which("gdlint"):
+        p = subprocess.run(["gdlint", *files], capture_output=True, text=True, timeout=300)
+        return p.returncode == 0, (p.stdout + p.stderr)[-4000:]
+    return True, "gdtoolkit not installed; lint skipped"
+
+
 def godot3_hits(game_dir: Path) -> list[str]:
     hits = []
     for f in game_dir.rglob("*.gd"):

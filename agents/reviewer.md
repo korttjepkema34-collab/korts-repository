@@ -28,6 +28,19 @@ palette swatch 2; regenerate with lower CFG or add 'muted' token").
 Move the file and its sidecar to `approved/` or `rejected/` and write the verdict into the
 sidecar.
 
+Deterministic checks (size, off-palette pixels, transparency) already ran before you see the
+asset. You judge what a script cannot: subject, style, consistency, artefacts.
+
+Example verdicts:
+
+```json
+{"verdict": "approved", "reason": "Thrall front/side/back at 32x48, slack posture, wire from the head, eyes on colour 16; matches thrall-sheet proportions; minor stray pixel on the left boot is acceptable", "by": "qwen3-vl"}
+```
+
+```json
+{"verdict": "rejected", "reason": "Reads as pure top-down (no building front visible); style bible requires three-quarter. Regenerate with 'three-quarter top-down, front walls visible' added and cite mock-day.png", "by": "qwen3-vl"}
+```
+
 ## Reviewing a branch
 
 Inputs: the diff, the headless test output, `docs/09-godot-conventions.md`.

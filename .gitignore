@@ -24,3 +24,6 @@ Thumbs.db
 
 # redis snapshots from local testing
 dump.rdb
+
+# Godot class reference dump (regenerate with scripts/dump_godot_docs)
+server/godot-docs/

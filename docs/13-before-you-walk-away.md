@@ -18,6 +18,7 @@ then leave it. Estimated time: an afternoon.
       `"%GODOT_BIN%" --path game -s res://scripts/dev/screenshot.gd -- res://scenes/main/main.tscn C:\studio\reports\test.png`
       produces a PNG.
 - [ ] Optional: a Godot MCP server installed on the server and `GODOT_MCP_CMD` set (docs/11).
+- [ ] `scripts\dump_godot_docs.ps1` so the coder can search the exact class reference (rerun after any Godot upgrade).
 - [ ] gdUnit4: run `scripts\install_gdunit4.ps1` from the repo root. It is already enabled in
       `project.godot`; `game/tests/test_smoke.gd` should pass headless afterwards:
       `"%GODOT_BIN%" --headless --path game -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd --add res://tests --ignoreHeadlessMode`

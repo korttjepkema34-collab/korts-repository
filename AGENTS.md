@@ -87,6 +87,8 @@ Model picks and alternatives: `docs/04-models.md`.
 
 ## 6. Where things are
 
+- Godot snippets that are known to work: `docs/16-godot4-cookbook.md`; exact API lookup via the coder's `search_godot_api`
+- How the repo helps small models, and the Claude Code skills in `.claude/skills/`: `docs/17-helping-weak-models.md`
 - Gameplay systems (loop rules, building, weapons, armor, classes, workers): `docs/15-gameplay-systems.md`
 - Item data is generated: edit `scripts/gen_items.py`, never `game/data/{weapons,armor,classes,rarities}.json`
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)

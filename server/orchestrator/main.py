@@ -25,7 +25,7 @@ from pathlib import Path
 from shared import queue as q
 from shared.jobs import Job, JobKind, ResultStatus
 
-from . import coder, gitops, planner, report, reviewer, wake
+from . import checks, coder, gitops, planner, report, reviewer, wake
 from .state import State
 
 log = logging.getLogger("orchestrator")
@@ -110,7 +110,15 @@ def handle_results(r, st: State) -> None:
         tf = task_file(task_id)
         spec = job_meta.get("spec", {})
         if res.status == ResultStatus.OK and job_meta.get("kind") in ("image", "music", "sfx"):
-            verdict, reason = reviewer.review_result(REPO, res, spec)
+            verdict, reason = "approved", ""
+            if job_meta.get("kind") == "image":
+                for rel in res.outputs:
+                    ok, why = checks.check_image(REPO, REPO / rel, spec)
+                    if not ok:
+                        verdict, reason = "rejected", f"auto-check {Path(rel).name}: {why}"
+                        break
+            if verdict == "approved":
+                verdict, reason = reviewer.review_result(REPO, res, spec)
             moved = reviewer.file_verdict(REPO, res, verdict, reason)
             if verdict == "approved":
                 st.set_job(res.job_id, "approved", outputs=moved)

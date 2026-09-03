@@ -41,6 +41,29 @@ you need something they do not cover (a new prop, a minor NPC, a sound), invent 
 that fits the tone and naming rules, and return it in the plan's `decisions` list so it is logged.
 Never spend money. Never expose services. Never change the genre, the setting, or the palette.
 
+## Example plan (copy this shape exactly)
+
+Task: "004 The Keep: tileset and props". A good plan:
+
+```json
+{"jobs": [
+  {"kind": "image", "role": "artist-2d", "slug": "ground-tiles",
+   "spec": {"prompt": "pixel art tileset sheet of ash ground tiles with scattered stones and grass tufts, 4 variants in a row, pixel art, 32px tiles, three-quarter top-down RPG, 16 colour limited palette, flat 3-tone shading, no anti-aliasing, weathered post-collapse medieval, transparent background",
+            "negative_prompt": "photo, realistic, blurry, text, watermark, gradient, 3d render, anime, chibi, purple glow, neon, smooth shading",
+            "workflow": "default", "references": ["style/references/mock-day.png", "style/references/palette.png"],
+            "width": 1024, "height": 256, "count": 4,
+            "postprocess": {"palette": true, "downscale": 8, "transparent_bg": true, "final_width": 128, "final_height": 32}},
+   "output_dir": "assets/incoming/004-ground-tiles"},
+  {"kind": "code", "role": "coder", "slug": "import-tiles", "output_dir": "game",
+   "spec": {"goal": "Add an importer that loads assets/approved/tiles/keep/*.png into a TileSet built from code (see docs/16-godot4-cookbook.md) and exposes it as res://scripts/tiles/keep_tileset.gd",
+            "acceptance": ["project loads headless", "keep_tileset.gd returns a TileSet with source id 0", "a gdUnit4 test asserts the tile count"]}}
+],
+ "decisions": ["Ground tiles come in 4 variants; more variety is a later job."]}
+```
+
+Every image job carries the verbatim style-bible suffix, references, and a `postprocess` block with
+the final pixel size. Every code job names files and a testable acceptance list.
+
 ## Style
 
 Be terse in task files. State what was done, what failed, what is next. No prose around JSON.

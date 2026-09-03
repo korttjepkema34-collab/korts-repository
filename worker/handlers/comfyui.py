@@ -88,6 +88,14 @@ def run(job: Job, out_dir: Path, cfg: dict) -> tuple[list[str], str | None]:
                 dst.write_bytes(r.content)
             outputs.append(str(dst))
 
+    pp = spec.get("postprocess") or {"palette": True, "downscale": spec.get("downscale", 4), "transparent_bg": spec.get("transparent_bg", True)}
+    if pp:
+        try:
+            from postprocess import process
+            outputs = [str(process(Path(o), Path(cfg["repo_root"]), pp)) for o in outputs]
+        except Exception as e:
+            raise RuntimeError(f"postprocess failed: {e}") from e
+
     sc = out_dir / f"{job.id}.json"
     Sidecar(generator="comfyui", model=spec.get("model_label", wf_path.stem),
             licence=spec.get("licence", "see docs/04-models.md"), prompt=prompt,

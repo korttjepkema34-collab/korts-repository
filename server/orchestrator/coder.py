@@ -18,7 +18,9 @@ import logging
 import time
 from pathlib import Path
 
-from . import gitops, godot, llm, mcp_bridge, vision
+import re
+
+from . import docsearch, gitops, godot, llm, mcp_bridge, vision
 
 log = logging.getLogger("coder")
 MAX_STEPS = 40
@@ -41,6 +43,8 @@ TOOLS = [
         "parameters": {"type": "object", "properties": {"scene": {"type": "string", "description": "res:// path to a .tscn"}, "expectation": {"type": "string"}}, "required": ["scene", "expectation"]}}},
     {"type": "function", "function": {"name": "run_scene_capture_output", "description": "Run a scene headless for a few seconds and return its printed output and errors (server-side logic, no rendering).",
         "parameters": {"type": "object", "properties": {"scene": {"type": "string"}, "seconds": {"type": "integer"}}, "required": ["scene"]}}},
+    {"type": "function", "function": {"name": "search_godot_api", "description": "Search the installed Godot's exact class reference (methods, properties, signals). Use before calling any API you are not sure of.",
+        "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}}},
     {"type": "function", "function": {"name": "finish", "description": "Call when done. Summarise what you changed and why.",
         "parameters": {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}}},
 ]
@@ -57,6 +61,8 @@ def _exec(game: Path, name: str, args: dict, mcp=None) -> str:
     game = game.resolve()
     if name.startswith("mcp_") and mcp is not None:
         return mcp.call(name, args)
+    if name == "search_godot_api":
+        return docsearch.search(args.get("query", ""))
     if name == "visual_check":
         return vision.visual_check(game.parent, args["scene"], args.get("expectation", ""))
     if name == "run_scene_capture_output":
@@ -89,7 +95,8 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
     mcp = mcp_bridge.connect_if_configured(str(game))
     tools = TOOLS + (mcp.tools if mcp else [])
     try:
-        system = llm.load_role(repo, "coder") + "\n\n" + (repo / "docs" / "09-godot-conventions.md").read_text()
+        system = (llm.load_role(repo, "coder") + "\n\n" + (repo / "docs" / "09-godot-conventions.md").read_text()
+                  + "\n\n" + (repo / "docs" / "16-godot4-cookbook.md").read_text())
         user = ("Goal:\n" + str(spec.get("goal", spec)) + "\n\nAcceptance:\n"
                 + "\n".join(f"- {a}" for a in spec.get("acceptance", [])) + "\n\nApproved assets available:\n"
                 + "\n".join(str(p.relative_to(repo)) for p in (repo / "assets" / "approved").rglob("*") if p.is_file())[:3000]
@@ -103,7 +110,24 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
             msg = resp.choices[0].message
             messages.append({"role": "assistant", "content": msg.content or "", "tool_calls": [tc.model_dump() for tc in (msg.tool_calls or [])]})
             if not msg.tool_calls:
-                messages.append({"role": "user", "content": "Use the tools. Call finish when done."})
+                # Weak models sometimes write the call as JSON in text. Accept {"tool": ..., "args": {...}}.
+                m = re.search(r"\{[^{}]*\"(?:tool|name)\"\s*:\s*\"([a-z_]+)\"[^{}]*(\{.*?\})?[^{}]*\}", msg.content or "", re.S)
+                if m:
+                    tname = m.group(1)
+                    try:
+                        targs = json.loads(m.group(2) or "{}")
+                    except json.JSONDecodeError:
+                        targs = {}
+                    if tname == "finish":
+                        summary = targs.get("summary", "")
+                        break
+                    try:
+                        out = _exec(game, tname, targs, mcp)
+                    except Exception as e:
+                        out = f"ERROR: {e}"
+                    messages.append({"role": "user", "content": f"[{tname} result]\n{out[:12000]}"})
+                    continue
+                messages.append({"role": "user", "content": "Use the tools (or write a JSON block {\"tool\": name, \"args\": {...}}). Call finish when done."})
                 continue
             for tc in msg.tool_calls:
                 try:
@@ -124,6 +148,9 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
         hits = godot.godot3_hits(game)
         if hits:
             return False, "Godot 3 patterns found:\n" + "\n".join(hits[:20])
+        lint_ok, lint_out = godot.lint(game)
+        if not lint_ok:
+            return False, "gdlint failed:\n" + lint_out
         ok, out = godot.run_tests(game)
         if not ok:
             return False, "Headless check/tests failed:\n" + out[-4000:]

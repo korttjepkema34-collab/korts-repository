@@ -4,6 +4,8 @@
   "day_seconds": 720,
   "night_seconds": 360,
   "waves_per_night": 5,
+  "dusk_bell_seconds": 120,
+  "long_night_every": 7,
   "horde_cap": 150,
   "flow_field_interval": 0.5,
   "camera_zoom": { "world": 1.0, "indoors": 1.5, "dialogue": 3.0 }

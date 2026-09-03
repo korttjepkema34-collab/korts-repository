@@ -13,5 +13,8 @@ Then, depending on what you are doing:
 - Gameplay systems, items, classes, building, workers: `docs/15-gameplay-systems.md`; item JSON comes from `scripts/gen_items.py`
 - Touching the queue or job format: `shared/jobs.py` and `docs/08-job-schema.md`
 
+Skills for this repo live in `.claude/skills/`: `studio-status`, `godot-check`, `asset-review`,
+`new-task`, `act-as`. Known-good Godot snippets: `docs/16-godot4-cookbook.md`.
+
 When acting as one of the team roles, load the matching file in `agents/` as your system prompt.
 When unsure which role applies, act as the orchestrator (`agents/orchestrator.md`).
