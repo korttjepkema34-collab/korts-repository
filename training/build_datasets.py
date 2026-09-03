@@ -157,12 +157,18 @@ def build_coder(repo: Path, out: Path) -> int:
         by_task[r["task_id"]]["p"].append(r)
     for r in failed:
         by_task[r["task_id"]]["f"].append(r)
-    pairs = 0
+    # A pair is only valid when both runs saw the same prompt (same system + user turn). A retry's
+    # prompt carries "Notes from the previous failed attempt", so it differs from the first run;
+    # such runs are not paired. Matched pairs come from best-of-N style repeats of one job.
+    pairs, skipped = 0, 0
     with (out / "dpo.jsonl").open("w", encoding="utf-8") as f:
         for task, d in by_task.items():
             for good in d["p"]:
-                for bad in d["f"][:2]:
-                    prompt = good["messages"][:2]
+                prompt = good["messages"][:2]
+                for bad in d["f"]:
+                    if bad["messages"][:2] != prompt:
+                        skipped += 1
+                        continue
                     f.write(json.dumps({"prompt": prompt, "chosen": good["messages"][2:], "rejected": bad["messages"][2:],
                                         "tools": good["tools"]}, ensure_ascii=False) + "\n")
                     pairs += 1
@@ -174,7 +180,7 @@ def build_coder(repo: Path, out: Path) -> int:
                 for line in src.open(encoding="utf-8"):
                     if line.strip():
                         f.write(line if line.endswith("\n") else line + "\n"); public += 1
-    (out / "meta.json").write_text(json.dumps({"recipe": "coder", "sft": n, "dpo_pairs": pairs, "public": public,
+    (out / "meta.json").write_text(json.dumps({"recipe": "coder", "sft": n, "dpo_pairs": pairs, "dpo_skipped_prompt_mismatch": skipped, "public": public,
                                                "failed_runs": len(failed), "built_at": time.strftime("%Y-%m-%d %H:%M")}, indent=2))
     _log(f"coder: {n} passed runs, {pairs} DPO pairs, {public} public examples -> {out}")
     return n + public

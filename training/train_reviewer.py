@@ -22,6 +22,29 @@ import time
 from pathlib import Path
 
 
+def _cfg(cls, **kw):
+    """Build a TRL config tolerating field renames across versions (max_seq_length -> max_length);
+    unknown fields are dropped with a notice instead of crashing a multi-hour run at start."""
+    import dataclasses
+    names = {f.name for f in dataclasses.fields(cls)}
+    aliases = {"max_seq_length": "max_length", "max_length": "max_seq_length"}
+    out = {}
+    for k, v in kw.items():
+        if k in names:
+            out[k] = v
+        elif aliases.get(k) in names:
+            out[aliases[k]] = v
+        else:
+            print(f"[cfg] {cls.__name__} has no field {k}; dropped", flush=True)
+    return cls(**out)
+
+
+def _tok_kwarg(cls, tok) -> dict:
+    """TRL >= 0.15 takes processing_class=, older takes tokenizer=."""
+    import inspect
+    return {"processing_class": tok} if "processing_class" in inspect.signature(cls.__init__).parameters else {"tokenizer": tok}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", required=True)
@@ -68,13 +91,13 @@ def main() -> None:
     FastVisionModel.for_training(model)
     t0 = time.time()
     trainer = SFTTrainer(
-        model=model, tokenizer=proc, data_collator=UnslothVisionDataCollator(model, proc), train_dataset=data,
-        args=SFTConfig(output_dir=str(out / "ckpt"), per_device_train_batch_size=1, gradient_accumulation_steps=8,
-                       num_train_epochs=a.epochs, learning_rate=a.lr, warmup_ratio=0.05, lr_scheduler_type="cosine",
-                       logging_steps=5, save_strategy="no", optim="adamw_8bit", weight_decay=0.01,
-                       fp16=not is_bf16_supported(), bf16=is_bf16_supported(), report_to="none", seed=42,
-                       remove_unused_columns=False, dataset_text_field="", dataset_kwargs={"skip_prepare_dataset": True},
-                       max_seq_length=4096))
+        model=model, data_collator=UnslothVisionDataCollator(model, proc), train_dataset=data, **_tok_kwarg(SFTTrainer, proc),
+        args=_cfg(SFTConfig, output_dir=str(out / "ckpt"), per_device_train_batch_size=1, gradient_accumulation_steps=8,
+                  num_train_epochs=a.epochs, learning_rate=a.lr, warmup_ratio=0.05, lr_scheduler_type="cosine",
+                  logging_steps=5, save_strategy="no", optim="adamw_8bit", weight_decay=0.01,
+                  fp16=not is_bf16_supported(), bf16=is_bf16_supported(), report_to="none", seed=42,
+                  remove_unused_columns=False, dataset_text_field="", dataset_kwargs={"skip_prepare_dataset": True},
+                  max_seq_length=4096))
     stats = trainer.train()
     model.save_pretrained(str(out / "lora")); proc.save_pretrained(str(out / "lora"))
     model.save_pretrained_merged(str(out / "merged"), proc, save_method="merged_16bit")

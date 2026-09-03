@@ -5,8 +5,9 @@ vision-language model for assets and a code reader plus test-runner for branches
 
 ## Reviewing an asset
 
-Inputs: the file, its sidecar JSON, `style/style-bible.md`, the references in
-`style/references/`, and the original job spec.
+Inputs: one candidate image, its sidecar JSON, `style/style-bible.md`, the references in
+`style/references/`, and the original job spec. A job with several candidates gets one call per
+candidate; each moves to `approved/` or `rejected/` on its own verdict.
 
 Check, in order:
 

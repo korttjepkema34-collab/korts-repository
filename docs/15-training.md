@@ -39,8 +39,10 @@ eval_coder.py (you or daily): pass rate on 8 held-out tasks
 ```
 
 - A `train` job is an ordinary queue job (`kind: train`, `role: trainer`) with
-  `spec.recipe`, `spec.dataset`, `spec.stale_after_s` (hours, not the usual 90 minutes). One at a
-  time, priority 8, so asset jobs go first.
+  `spec.recipe`, `spec.dataset`, `spec.stale_after_s` (hours, not the usual 90 minutes; the worker's
+  own `timeout_s` is set 10 minutes shorter so both sides agree). One at a time, and last in the
+  worker's `kinds` list so queued asset jobs go first (the queue is FIFO per kind; `Job.priority`
+  is not used by anything yet).
 - Datasets are built **on the server** (CPU, stdlib + Pillow) into `assets/training/datasets/`,
   which Syncthing already carries to the GPU box. Models come back the same way. No new sync
   folder, no new port.

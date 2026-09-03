@@ -25,6 +25,29 @@ def load_jsonl(p: Path) -> list[dict]:
     return [json.loads(l) for l in p.open(encoding="utf-8") if l.strip()] if p.exists() else []
 
 
+def _cfg(cls, **kw):
+    """Build a TRL config tolerating field renames across versions (max_seq_length -> max_length);
+    unknown fields are dropped with a notice instead of crashing a multi-hour run at start."""
+    import dataclasses
+    names = {f.name for f in dataclasses.fields(cls)}
+    aliases = {"max_seq_length": "max_length", "max_length": "max_seq_length"}
+    out = {}
+    for k, v in kw.items():
+        if k in names:
+            out[k] = v
+        elif aliases.get(k) in names:
+            out[aliases[k]] = v
+        else:
+            print(f"[cfg] {cls.__name__} has no field {k}; dropped", flush=True)
+    return cls(**out)
+
+
+def _tok_kwarg(cls, tok) -> dict:
+    """TRL >= 0.15 takes processing_class=, older takes tokenizer=."""
+    import inspect
+    return {"processing_class": tok} if "processing_class" in inspect.signature(cls.__init__).parameters else {"tokenizer": tok}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", required=True)
@@ -67,11 +90,11 @@ def main() -> None:
     train_ds = Dataset.from_list(rows).shuffle(seed=42)
     t0 = time.time()
     trainer = SFTTrainer(
-        model=model, tokenizer=tok, train_dataset=train_ds, dataset_text_field="text",
-        args=SFTConfig(output_dir=str(out / "ckpt"), per_device_train_batch_size=1, gradient_accumulation_steps=8,
-                       num_train_epochs=a.epochs, learning_rate=a.lr, lr_scheduler_type="cosine", warmup_ratio=0.03,
-                       logging_steps=10, save_strategy="no", bf16=True, optim="adamw_8bit", weight_decay=0.01,
-                       max_seq_length=a.max_seq, packing=False, seed=42, report_to="none"))
+        model=model, train_dataset=train_ds, **_tok_kwarg(SFTTrainer, tok),
+        args=_cfg(SFTConfig, output_dir=str(out / "ckpt"), per_device_train_batch_size=1, gradient_accumulation_steps=8,
+                  num_train_epochs=a.epochs, learning_rate=a.lr, lr_scheduler_type="cosine", warmup_ratio=0.03,
+                  logging_steps=10, save_strategy="no", bf16=True, optim="adamw_8bit", weight_decay=0.01,
+                  max_seq_length=a.max_seq, packing=False, seed=42, report_to="none", dataset_text_field="text"))
     stats = trainer.train()
     metrics = {"sft_loss": stats.training_loss, "sft_examples": len(rows)}
 
@@ -85,11 +108,11 @@ def main() -> None:
             full_r = tok.apply_chat_template(ex["prompt"] + ex["rejected"], tokenize=False, **kw)
             return {"prompt": prompt, "chosen": full_c[len(prompt):], "rejected": full_r[len(prompt):]}
         pairs = Dataset.from_list([render_pair(e) for e in dpo])
-        dtrainer = DPOTrainer(model=model, ref_model=None, tokenizer=tok, train_dataset=pairs, beta=0.1,
-                              args=DPOConfig(output_dir=str(out / "ckpt-dpo"), per_device_train_batch_size=1,
-                                             gradient_accumulation_steps=8, num_train_epochs=1, learning_rate=5e-6,
-                                             max_length=a.max_seq, max_prompt_length=a.max_seq // 2, bf16=True,
-                                             logging_steps=5, save_strategy="no", report_to="none", seed=42))
+        dtrainer = DPOTrainer(model=model, ref_model=None, train_dataset=pairs, **_tok_kwarg(DPOTrainer, tok),
+                              args=_cfg(DPOConfig, output_dir=str(out / "ckpt-dpo"), per_device_train_batch_size=1,
+                                        gradient_accumulation_steps=8, num_train_epochs=1, learning_rate=5e-6, beta=0.1,
+                                        max_length=a.max_seq, max_prompt_length=a.max_seq // 2, bf16=True,
+                                        logging_steps=5, save_strategy="no", report_to="none", seed=42))
         dstats = dtrainer.train()
         metrics["dpo_loss"] = dstats.training_loss; metrics["dpo_pairs"] = len(dpo)
 

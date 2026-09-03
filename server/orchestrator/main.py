@@ -113,8 +113,8 @@ def handle_results(r, st: State) -> None:
         tf = task_file(task_id)
         spec = job_meta.get("spec", {})
         if res.status == ResultStatus.OK and job_meta.get("kind") in ("image", "music", "sfx"):
-            verdict, reason = reviewer.review_result(REPO, res, spec)
-            moved = reviewer.file_verdict(REPO, res, verdict, reason)
+            verdict, reason, per_output = reviewer.review_result(REPO, res, spec)
+            moved = reviewer.file_verdict(REPO, res, verdict, reason, per_output)
             if verdict == "approved":
                 st.set_job(res.job_id, "approved", outputs=moved)
                 if tf: append_log(tf, f"APPROVED {res.job_id}: {reason} -> {moved[:3]}")

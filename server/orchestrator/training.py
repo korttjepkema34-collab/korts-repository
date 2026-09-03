@@ -82,11 +82,15 @@ def make_job(repo: Path, recipe: str, extra_spec: dict | None = None) -> Job:
     n = _builder(repo).build(repo, recipe, repo / dataset_rel)
     if n == 0:
         raise RuntimeError(f"no training examples for {recipe}; nothing to train on yet")
+    stale = int(os.environ.get("TRAIN_STALE_SECONDS", str(12 * 3600)))
     spec = {"recipe": recipe, "dataset": dataset_rel, "examples": n,
-            "stale_after_s": int(os.environ.get("TRAIN_STALE_SECONDS", str(8 * 3600)))}
+            "stale_after_s": stale,            # orchestrator gives up after this
+            "timeout_s": max(600, stale - 600)}  # worker kills the run a little earlier, so the two agree
     spec.update(extra_spec or {})
+    # Ordering note: the queue is FIFO per kind; train jobs go last because `train` is last in the
+    # worker's `kinds` list, not because of Job.priority (which nothing reads yet).
     return Job(id=make_job_id(TRAIN_TASK_ID, recipe), task_id=TRAIN_TASK_ID, kind=JobKind.TRAIN,
-               role=Role.TRAINER, priority=8, max_attempts=1, spec=spec,
+               role=Role.TRAINER, max_attempts=1, spec=spec,
                output_dir=f"assets/training/models/{name}")
 
 

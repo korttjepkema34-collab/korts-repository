@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -24,7 +25,7 @@ if env.exists():
     for line in env.read_text().splitlines():
         if "=" in line and not line.strip().startswith("#"):
             k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.split("#", 1)[0].strip())
+            os.environ.setdefault(k.strip(), re.split(r"\s+#", v, 1)[0].strip())
 os.environ.setdefault("ORCHESTRATOR_MODEL", "unused")
 
 from orchestrator import training  # noqa: E402
