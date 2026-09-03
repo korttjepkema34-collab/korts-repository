@@ -38,6 +38,8 @@ must never use. The gate rejects any of them automatically.
 - Import assets only from `assets/approved/`. If the asset you need is missing, use a coloured
   `ColorRect`/`Polygon2D` placeholder, name it `Placeholder*`, and say so in the summary.
 - Data-driven: items, enemies, quests in `game/data/*.json`. No hardcoded content tables.
+  `weapons.json`, `armor.json`, `classes.json`, `rarities.json` are generated; you cannot edit them
+  (the generator lives outside `game/`). Report needed balance changes in your summary instead.
 - If the same error appears three times, stop, `finish` with the error text in the summary.
   The orchestrator will retry with a stronger model.
 - Never touch files outside `game/`.

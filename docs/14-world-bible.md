@@ -31,7 +31,11 @@ it falls. Elden Ring's weight with Stardew's warmth underneath. Not grimdark, ne
 4. **Hearths** are working power nodes. Resting at one banks your relics and restores you. They
    are the only safe light at night.
 5. **Nights belong to the Wired.** They move on any light. The wall you built by day, and the
-   door you did or did not fix, decide whether you survive.
+   door you did or did not fix, decide whether you survive. Caught outside, you bar a door
+   (a **Holdout**) or burn a relic in a dead power node (a **wild Hearth**). Every seventh night
+   is **the Long Night**.
+6. **Holdfasts.** Beyond the Keep, a party can claim a ruin and make it theirs: walls, turrets,
+   a Reliquary, rescued survivors and repaired robots working the place. The Wired notice.
 
 ## Places
 
@@ -43,6 +47,13 @@ it falls. Elden Ring's weight with Stardew's warmth underneath. Not grimdark, ne
 
 Later regions (do not build yet): the Millrace, the Glass Market, the Deep Stair.
 
+## Classes (everyone is human)
+
+A class is a starting kit, a signature relic, and a talent tree. Reaper, Warden, Gunner, Hunter,
+Shade, Wright, Linker, Cantor, Physician, Tinker. Nothing is magic: the Wright channels a reactor
+pack, the Linker re-links Thralls to their own signal, the Cantor broadcasts through a relic
+speaker. Full table in `docs/15-gameplay-systems.md` §6.
+
 ## People
 
 | Name | Role | Voice |
@@ -50,6 +61,8 @@ Later regions (do not build yet): the Millrace, the Glass Market, the Deep Stair
 | **The Reaper** | Player. Scythe (slow, wide), hook (fast, short), one relic slot for an active ability. | Silent. |
 | **Hesper the Reeve** | Keeps the Keep's ledger, gives contracts and the first quest | Tired, exact, secretly kind. Short sentences. Never says please. |
 | **Old Cutter** | Retired Reaper by the garden fence, tutorial hints. Named for the hook they never put down. | Rambling, cheerful, wrong about half of it. |
+| **Rescued survivors** | Farmer, Smith, Guard, Scout. Join a Holdfast if fed and trusted; leave if it falls twice. | Each has one line of history and never repeats it. |
+| **Repaired robots** | Mule, Maintenance drone, Sentry. Relics with jobs. | Beep in a way that sounds like an old modem. |
 | **The Castellan** | First boss. A lord's champion in augmented plate, sent to take the Undercroft reactor, never came back. Now they keep it. | Does not speak. The shield's siren sounds before each pattern. |
 
 ## Enemies (prototype set)
@@ -87,7 +100,11 @@ The rule: **medieval words that happen to describe the tech.**
 - Places are what they were for: the Keep, the Fallows, the Undercroft, Substation Row.
 - Enemies are what the network made of people: Thrall, Courser, Herald, Castellan.
 - Roles are old offices: Reeve, Reaper.
-- Relics are old tech named as if holy: the Reactor, a Saint (a battery), the Rack.
+- Relics are old tech named as if holy: the Reactor, a Saint (a battery), the Rack. Rarity
+  tiers: Scrap, Worn, Sound, Fine, Saint.
+- Weapons are what they were before, named plainly: Rebar Blade, Manhole Maul, Cable Whip,
+  Pipe Pistol. Armor sets are named for who wore them: Reeve's Coat, Guard's Plate, Wired-hide.
+- Stations: Workbench (upgrade), Forge (craft), **Reliquary** (socket a relic, permanent).
 - People get one short name and maybe a nickname: Hesper, Old Cutter.
 - Dialogue: short, no exclamation marks, nobody explains the lore, they mention it sideways.
 - UI text: lowercase labels, terse ("vigour", "hook", "leave").

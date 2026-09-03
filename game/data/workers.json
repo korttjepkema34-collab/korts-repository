@@ -1,0 +1,9 @@
+[
+  {"id": "mule", "kind": "robot", "name": "Mule", "jobs": ["carry", "fetch_dropped_relics"], "power": 1, "repair_cost": {"scrap": 200, "relic_fragment": 3}},
+  {"id": "maintenance_drone", "kind": "robot", "name": "Maintenance drone", "jobs": ["repair"], "power": 1, "repair_cost": {"scrap": 260, "relic_fragment": 4}},
+  {"id": "sentry", "kind": "robot", "name": "Sentry", "jobs": ["defend"], "power": 2, "ammo": "scrap", "repair_cost": {"scrap": 400, "relic_fragment": 6}},
+  {"id": "farmer", "kind": "human", "name": "Farmer", "jobs": ["farm", "cook"], "trust_start": 20},
+  {"id": "smith", "kind": "human", "name": "Smith", "jobs": ["craft", "upgrade"], "trust_start": 10},
+  {"id": "guard", "kind": "human", "name": "Guard", "jobs": ["defend", "repair"], "trust_start": 10},
+  {"id": "scout", "kind": "human", "name": "Scout", "jobs": ["scavenge"], "trust_start": 15}
+]

@@ -10,6 +10,7 @@ Then, depending on what you are doing:
 - The approved look: `style/references/mock-day.png`, `mock-night.png`, and `docs/pitch/`
 - Generating art or audio: `style/style-bible.md`, `docs/14-world-bible.md` and the matching `agents/*.md`
 - Anything about the game's world, characters, places, quests: `docs/14-world-bible.md`
+- Gameplay systems, items, classes, building, workers: `docs/15-gameplay-systems.md`; item JSON comes from `scripts/gen_items.py`
 - Touching the queue or job format: `shared/jobs.py` and `docs/08-job-schema.md`
 
 When acting as one of the team roles, load the matching file in `agents/` as your system prompt.

@@ -1,0 +1,218 @@
+[
+  {
+    "id": "scavengers_rags",
+    "name": "Scavenger's Rags",
+    "weight": "light",
+    "tier": 1,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 3.3,
+    "stamina_regen": 0.2,
+    "dodge_cost": -0.2,
+    "bonus_2": "carry +10",
+    "bonus_3": "stamina regen +10%",
+    "side_effect": "Nobody looks twice: merchants charge you less.",
+    "silhouette": "light_2"
+  },
+  {
+    "id": "reeves_coat",
+    "name": "Reeve's Coat",
+    "weight": "light",
+    "tier": 2,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 3.3,
+    "stamina_regen": 0.2,
+    "dodge_cost": -0.2,
+    "bonus_2": "carry +30",
+    "bonus_3": "trade prices +15%",
+    "side_effect": "Little armour to speak of. Relics stored on you are safe on death.",
+    "silhouette": "light_3"
+  },
+  {
+    "id": "wired-hide",
+    "name": "Wired-hide",
+    "weight": "light",
+    "tier": 3,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 3.3,
+    "stamina_regen": 0.2,
+    "dodge_cost": -0.2,
+    "bonus_2": "stealth +20%",
+    "bonus_3": "Thralls ignore you 2 s after each kill",
+    "side_effect": "Wearing their skin. NPCs trust you slower.",
+    "silhouette": "light_1"
+  },
+  {
+    "id": "hunters_leathers",
+    "name": "Hunter's Leathers",
+    "weight": "light",
+    "tier": 2,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 3.3,
+    "stamina_regen": 0.2,
+    "dodge_cost": -0.2,
+    "bonus_2": "bow damage +10%",
+    "bonus_3": "see 3 tiles further at night",
+    "side_effect": "Silent footsteps on grass.",
+    "silhouette": "light_3"
+  },
+  {
+    "id": "lamplighter",
+    "name": "Lamplighter",
+    "weight": "medium",
+    "tier": 2,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 6.7,
+    "stamina_regen": 0.0,
+    "dodge_cost": 0.0,
+    "bonus_2": "your lamps reach +30%",
+    "bonus_3": "lamp flicker no longer blinds you",
+    "side_effect": "The horde's interest in you scales with your light.",
+    "silhouette": "medium_3"
+  },
+  {
+    "id": "toll-road_mail",
+    "name": "Toll-Road Mail",
+    "weight": "medium",
+    "tier": 3,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 6.7,
+    "stamina_regen": 0.0,
+    "dodge_cost": 0.0,
+    "bonus_2": "armour +5",
+    "bonus_3": "block +15%",
+    "side_effect": "Loud on cobbles: noise +1.",
+    "silhouette": "medium_1"
+  },
+  {
+    "id": "physicians_wraps",
+    "name": "Physician's Wraps",
+    "weight": "medium",
+    "tier": 3,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 6.7,
+    "stamina_regen": 0.0,
+    "dodge_cost": 0.0,
+    "bonus_2": "heal +20%",
+    "bonus_3": "revive 2x faster",
+    "side_effect": "Grabs release you 0.5 s sooner.",
+    "silhouette": "medium_1"
+  },
+  {
+    "id": "tinkers_harness",
+    "name": "Tinker's Harness",
+    "weight": "medium",
+    "tier": 3,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 6.7,
+    "stamina_regen": 0.0,
+    "dodge_cost": 0.0,
+    "bonus_2": "repair +30%",
+    "bonus_3": "turrets reload faster",
+    "side_effect": "Carries a toolkit: sealed doors open without a hammer.",
+    "silhouette": "medium_1"
+  },
+  {
+    "id": "linkers_shroud",
+    "name": "Linker's Shroud",
+    "weight": "medium",
+    "tier": 4,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 6.7,
+    "stamina_regen": 0.0,
+    "dodge_cost": 0.0,
+    "bonus_2": "pack size +1",
+    "bonus_3": "linked Thralls +20% health",
+    "side_effect": "The Wired treat you as one of them for 1 s after linking.",
+    "silhouette": "medium_2"
+  },
+  {
+    "id": "guards_plate",
+    "name": "Guard's Plate",
+    "weight": "heavy",
+    "tier": 3,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 11.7,
+    "stamina_regen": -0.2,
+    "dodge_cost": 0.3,
+    "bonus_2": "armour +10",
+    "bonus_3": "stagger resistance",
+    "side_effect": "A lord's colours: Keep guards are polite, lords' guards are not.",
+    "silhouette": "heavy_1"
+  },
+  {
+    "id": "reactor_suit",
+    "name": "Reactor Suit",
+    "weight": "heavy",
+    "tier": 4,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 11.7,
+    "stamina_regen": -0.2,
+    "dodge_cost": 0.3,
+    "bonus_2": "Wright overheat -25%",
+    "bonus_3": "EMP radius +30%",
+    "side_effect": "Glows faintly: light radius 2 tiles, always.",
+    "silhouette": "heavy_2"
+  },
+  {
+    "id": "castellan_plate",
+    "name": "Castellan Plate",
+    "weight": "heavy",
+    "tier": 5,
+    "pieces": [
+      "head",
+      "body",
+      "legs"
+    ],
+    "armour_per_piece": 11.7,
+    "stamina_regen": -0.2,
+    "dodge_cost": 0.3,
+    "bonus_2": "armour +15",
+    "bonus_3": "the siren works for you: pulls Thralls to you",
+    "side_effect": "Boss set. Slow. The Keep goes quiet when you walk in.",
+    "silhouette": "heavy_3"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {"id": "wall", "name": "wall", "cost": {"scrap": 10}, "health": 200, "blocks": ["move", "sight", "path"], "needs": [], "power": 0},
+  {"id": "door", "name": "door", "cost": {"scrap": 15}, "health": 120, "blocks": ["move", "path"], "needs": ["wall_left_right"], "power": 0, "states": ["closed", "open", "locked", "broken"]},
+  {"id": "window", "name": "window", "cost": {"scrap": 12}, "health": 60, "blocks": ["move", "path"], "needs": ["wall_left_right"], "power": 0},
+  {"id": "floor", "name": "floor", "cost": {"scrap": 4}, "health": 50, "blocks": [], "needs": [], "power": 0},
+  {"id": "roof", "name": "roof", "cost": {"scrap": 8}, "health": 80, "blocks": ["sight"], "needs": ["wall_support_2"], "power": 0},
+  {"id": "stairs", "name": "stairs", "cost": {"scrap": 20}, "health": 100, "blocks": [], "needs": ["floor"], "power": 0},
+  {"id": "lamp", "name": "lamp", "cost": {"scrap": 25}, "health": 40, "blocks": [], "needs": ["cable"], "power": 1, "light_radius_tiles": 5, "attracts": 1},
+  {"id": "turret", "name": "turret", "cost": {"scrap": 120, "relic_fragment": 2}, "health": 150, "blocks": ["move"], "needs": ["cable"], "power": 3, "ammo": "scrap", "attracts": 2},
+  {"id": "workbench", "name": "workbench", "cost": {"scrap": 40}, "health": 80, "blocks": ["move"], "needs": [], "power": 0, "station": "upgrade"},
+  {"id": "forge", "name": "forge", "cost": {"scrap": 90}, "health": 120, "blocks": ["move"], "needs": [], "power": 0, "station": "craft"},
+  {"id": "reliquary", "name": "reliquary", "cost": {"scrap": 400, "relic_fragment": 6}, "health": 200, "blocks": ["move"], "needs": ["cable"], "power": 2, "station": "socket"},
+  {"id": "bed", "name": "bed", "cost": {"scrap": 30}, "health": 40, "blocks": ["move"], "needs": ["roof"], "power": 0, "station": "rest"},
+  {"id": "farm_plot", "name": "farm plot", "cost": {"scrap": 15}, "health": 30, "blocks": [], "needs": [], "power": 0, "station": "farm"},
+  {"id": "cable", "name": "cable", "cost": {"scrap": 2}, "health": 20, "blocks": [], "needs": [], "power": 0, "carries_power": true},
+  {"id": "generator", "name": "generator socket", "cost": {"scrap": 150}, "health": 250, "blocks": ["move"], "needs": [], "power": -12, "holds": "relic_reactor", "attracts": 4}
+]

@@ -1,0 +1,152 @@
+[
+  {
+    "id": "reaper",
+    "name": "Reaper",
+    "fantasy": "warrior",
+    "signature": "Scythe sweep: a full-circle strike, stamina-heavy",
+    "starting_weapon": "scythe",
+    "starting_armor_weight": "medium",
+    "talent_branches": [
+      "harvest",
+      "endurance",
+      "wrath"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "warden",
+    "name": "Warden",
+    "fantasy": "tank",
+    "signature": "Siren shield: holds a doorway alone, staggers what touches it",
+    "starting_weapon": "guards_sword",
+    "starting_armor_weight": "heavy",
+    "talent_branches": [
+      "bulwark",
+      "vigil",
+      "retort"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "gunner",
+    "name": "Gunner",
+    "fantasy": "gunslinger",
+    "signature": "Relic firearms: huge damage, every shot draws the horde",
+    "starting_weapon": "pipe_pistol",
+    "starting_armor_weight": "light",
+    "talent_branches": [
+      "deadeye",
+      "ammunition",
+      "escape"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "hunter",
+    "name": "Hunter",
+    "fantasy": "ranger",
+    "signature": "Silent bow, traps, sees further at night",
+    "starting_weapon": "fibreglass_bow",
+    "starting_armor_weight": "light",
+    "talent_branches": [
+      "stalk",
+      "snare",
+      "provision"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "shade",
+    "name": "Shade",
+    "fantasy": "rogue",
+    "signature": "Daggers and stealth: the Wired lose you after a kill",
+    "starting_weapon": "shiv",
+    "starting_armor_weight": "light",
+    "talent_branches": [
+      "knife",
+      "shadow",
+      "theft"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "wright",
+    "name": "Wright",
+    "fantasy": "wizard",
+    "signature": "Reactor pack: bursts and EMP, overheats",
+    "starting_weapon": "rebar_blade",
+    "starting_armor_weight": "medium",
+    "talent_branches": [
+      "surge",
+      "pulse",
+      "coolant"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "linker",
+    "name": "Linker",
+    "fantasy": "necromancer",
+    "signature": "Re-links Thralls into a pack that follows you",
+    "starting_weapon": "cable_whip",
+    "starting_armor_weight": "medium",
+    "talent_branches": [
+      "binding",
+      "pack",
+      "signal"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "cantor",
+    "name": "Cantor",
+    "fantasy": "bard",
+    "signature": "Relic speaker: buffs allies, disorients the Wired, who listen",
+    "starting_weapon": "machete",
+    "starting_armor_weight": "light",
+    "talent_branches": [
+      "hymn",
+      "dirge",
+      "chorus"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "physician",
+    "name": "Physician",
+    "fantasy": "cleric",
+    "signature": "Medical relics: heal, revive, cure grabs",
+    "starting_weapon": "surgeons_knife",
+    "starting_armor_weight": "medium",
+    "talent_branches": [
+      "triage",
+      "stimulant",
+      "quarantine"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  },
+  {
+    "id": "tinker",
+    "name": "Tinker",
+    "fantasy": "engineer",
+    "signature": "Turrets, repairs, robot workers obey faster",
+    "starting_weapon": "sledge",
+    "starting_armor_weight": "medium",
+    "talent_branches": [
+      "fabricate",
+      "fortify",
+      "automate"
+    ],
+    "proficiency_bonus": 0.1,
+    "species": "human"
+  }
+]

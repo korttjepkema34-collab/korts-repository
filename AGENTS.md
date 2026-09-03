@@ -87,6 +87,8 @@ Model picks and alternatives: `docs/04-models.md`.
 
 ## 6. Where things are
 
+- Gameplay systems (loop rules, building, weapons, armor, classes, workers): `docs/15-gameplay-systems.md`
+- Item data is generated: edit `scripts/gen_items.py`, never `game/data/{weapons,armor,classes,rarities}.json`
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)
 - Decision log: `docs/decisions.md`
 - Open questions for the human: `docs/open-questions.md` (read on return; nothing blocks on them)

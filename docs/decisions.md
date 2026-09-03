@@ -44,3 +44,12 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-02 | 2.5D via 2D: Godot 2D lights with normal maps, particles, CanvasModulate clock, one post-process shader. True HD-2D 3D geometry deferred | Approved (decision 9). Keeps every tool in the studio. |
 | 2026-09-02 | Night readability rule: every enemy identifiable at any distance; lamps light ground, not air | Scaffold author's pushback, accepted with approval. |
 | 2026-09-02 | Mock frames saved as reviewer references; pitch page archived in docs/pitch | So the artist and reviewer have a fixed target from day one. |
+| 2026-09-03 | Loop law: survival is a decision, never a dice roll. Distance from light is danger; Holdouts and wild Hearths are the prepared player's outs; bases are safe because built; breaches cost things | Owner's day-out/night-home loop, with the coin-flip pushback accepted. docs/15 §1. |
+| 2026-09-03 | Decision 3 amended: Keep plot at rung 1, **Holdfasts** (party-claimed ruins, Palworld-style base) at rung 1.5, free-build rung 2 | Resolves shared hub vs personal base. docs/15 §3. |
+| 2026-09-03 | Building: tile grid, pieces with cost/health/blocking, roofs need support, power by cable from a relic reactor, light attracts the horde | docs/15 §3, game/data/build.json. |
+| 2026-09-03 | The Long Night every 7th night; wave pressure scales with light, noise, stored relics | Weekly rhythm; self-balancing difficulty. |
+| 2026-09-03 | Weapons: 9 classes with distinct verbs, 25 base weapons, noise as a stat, guns are loud relics; rarities Scrap/Worn/Sound/Fine/Saint; workbench +1..+10; Reliquary socket deterministic and permanent | docs/15 §4. Volume is data, identity is animation. |
+| 2026-09-03 | Armor: head/body/legs, light/medium/heavy weight classes, 12 sets with 2/3-piece bonuses and a side effect each, generated from 3 silhouettes per weight | docs/15 §5. |
+| 2026-09-03 | Classes: 10 (Reaper, Warden, Gunner, Hunter, Shade, Wright, Linker, Cantor, Physician, Tinker); class = kit + signature relic + talent tree; all gear usable by all; everyone human; nothing is magic | docs/15 §6. Fantasy names reskinned to the world. |
+| 2026-09-03 | Workers: robots are repaired relics (Mule, Maintenance drone, Sentry), humans are rescued survivors (Farmer, Smith, Guard, Scout); jobs are stations; 3 workers first | docs/15 §7. Full automation is rung 2. |
+| 2026-09-03 | Items are generated from a stat budget by scripts/gen_items.py; JSON is never hand-edited | An unattended AI team cannot hand-balance 25x10x12. docs/15 §8. |

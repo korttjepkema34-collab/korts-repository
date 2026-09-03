@@ -1,0 +1,1034 @@
+[
+  {
+    "id": "shiv",
+    "name": "Shiv",
+    "class": "dagger",
+    "tier": 1,
+    "materials": [
+      "scrap"
+    ],
+    "notes": "A sharpened spoon. Everyone starts with something like it.",
+    "aps": 2.4,
+    "reach": 0.8,
+    "stamina": 6,
+    "noise": 1,
+    "affix_pool": [
+      "bleed",
+      "quick",
+      "silent",
+      "lifesteal"
+    ],
+    "damage_by_rarity": {
+      "scrap": 14.2,
+      "worn": 16.7,
+      "sound": 19.2,
+      "fine": 21.7,
+      "saint": 25.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "kitchen_knife",
+    "name": "Kitchen Knife",
+    "class": "dagger",
+    "tier": 2,
+    "materials": [
+      "steel"
+    ],
+    "notes": "Still says DISHWASHER SAFE on the handle.",
+    "aps": 2.4,
+    "reach": 0.8,
+    "stamina": 6,
+    "noise": 1,
+    "affix_pool": [
+      "bleed",
+      "quick",
+      "silent",
+      "lifesteal"
+    ],
+    "damage_by_rarity": {
+      "scrap": 28.3,
+      "worn": 33.3,
+      "sound": 38.3,
+      "fine": 43.3,
+      "saint": 50.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "surgeons_knife",
+    "name": "Surgeon's Knife",
+    "class": "dagger",
+    "tier": 4,
+    "materials": [
+      "relic"
+    ],
+    "notes": "Medical relic. Cuts what it is pointed at.",
+    "aps": 2.4,
+    "reach": 0.8,
+    "stamina": 6,
+    "noise": 1,
+    "affix_pool": [
+      "bleed",
+      "quick",
+      "silent",
+      "lifesteal"
+    ],
+    "damage_by_rarity": {
+      "scrap": 56.7,
+      "worn": 66.7,
+      "sound": 76.7,
+      "fine": 86.7,
+      "saint": 100.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "machete",
+    "name": "Machete",
+    "class": "sword",
+    "tier": 1,
+    "materials": [
+      "steel"
+    ],
+    "notes": "Trade goods from before. Cheap, honest.",
+    "aps": 1.5,
+    "reach": 1.2,
+    "stamina": 10,
+    "noise": 3,
+    "affix_pool": [
+      "bleed",
+      "stagger",
+      "quick",
+      "cheap"
+    ],
+    "damage_by_rarity": {
+      "scrap": 22.7,
+      "worn": 26.7,
+      "sound": 30.7,
+      "fine": 34.7,
+      "saint": 40.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "guards_sword",
+    "name": "Guard's Sword",
+    "class": "sword",
+    "tier": 2,
+    "materials": [
+      "steel"
+    ],
+    "notes": "Issued to a lord's guard. Taken off one.",
+    "aps": 1.5,
+    "reach": 1.2,
+    "stamina": 10,
+    "noise": 3,
+    "affix_pool": [
+      "bleed",
+      "stagger",
+      "quick",
+      "cheap"
+    ],
+    "damage_by_rarity": {
+      "scrap": 45.3,
+      "worn": 53.3,
+      "sound": 61.3,
+      "fine": 69.3,
+      "saint": 80.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "rebar_blade",
+    "name": "Rebar Blade",
+    "class": "sword",
+    "tier": 3,
+    "materials": [
+      "rebar"
+    ],
+    "notes": "Ground on a wheel for a month. Heavy for its length.",
+    "aps": 1.5,
+    "reach": 1.2,
+    "stamina": 10,
+    "noise": 3,
+    "affix_pool": [
+      "bleed",
+      "stagger",
+      "quick",
+      "cheap"
+    ],
+    "damage_by_rarity": {
+      "scrap": 68.0,
+      "worn": 80.0,
+      "sound": 92.0,
+      "fine": 104.0,
+      "saint": 120.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "ceremonial_sword",
+    "name": "Ceremonial Sword",
+    "class": "sword",
+    "tier": 4,
+    "materials": [
+      "steel",
+      "gold"
+    ],
+    "notes": "From a guild hall wall. Sharper than it should be.",
+    "aps": 1.5,
+    "reach": 1.2,
+    "stamina": 10,
+    "noise": 3,
+    "affix_pool": [
+      "bleed",
+      "stagger",
+      "quick",
+      "cheap"
+    ],
+    "damage_by_rarity": {
+      "scrap": 90.7,
+      "worn": 106.7,
+      "sound": 122.7,
+      "fine": 138.7,
+      "saint": 160.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "scythe",
+    "name": "Scythe",
+    "class": "greatblade",
+    "tier": 2,
+    "materials": [
+      "steel"
+    ],
+    "notes": "The Reaper's tool. A harvest blade on a long haft.",
+    "aps": 0.8,
+    "reach": 1.8,
+    "stamina": 18,
+    "noise": 4,
+    "affix_pool": [
+      "stagger",
+      "cleave",
+      "lifesteal",
+      "cheap"
+    ],
+    "damage_by_rarity": {
+      "scrap": 85.0,
+      "worn": 100.0,
+      "sound": 115.0,
+      "fine": 130.0,
+      "saint": 150.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "signpost_blade",
+    "name": "Signpost Blade",
+    "class": "greatblade",
+    "tier": 3,
+    "materials": [
+      "steel"
+    ],
+    "notes": "A street sign, folded and edged.",
+    "aps": 0.8,
+    "reach": 1.8,
+    "stamina": 18,
+    "noise": 4,
+    "affix_pool": [
+      "stagger",
+      "cleave",
+      "lifesteal",
+      "cheap"
+    ],
+    "damage_by_rarity": {
+      "scrap": 127.5,
+      "worn": 150.0,
+      "sound": 172.5,
+      "fine": 195.0,
+      "saint": 225.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "turbine_blade",
+    "name": "Turbine Blade",
+    "class": "greatblade",
+    "tier": 5,
+    "materials": [
+      "relic"
+    ],
+    "notes": "One fin of a wind turbine. Nobody knows how it was cut.",
+    "aps": 0.8,
+    "reach": 1.8,
+    "stamina": 18,
+    "noise": 4,
+    "affix_pool": [
+      "stagger",
+      "cleave",
+      "lifesteal",
+      "cheap"
+    ],
+    "damage_by_rarity": {
+      "scrap": 212.5,
+      "worn": 250.0,
+      "sound": 287.5,
+      "fine": 325.0,
+      "saint": 375.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "sledge",
+    "name": "Sledge",
+    "class": "hammer",
+    "tier": 1,
+    "materials": [
+      "steel",
+      "wood"
+    ],
+    "notes": "Breaks doors. Breaks Thralls.",
+    "aps": 0.7,
+    "reach": 1.3,
+    "stamina": 20,
+    "noise": 6,
+    "affix_pool": [
+      "stagger",
+      "breaker",
+      "cheap",
+      "quake"
+    ],
+    "damage_by_rarity": {
+      "scrap": 48.6,
+      "worn": 57.1,
+      "sound": 65.7,
+      "fine": 74.3,
+      "saint": 85.7
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "manhole_maul",
+    "name": "Manhole Maul",
+    "class": "hammer",
+    "tier": 3,
+    "materials": [
+      "iron"
+    ],
+    "notes": "A manhole cover on a pipe.",
+    "aps": 0.7,
+    "reach": 1.3,
+    "stamina": 20,
+    "noise": 6,
+    "affix_pool": [
+      "stagger",
+      "breaker",
+      "cheap",
+      "quake"
+    ],
+    "damage_by_rarity": {
+      "scrap": 145.7,
+      "worn": 171.4,
+      "sound": 197.1,
+      "fine": 222.9,
+      "saint": 257.1
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "piston_hammer",
+    "name": "Piston Hammer",
+    "class": "hammer",
+    "tier": 5,
+    "materials": [
+      "relic"
+    ],
+    "notes": "Fires on impact. Needs power.",
+    "aps": 0.7,
+    "reach": 1.3,
+    "stamina": 20,
+    "noise": 6,
+    "affix_pool": [
+      "stagger",
+      "breaker",
+      "cheap",
+      "quake"
+    ],
+    "damage_by_rarity": {
+      "scrap": 242.9,
+      "worn": 285.7,
+      "sound": 328.6,
+      "fine": 371.4,
+      "saint": 428.6
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "rebar_spear",
+    "name": "Rebar Spear",
+    "class": "spear",
+    "tier": 1,
+    "materials": [
+      "rebar"
+    ],
+    "notes": "Reach is armour.",
+    "aps": 1.2,
+    "reach": 2.2,
+    "stamina": 11,
+    "noise": 2,
+    "affix_pool": [
+      "pierce",
+      "quick",
+      "cheap",
+      "bleed"
+    ],
+    "damage_by_rarity": {
+      "scrap": 28.3,
+      "worn": 33.3,
+      "sound": 38.3,
+      "fine": 43.3,
+      "saint": 50.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "antenna_pike",
+    "name": "Antenna Pike",
+    "class": "spear",
+    "tier": 3,
+    "materials": [
+      "relic"
+    ],
+    "notes": "A broadcast mast section. Hums near the Wired.",
+    "aps": 1.2,
+    "reach": 2.2,
+    "stamina": 11,
+    "noise": 2,
+    "affix_pool": [
+      "pierce",
+      "quick",
+      "cheap",
+      "bleed"
+    ],
+    "damage_by_rarity": {
+      "scrap": 85.0,
+      "worn": 100.0,
+      "sound": 115.0,
+      "fine": 130.0,
+      "saint": 150.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "cable_whip",
+    "name": "Cable Whip",
+    "class": "whip",
+    "tier": 2,
+    "materials": [
+      "cable"
+    ],
+    "notes": "Braided power cable. Pulls what it catches.",
+    "aps": 1.3,
+    "reach": 2.5,
+    "stamina": 9,
+    "noise": 3,
+    "affix_pool": [
+      "pull",
+      "stagger",
+      "quick",
+      "shock"
+    ],
+    "damage_by_rarity": {
+      "scrap": 52.3,
+      "worn": 61.5,
+      "sound": 70.8,
+      "fine": 80.0,
+      "saint": 92.3
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "chain_flail",
+    "name": "Chain Flail",
+    "class": "whip",
+    "tier": 3,
+    "materials": [
+      "chain"
+    ],
+    "notes": "A padlock on a chain, mostly.",
+    "aps": 1.3,
+    "reach": 2.5,
+    "stamina": 9,
+    "noise": 3,
+    "affix_pool": [
+      "pull",
+      "stagger",
+      "quick",
+      "shock"
+    ],
+    "damage_by_rarity": {
+      "scrap": 78.5,
+      "worn": 92.3,
+      "sound": 106.2,
+      "fine": 120.0,
+      "saint": 138.5
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "fibreglass_bow",
+    "name": "Fibreglass Bow",
+    "class": "bow",
+    "tier": 2,
+    "materials": [
+      "fibreglass"
+    ],
+    "notes": "Sporting goods, salvaged. Quiet.",
+    "aps": 1.0,
+    "reach": 8.0,
+    "stamina": 8,
+    "noise": 1,
+    "affix_pool": [
+      "pierce",
+      "silent",
+      "quick",
+      "light"
+    ],
+    "damage_by_rarity": {
+      "scrap": 68.0,
+      "worn": 80.0,
+      "sound": 92.0,
+      "fine": 104.0,
+      "saint": 120.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "compound_bow",
+    "name": "Compound Bow",
+    "class": "bow",
+    "tier": 3,
+    "materials": [
+      "fibreglass",
+      "steel"
+    ],
+    "notes": "Pulleys still work. Hits hard.",
+    "aps": 1.0,
+    "reach": 8.0,
+    "stamina": 8,
+    "noise": 1,
+    "affix_pool": [
+      "pierce",
+      "silent",
+      "quick",
+      "light"
+    ],
+    "damage_by_rarity": {
+      "scrap": 102.0,
+      "worn": 120.0,
+      "sound": 138.0,
+      "fine": 156.0,
+      "saint": 180.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "crossbow",
+    "name": "Crossbow",
+    "class": "bow",
+    "tier": 4,
+    "materials": [
+      "steel",
+      "wood"
+    ],
+    "notes": "Slow to wind. Ends arguments.",
+    "aps": 1.0,
+    "reach": 8.0,
+    "stamina": 8,
+    "noise": 1,
+    "affix_pool": [
+      "pierce",
+      "silent",
+      "quick",
+      "light"
+    ],
+    "damage_by_rarity": {
+      "scrap": 136.0,
+      "worn": 160.0,
+      "sound": 184.0,
+      "fine": 208.0,
+      "saint": 240.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "brick",
+    "name": "Brick",
+    "class": "throwable",
+    "tier": 1,
+    "materials": [
+      "brick"
+    ],
+    "notes": "The first ranged weapon. Loud on cobbles.",
+    "aps": 0.6,
+    "reach": 6.0,
+    "stamina": 8,
+    "noise": 8,
+    "affix_pool": [
+      "burn",
+      "shrapnel",
+      "cheap",
+      "quake"
+    ],
+    "damage_by_rarity": {
+      "scrap": 56.7,
+      "worn": 66.7,
+      "sound": 76.7,
+      "fine": 86.7,
+      "saint": 100.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "molotov",
+    "name": "Molotov",
+    "class": "throwable",
+    "tier": 2,
+    "materials": [
+      "glass",
+      "oil"
+    ],
+    "notes": "Fire. The Wired do not stop for it, but they burn.",
+    "aps": 0.6,
+    "reach": 6.0,
+    "stamina": 8,
+    "noise": 8,
+    "affix_pool": [
+      "burn",
+      "shrapnel",
+      "cheap",
+      "quake"
+    ],
+    "damage_by_rarity": {
+      "scrap": 113.3,
+      "worn": 133.3,
+      "sound": 153.3,
+      "fine": 173.3,
+      "saint": 200.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "shrapnel_jar",
+    "name": "Shrapnel Jar",
+    "class": "throwable",
+    "tier": 3,
+    "materials": [
+      "glass",
+      "scrap"
+    ],
+    "notes": "A jar of nails around a firecracker.",
+    "aps": 0.6,
+    "reach": 6.0,
+    "stamina": 8,
+    "noise": 8,
+    "affix_pool": [
+      "burn",
+      "shrapnel",
+      "cheap",
+      "quake"
+    ],
+    "damage_by_rarity": {
+      "scrap": 170.0,
+      "worn": 200.0,
+      "sound": 230.0,
+      "fine": 260.0,
+      "saint": 300.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "pipe_pistol",
+    "name": "Pipe Pistol",
+    "class": "gun",
+    "tier": 3,
+    "materials": [
+      "relic",
+      "pipe"
+    ],
+    "notes": "One shot, then everything knows where you are.",
+    "aps": 0.9,
+    "reach": 10.0,
+    "stamina": 4,
+    "noise": 10,
+    "affix_pool": [
+      "pierce",
+      "stagger",
+      "breaker",
+      "burn"
+    ],
+    "damage_by_rarity": {
+      "scrap": 113.3,
+      "worn": 133.3,
+      "sound": 153.3,
+      "fine": 173.3,
+      "saint": 200.0
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  },
+  {
+    "id": "scavenged_rifle",
+    "name": "Scavenged Rifle",
+    "class": "gun",
+    "tier": 5,
+    "materials": [
+      "relic"
+    ],
+    "notes": "A real one. The Keep's most expensive sound.",
+    "aps": 0.9,
+    "reach": 10.0,
+    "stamina": 4,
+    "noise": 10,
+    "affix_pool": [
+      "pierce",
+      "stagger",
+      "breaker",
+      "burn"
+    ],
+    "damage_by_rarity": {
+      "scrap": 188.9,
+      "worn": 222.2,
+      "sound": 255.6,
+      "fine": 288.9,
+      "saint": 333.3
+    },
+    "upgrade": {
+      "max": 10,
+      "damage_per_level": 0.06,
+      "scrap_cost": "20*level^2"
+    },
+    "reliquary": {
+      "stat_mult": 1.25,
+      "cost": {
+        "relic": 1,
+        "saint_materials": 3,
+        "scrap": 2000
+      },
+      "permanent": true
+    }
+  }
+]
