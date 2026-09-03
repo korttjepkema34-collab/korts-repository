@@ -9,7 +9,7 @@ from pathlib import Path
 
 from shared.jobs import Result
 
-from . import llm
+from . import llm, traces
 
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp"}
 
@@ -38,17 +38,29 @@ def review_result(repo: Path, res: Result, job_spec: dict) -> tuple[str, str]:
                 "Respond with JSON {\"verdict\": \"approved\"|\"rejected\", \"reason\": \"...\"}."}]
     content += [_image_block(p) for p in images[:4]]
     content += [_image_block(p) for p in refs]
+    model = llm.reviewer_model()
     try:
-        resp = llm.client().chat.completions.create(
-            model=llm.reviewer_model(), temperature=0.1,
+        resp = llm.client(llm.slot_for(model)).chat.completions.create(
+            model=model, temperature=0.1,
             response_format={"type": "json_object"},
             messages=[{"role": "system", "content": system}, {"role": "user", "content": content}],
         )
-        data = json.loads(resp.choices[0].message.content or "{}")
+        raw = resp.choices[0].message.content or "{}"
+        data = json.loads(raw)
         verdict = "approved" if str(data.get("verdict", "")).lower().startswith("appr") else "rejected"
-        return verdict, str(data.get("reason", ""))[:500]
+        reason = str(data.get("reason", ""))[:500]
     except Exception as e:  # reviewer down: do not block the pipeline, but do not approve either
         return "rejected", f"reviewer error: {e}"
+    # Training-data capture: paths are recorded relative to the repo; file_verdict() moves the
+    # files afterwards, so the dataset builder resolves incoming/ -> approved|rejected/ itself.
+    try:
+        traces.write_review_trace(repo, job_id=res.job_id,
+                                  images=[str(p.relative_to(repo)) for p in images[:4]],
+                                  references=[str(p.relative_to(repo)) for p in refs],
+                                  spec=job_spec, verdict=verdict, reason=reason, model=model, raw=raw)
+    except Exception:
+        pass
+    return verdict, reason
 
 
 def file_verdict(repo: Path, res: Result, verdict: str, reason: str) -> list[str]:

@@ -3,3 +3,4 @@ redis>=5.0
 openai>=1.40
 pyyaml>=6.0
 mcp>=1.2
+pillow>=10.0

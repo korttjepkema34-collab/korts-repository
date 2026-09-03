@@ -25,7 +25,7 @@ from pathlib import Path
 from shared import queue as q
 from shared.jobs import Job, JobKind, ResultStatus
 
-from . import coder, gitops, planner, report, reviewer, wake
+from . import coder, gitops, planner, report, reviewer, training, wake
 from .state import State
 
 log = logging.getLogger("orchestrator")
@@ -84,7 +84,9 @@ def reap_stale(r, st: State) -> None:
         for raw in r.lrange(key, 0, -1):
             job = Job.from_json(raw)
             started = st.job(job.id).get("claimed_at") or now
-            if now - started > STALE_JOB_S:
+            # training jobs legitimately run for hours; they say so in spec.stale_after_s
+            limit = max(STALE_JOB_S, int(job.spec.get("stale_after_s", 0) or 0))
+            if now - started > limit:
                 r.lrem(key, 1, raw)
                 if job.attempt < job.max_attempts:
                     job.attempt += 1
@@ -117,6 +119,10 @@ def handle_results(r, st: State) -> None:
                 if tf: append_log(tf, f"APPROVED {res.job_id}: {reason} -> {moved[:3]}")
             else:
                 _retry_or_fail(r, st, res.job_id, job_meta, f"reviewer: {reason}", tf)
+        elif res.status == ResultStatus.OK and job_meta.get("kind") == "train":
+            st.set_job(res.job_id, "ok", outputs=res.outputs)
+            training.on_trained(REPO, spec, res.outputs, ev)
+            if tf: append_log(tf, f"TRAINED {res.job_id}: {res.outputs[:3]}")
         elif res.status == ResultStatus.OK:
             st.set_job(res.job_id, "ok", outputs=res.outputs)
             if tf: append_log(tf, f"ok {res.job_id}: {res.outputs}")
@@ -243,6 +249,17 @@ def daily(r, st: State) -> None:
     deferred = sorted(DEFERRED.glob("*.md"), key=task_priority)
     if deferred:
         plan_next(r, st, escalate=True, source=DEFERRED)
+    # Self-improvement: when enough new labelled data has accumulated, queue a training job
+    # for the GPU worker (off by default; AUTO_TRAIN=1 in server/.env). See docs/15-training.md.
+    try:
+        for job in training.auto_jobs(REPO, st):
+            st.add_job(job.task_id, job.id, job.kind.value)
+            st.set_job(job.id, "pending", job=job.to_json(), spec=job.spec, max_attempts=job.max_attempts,
+                       attempt=1, task=job.task_id, kind=job.kind.value)
+            q.enqueue(r, job)
+            ev(f"queued training job {job.id} ({job.spec.get('recipe')})")
+    except Exception:
+        log.exception("auto-train check failed")
     report.write(REPO, st, q.queue_depths(r), q.worker_alive(r, WORKER), EVENTS)
     if gitops.commit_paths(REPO, ["tasks", "reports", "PROGRESS.md", "docs", "style"], f"studio: daily checkpoint {time.strftime('%Y-%m-%d')}"):
         gitops.push(REPO, gitops.current_branch(REPO))

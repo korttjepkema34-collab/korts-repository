@@ -19,6 +19,14 @@ Apache 2.0 or MIT licences.
 | **Embeddings** (memory/RAG over docs and code) | server | **nomic-embed-text** or **bge-m3** | Tiny, fast on CPU | |
 | **Animation (2D)** | gpu | SDXL + character reference sheet, frame by frame, with the reviewer checking consistency | No dedicated open sprite-animation model is reliable yet | Open sprite bases (LPC) as a fallback for walk cycles; see docs/10-game-design.md |
 
+## Fine-tuned slots (docs/15-training.md)
+
+| Slot | After training | Served by | `.env` |
+|---|---|---|---|
+| Coder | `reapers-coder` (7B dense QLoRA merged, q4_K_M) | Ollama on the server, or the GPU box when idle | `CODER_MODEL`, optional `CODER_BASE_URL` |
+| Reviewer | fine-tuned Qwen2.5-VL-3B / Qwen3-VL-4B | `training/serve_reviewer.py` on the GPU box (server once it has a card) | `REVIEWER_MODEL`, `REVIEWER_BASE_URL` |
+| 2D artist | SDXL + `rrstyle` LoRA | ComfyUI, `STYLE_LORA` node in `worker/workflows/default.json` | none |
+
 ## Placement rules
 
 1. **The orchestrator must be a MoE model** while the server has no GPU. Dense models are too

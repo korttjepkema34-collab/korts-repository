@@ -27,8 +27,9 @@ def screenshot(game: Path, scene: str, out: Path, frames: int = 10, timeout_s: i
 
 def describe(image: Path, question: str) -> str:
     data = base64.b64encode(image.read_bytes()).decode()
-    resp = llm.client().chat.completions.create(
-        model=llm.reviewer_model(), temperature=0.1,
+    model = llm.reviewer_model()
+    resp = llm.client(llm.slot_for(model)).chat.completions.create(
+        model=model, temperature=0.1,
         messages=[{"role": "user", "content": [
             {"type": "text", "text": question},
             {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{data}"}}]}])

@@ -2,11 +2,12 @@
 and unload(cfg) to free VRAM. Add a kind here and in shared/jobs.py together."""
 from shared.jobs import JobKind
 
-from . import acestep, comfyui, stub
+from . import acestep, comfyui, stub, train
 
 HANDLERS = {
     JobKind.STUB: stub,
     JobKind.IMAGE: comfyui,
     JobKind.MUSIC: acestep,
     JobKind.SFX: acestep,
+    JobKind.TRAIN: train,
 }

@@ -20,6 +20,13 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 - [ ] Stable Audio Open version and licence.
 - [ ] Server case clearance and PSU headroom for a full-size GPU.
 
+## Training (docs/16-when-you-get-home.md has the checklist)
+
+- [ ] Unsloth on native Windows: does `import unsloth` work in `training\.venv` after `setup.ps1`? If not, WSL2 route.
+- [ ] Confirm `unsloth/Qwen3-VL-4B-Instruct` is supported by the installed Unsloth; else keep the Qwen2.5-VL-3B default.
+- [ ] Verify the gdquest repo in `training/collect_godot4_code.py` still exists and is MIT; add more MIT Godot 4 repos.
+- [ ] Run the coder baseline eval before any fine-tune so `reports/eval-coder.md` has a first row.
+
 ## Not started
 
 - [ ] Normal-map generation for sprites and tiles (a ComfyUI workflow or a small script) so 2D lights have direction.

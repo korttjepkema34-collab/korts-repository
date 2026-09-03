@@ -15,21 +15,34 @@ from pathlib import Path
 
 from openai import OpenAI
 
-_client: OpenAI | None = None
+_clients: dict[str, OpenAI] = {}
 
 
-def client() -> OpenAI:
-    global _client
-    if _client is None:
-        _client = OpenAI(base_url=os.environ.get("LLM_BASE_URL", "http://127.0.0.1:11434/v1"),
-                         api_key=os.environ.get("LLM_API_KEY", "ollama"), timeout=3600)
-    return _client
+def client(slot: str = "default") -> OpenAI:
+    """One client per model slot. A slot may point at a different endpoint via
+    CODER_BASE_URL / REVIEWER_BASE_URL (e.g. a fine-tuned model served from the gaming PC);
+    otherwise every slot shares LLM_BASE_URL."""
+    if slot not in _clients:
+        default_url = os.environ.get("LLM_BASE_URL", "http://127.0.0.1:11434/v1")
+        url = os.environ.get(f"{slot.upper()}_BASE_URL") or default_url
+        _clients[slot] = OpenAI(base_url=url, api_key=os.environ.get("LLM_API_KEY", "ollama"), timeout=3600)
+    return _clients[slot]
 
 
 def orchestrator_model() -> str: return os.environ["ORCHESTRATOR_MODEL"]
 def coder_model() -> str: return os.environ.get("CODER_MODEL") or orchestrator_model()
 def escalation_model() -> str: return os.environ.get("ESCALATION_MODEL") or orchestrator_model()
 def reviewer_model() -> str: return os.environ.get("REVIEWER_MODEL") or orchestrator_model()
+
+
+def slot_for(model: str) -> str:
+    """Which endpoint serves a model name: the coder or reviewer slot if it matches that slot's
+    model and that slot has its own base URL, else the default."""
+    if model == coder_model() and os.environ.get("CODER_BASE_URL"):
+        return "coder"
+    if model == reviewer_model() and os.environ.get("REVIEWER_BASE_URL"):
+        return "reviewer"
+    return "default"
 
 
 def load_role(repo_root: Path, role: str) -> str:

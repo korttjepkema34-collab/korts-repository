@@ -9,6 +9,7 @@ task board directly; everyone else receives jobs.
 | **Coder** | GDScript, scenes, resources, imports, tests | Job with spec, `docs/09-godot-conventions.md`, current repo | Commits on `coder/<id>-<slug>` branch, test results | Godot MCP server, git |
 | **2D artist** | Sprites, tilesets, backgrounds, UI art, concept art | Job with description, style bible, references | PNGs in `assets/incoming/<id>/` + sidecar JSON | ComfyUI (SDXL/FLUX, LoRAs, IP-Adapter) |
 | **Audio** | Music tracks, SFX, placeholder voice | Job with mood/tempo/length or SFX description | `.ogg`/`.wav` in `assets/incoming/<id>/` + sidecar | ACE-Step, Stable Audio Open, Kokoro |
+| **Trainer** | Fine-tune the style LoRA, coder and reviewer on the studio's own approved work | `train` job with recipe + dataset built on the server | LoRA / merged model in `assets/training/models/` + manifest | kohya sd-scripts, Unsloth, `training/` (docs/15) |
 | **Reviewer** | QA every generated asset and every code branch against style bible and conventions | Asset + style bible, or branch diff + test output | Verdict JSON, file moved to `approved/` or `rejected/` | Vision model, headless Godot, git |
 
 ## Escalation ladder

@@ -21,6 +21,7 @@ class JobKind(str, Enum):
     MUSIC = "music"      # ACE-Step: tracks and loops
     SFX = "sfx"          # Stable Audio Open: short effects
     CODE = "code"        # handled in-process by the orchestrator's coder loop, never queued to the GPU worker
+    TRAIN = "train"      # fine-tune a model on the studio's own data (LoRA / QLoRA); GPU worker, see training/
     # `review` is not a job kind: the orchestrator reviews every asset result automatically.
 
 
@@ -30,6 +31,7 @@ class Role(str, Enum):
     ARTIST_2D = "artist-2d"
     AUDIO = "audio"
     REVIEWER = "reviewer"
+    TRAINER = "trainer"
 
 
 def _now() -> str:

@@ -8,6 +8,11 @@ assets/**
 !assets/README.md
 !assets/*/.gitkeep
 
+# training data captured by the studio (traces, retrieval index, fetched docs, cloned repos)
+data/**
+!data/README.md
+worker/workflows/*.bak
+
 # python
 __pycache__/
 *.pyc

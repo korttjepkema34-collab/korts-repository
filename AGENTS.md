@@ -40,6 +40,8 @@ coder (server, in-process) edits game/ with file tools, headless Godot gate  -> 
 task closes  ->  tasks/done/ (all jobs passed) or tasks/deferred/ (caps hit; retried daily)
 backlog empty  ->  orchestrator generates next tasks from docs/10-game-design.md
 daily  ->  reports/YYYY-MM-DD.md + PROGRESS.md, committed and pushed
+always ->  every coder run and reviewer verdict is traced to data/traces/ (training data)
+daily, if AUTO_TRAIN=1 ->  enough new data? build dataset, queue a `train` job for the GPU worker
 ```
 
 Key rules: **the server never calls the gaming PC directly** (it enqueues, the worker pulls), and
@@ -59,6 +61,7 @@ Each role has a system prompt in `agents/`. Load the one you are acting as.
 | 2D artist | `agents/artist-2d.md` | gpu (ComfyUI), later server too | small LLM + SDXL/FLUX |
 | Audio | `agents/audio.md` | gpu (ACE-Step, Stable Audio Open), later server | small LLM + audio model |
 | Reviewer / QA | `agents/reviewer.md` | server (vision model) | vision-language model |
+| Trainer | no prompt; `training/` scripts | gpu (`train` jobs) | not an LLM role: kohya / Unsloth runs |
 
 Model picks and alternatives: `docs/04-models.md`.
 
@@ -94,3 +97,4 @@ Model picks and alternatives: `docs/04-models.md`.
 - Server stack: `server/docker-compose.yml`
 - GPU worker: `worker/worker.py`, config in `worker/config.yaml`
 - Shared job schema: `shared/jobs.py`
+- Training: `training/` (recipes), `data/traces/` (labelled history), `docs/15-training.md`

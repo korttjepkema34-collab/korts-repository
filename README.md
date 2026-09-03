@@ -46,7 +46,10 @@ game/                <- the Godot 4 project (placeholder until the first prototy
 style/               <- style bible + reference images every art prompt must include
 tasks/               <- file-based task board: backlog / in-progress / done
 assets/              <- generated assets: incoming / approved / rejected (synced, not in git)
-scripts/             <- wake-on-LAN, Tailscale ACL example, helpers
+                        plus training/datasets and training/models (same sync)
+data/                <- traces, retrieval index, fetched docs (server-only, not in git)
+training/            <- dataset builders, fine-tune recipes, eval, reviewer server
+scripts/             <- wake-on-LAN, Tailscale ACL example, override/train/activate helpers
 ```
 
 ## Quick start
@@ -60,6 +63,13 @@ scripts/             <- wake-on-LAN, Tailscale ACL example, helpers
 Turn it on and walk away. The orchestrator plans, delegates, reviews, retries, defers, generates
 its own backlog, and writes a daily report to `PROGRESS.md`. Nothing waits for a human. Setup
 checklist: `docs/13-before-you-walk-away.md`. Contract: `docs/12-autonomy.md`.
+
+## Self-improvement
+
+The studio records every coder run (with its gate result) and every reviewer verdict, gives
+the coder a retrieval tool over the Godot 4 docs, and can fine-tune a style LoRA, a coder and a
+reviewer on its own approved work using the gaming PC. Nothing activates itself. How it works:
+`docs/15-training.md`. What to do: `docs/16-when-you-get-home.md`.
 
 ## Status
 

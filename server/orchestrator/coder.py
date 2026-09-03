@@ -18,13 +18,15 @@ import logging
 import time
 from pathlib import Path
 
-from . import gitops, godot, llm, mcp_bridge, vision
+from . import gitops, godot, llm, mcp_bridge, rag, traces, vision
 
 log = logging.getLogger("coder")
 MAX_STEPS = 40
 MAX_FILE_BYTES = 60_000
 
 TOOLS = [
+    {"type": "function", "function": {"name": "search_docs", "description": "Search the Godot 4 reference docs, this project's conventions and its existing code. Use before writing any API call you are not certain of (signals, TileMapLayer, CharacterBody2D, multiplayer, tweens).",
+        "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}}},
     {"type": "function", "function": {"name": "list_files", "description": "List files under game/ (relative paths).",
         "parameters": {"type": "object", "properties": {"subdir": {"type": "string"}}, "required": []}}},
     {"type": "function", "function": {"name": "read_file", "description": "Read a file under game/.",
@@ -57,6 +59,8 @@ def _exec(game: Path, name: str, args: dict, mcp=None) -> str:
     game = game.resolve()
     if name.startswith("mcp_") and mcp is not None:
         return mcp.call(name, args)
+    if name == "search_docs":
+        return rag.search(game.parent, args.get("query", ""), k=5) or "(no index built; run scripts/build_rag_index.py on the server)"
     if name == "visual_check":
         return vision.visual_check(game.parent, args["scene"], args.get("expectation", ""))
     if name == "run_scene_capture_output":
@@ -88,18 +92,38 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
     gitops.new_branch(repo, branch, base)
     mcp = mcp_bridge.connect_if_configured(str(game))
     tools = TOOLS + (mcp.tools if mcp else [])
+    model = llm.escalation_model() if escalate else llm.coder_model()
+    messages: list[dict] = []
+    summary = None
+    steps = 0
+
+    def gate_and_merge() -> tuple[bool, str]:
+        hits = godot.godot3_hits(game)
+        if hits:
+            return False, "Godot 3 patterns found:\n" + "\n".join(hits[:20])
+        ok, out = godot.run_tests(game)
+        if not ok:
+            return False, "Headless check/tests failed:\n" + out[-4000:]
+        if not gitops.commit_paths(repo, ["game"], f"{task_id}: {summary or spec.get('goal', 'code job')}"[:200]):
+            return False, "coder made no changes"
+        merged = gitops.merge(repo, branch, base, f"{task_id}: merge {branch}")
+        return (True, summary or "merged") if merged else (False, "merge conflict; branch kept")
+
     try:
         system = llm.load_role(repo, "coder") + "\n\n" + (repo / "docs" / "09-godot-conventions.md").read_text()
-        user = ("Goal:\n" + str(spec.get("goal", spec)) + "\n\nAcceptance:\n"
+        goal = str(spec.get("goal", spec))
+        # Retrieval: the most relevant docs/code chunks for this goal, if an index exists.
+        refs = rag.search(repo, goal + "\n" + "\n".join(str(a) for a in spec.get("acceptance", [])), k=6)
+        user = ("Goal:\n" + goal + "\n\nAcceptance:\n"
                 + "\n".join(f"- {a}" for a in spec.get("acceptance", [])) + "\n\nApproved assets available:\n"
                 + "\n".join(str(p.relative_to(repo)) for p in (repo / "assets" / "approved").rglob("*") if p.is_file())[:3000]
                 + (f"\n\nNotes from the previous failed attempt:\n{notes}" if notes else "")
+                + (f"\n\nReference material (Godot 4 docs and this project; use search_docs for more):\n{refs}" if refs else "")
                 + "\n\nWork in small steps. Call run_godot_check after edits. Call finish when the acceptance list is met.")
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
-        model = llm.escalation_model() if escalate else llm.coder_model()
-        summary = None
         for step in range(MAX_STEPS):
-            resp = llm.client().chat.completions.create(model=model, messages=messages, tools=tools, temperature=0.1)
+            steps = step + 1
+            resp = llm.client(llm.slot_for(model)).chat.completions.create(model=model, messages=messages, tools=tools, temperature=0.1)
             msg = resp.choices[0].message
             messages.append({"role": "assistant", "content": msg.content or "", "tool_calls": [tc.model_dump() for tc in (msg.tool_calls or [])]})
             if not msg.tool_calls:
@@ -120,17 +144,15 @@ def run_code_job(repo: Path, task_id: str, job_id: str, spec: dict, notes: str |
                 messages.append({"role": "tool", "tool_call_id": tc.id, "content": out[:12000]})
             if summary is not None:
                 break
-        # Gate
-        hits = godot.godot3_hits(game)
-        if hits:
-            return False, "Godot 3 patterns found:\n" + "\n".join(hits[:20])
-        ok, out = godot.run_tests(game)
-        if not ok:
-            return False, "Headless check/tests failed:\n" + out[-4000:]
-        if not gitops.commit_paths(repo, ["game"], f"{task_id}: {summary or spec.get('goal', 'code job')}"[:200]):
-            return False, "coder made no changes"
-        merged = gitops.merge(repo, branch, base, f"{task_id}: merge {branch}")
-        return (True, summary or "merged") if merged else (False, "merge conflict; branch kept")
+        # Gate, then record the whole run with its pass/fail label for training.
+        ok, msg = gate_and_merge()
+        try:
+            traces.write_coder_trace(repo, job_id=job_id, task_id=task_id, model=model, escalate=escalate,
+                                     spec=spec, notes=notes, tools=tools, messages=messages,
+                                     gate_ok=ok, gate_msg=msg, summary=summary, steps=steps)
+        except Exception:
+            log.exception("could not write coder trace")
+        return ok, msg
     finally:
         if mcp:
             mcp.close()
