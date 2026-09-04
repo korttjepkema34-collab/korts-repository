@@ -30,7 +30,7 @@ scripts did not.
       `"%GODOT_BIN%" --headless --path game -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd --add res://tests --ignoreHeadlessMode`
 - [ ] Syncthing native, `assets/` folder shared with the gaming PC.
 - [ ] `server/.env` filled in: Tailscale IP, Redis password, model names, GPU MAC, broadcast.
-- [ ] `server/run-orchestrator.ps1` runs in a window and prints "orchestrator up".
+- [ ] `server/supervise.ps1` runs in a window and the orchestrator prints "orchestrator up".
 - [ ] Task Scheduler entry so it starts on boot.
 - [ ] Windows Update set to not auto-restart during active hours, or paused for the week.
 - [ ] Power plan: never sleep.

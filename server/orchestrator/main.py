@@ -25,7 +25,7 @@ from pathlib import Path
 from shared import queue as q
 from shared.jobs import Job, JobKind, ResultStatus
 
-from . import checks, coder, export, gitops, levels, planner, playtest, report, reviewer, training, wake, writer
+from . import checks, coder, engineer, export, gitops, health, incidents as incidents_mod, levels, notify, planner, playtest, report, reviewer, training, wake, writer
 from .state import State
 
 log = logging.getLogger("orchestrator")
@@ -368,15 +368,58 @@ def daily(r, st: State) -> None:
         except Exception:
             log.exception("build failed")
     report.write(REPO, st, q.queue_depths(r), q.worker_alive(r, WORKER), EVENTS)
-    if gitops.commit_paths(REPO, ["tasks", "reports", "PROGRESS.md", "docs", "style"], f"studio: daily checkpoint {time.strftime('%Y-%m-%d')}"):
+    if INC is not None and INC.open_list():
+        with (REPO / "PROGRESS.md").open("a") as f:
+            f.write("\n## Open incidents\n" + "\n".join(f"- {i['kind']}: {i['signature']} (attempts {i.get('attempts', 0)}) -> incidents/{i['file']}" for i in INC.open_list()) + "\n")
+    done_n = len(list(DONE.glob("*.md"))); def_n = len(list(DEFERRED.glob("*.md")))
+    notify.send("studio: daily", f"done {done_n}, deferred {def_n}, open incidents {len(INC.open_list()) if INC else 0}, queue {sum(q.queue_depths(r).values())}")
+    if gitops.commit_paths(REPO, ["tasks", "reports", "PROGRESS.md", "docs", "style", "incidents"], f"studio: daily checkpoint {time.strftime('%Y-%m-%d')}"):
         gitops.push(REPO, gitops.current_branch(REPO))
     EVENTS.clear()
 
 
-# ---------------------------------------------------------------- loop
+# ---------------------------------------------------------------- safety nets
+INC: incidents_mod.Incidents | None = None
+
+
+def run_engineer(st: State) -> None:
+    """Fix the studio's own code when a studio-bug incident is open. One attempt per cycle."""
+    if INC is None or os.environ.get("ENGINEER_ENABLED", "1") != "1":
+        return
+    for sig, rec in INC.engineer_candidates():
+        path = INC.dir / rec["file"]
+        ev(f"engineer: working incident {sig[:60]}")
+        try:
+            ok, msg = engineer.run(REPO, sig, path)
+        except Exception as e:
+            ok, msg = False, f"engineer crashed: {e}"
+            log.exception("engineer crashed")
+        n = INC.attempt(sig, msg[:600])
+        if ok:
+            INC.note(sig, "Diagnosis", msg[:600])
+            INC.note(sig, "Plan", "fix merged; the supervisor restarts the loop and rolls back if it does not come back healthy")
+            notify.send("studio: fix merged", f"{sig[:80]} | {msg[:300]}")
+            ev("engineer: fix merged, restart requested")
+        elif n >= 3:
+            INC.note(sig, "Plan", "3 engineer attempts failed; this needs a human. Read Attempts above.")
+            notify.send("studio: needs a human", sig[:200], "high")
+        return
+
+
 def cycle(r, st: State) -> None:
+    global INC
+    if INC is None:
+        INC = incidents_mod.Incidents(REPO, ev)
+    health.git_sanity(REPO, ev)
+    infra = health.heal(r, ev, INC)
+    if not infra["redis"]:
+        health.write(REPO, {"infra": infra}); return  # nothing else can run without the queue
     if free_gb() < MIN_FREE_GB:
-        ev(f"disk low ({free_gb():.1f} GB free); pausing new work"); return
+        ev(f"disk low ({free_gb():.1f} GB free); pausing new work")
+        INC.open("disk", "disk:low", f"{free_gb():.1f} GB free, below MIN_FREE_GB", plan="Delete old builds/, reports/playtests/, assets/rejected/; or raise the disk.")
+        health.write(REPO, {"infra": infra, "disk_gb": free_gb()}); return
+    if not infra["llm"]:
+        health.write(REPO, {"infra": infra}); reap_stale(r, st); handle_results(r, st); close_tasks(st); return  # no model: only bookkeeping
     reap_stale(r, st)
     handle_results(r, st)
     run_content_jobs(st)
@@ -384,10 +427,15 @@ def cycle(r, st: State) -> None:
     close_tasks(st)
     plan_next(r, st)
     refill_backlog(st)
+    run_engineer(st)
     daily(r, st)
     depth = sum(q.queue_depths(r).values())
     if wake.maybe_wake(depth, q.worker_alive(r, WORKER)):
         ev(f"sent wake-on-LAN to {WORKER} ({depth} jobs queued)")
+    health.write(REPO, {"infra": infra, "queue": depth, "in_flight": st.in_flight(), "open_incidents": len(INC.open_list())})
+    if (REPO / "RESTART_REQUESTED").exists():
+        ev("restart requested by the engineer; exiting for the supervisor")
+        raise SystemExit(3)
 
 
 def main() -> None:
@@ -402,8 +450,18 @@ def main() -> None:
     while True:
         try:
             cycle(r, st)
-        except Exception:
+        except SystemExit:
+            raise
+        except Exception as e:
             log.exception("cycle error")
+            import traceback
+            tb = traceback.format_exc()
+            sig = "studio:" + failure_signature(f"{type(e).__name__}: {e}")
+            n = health.record_error(sig)
+            if n >= 3 and INC is not None:
+                INC.open("studio-bug", sig, f"The orchestrator cycle raised the same error {n} times in the last hour.\n\n```\n{tb[-3000:]}\n```",
+                         plan="The engineer will read the traceback, fix the studio code on a branch, add a test, and merge behind the test gate. The supervisor restarts the loop and rolls back if it does not come back healthy.")
+                notify.send("studio: incident opened", sig[:200], "high")
         time.sleep(LOOP_S)
 
 

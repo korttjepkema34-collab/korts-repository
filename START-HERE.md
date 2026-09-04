@@ -16,7 +16,8 @@ afternoon. **After each block, run the doctor and fix what it names until it say
 6. `.\studio.ps1 scripts\doctor.py` and fix anything marked FAIL.
 7. Windows: enable auto-login (`netplwiz`, untick "users must enter a password"), set the power plan to never sleep, pause Windows Update for the week.
 8. In the Godot editor once: Editor > Manage Export Templates > Download, so the nightly Windows build works.
-9. Task Scheduler: new task, trigger "At log on", action `powershell -File C:\studio\server\run-orchestrator.ps1`, "Run only when user is logged on". Do not start it yet.
+9. Task Scheduler: new task, trigger "At log on", action `powershell -File C:\studio\server\supervise.ps1`, "Run only when user is logged on". The supervisor keeps the loop alive and rolls back bad self-fixes (docs/23). Do not start it yet.
+10. Optional: install the free ntfy app on your phone, make a topic, and set `NOTIFY_URL` in `server\.env` for a daily one-liner and incident pushes.
 
 ## B. Gaming PC (Windows, the GPU box)
 
@@ -32,13 +33,13 @@ afternoon. **After each block, run the doctor and fix what it names until it say
 ## C. Prove it, then walk away (15 minutes)
 
 1. Server: `.\studio.ps1 scripts\enqueue_stub.py`. Gaming PC's worker logs `running 000-stub-...` then `done`; `C:\studio\assets\incoming\000-stub\stub.txt` appears on the server within a minute.
-2. Server: start `server\run-orchestrator.ps1`. Within a minute task 001 moves to `tasks\in-progress\` and then `tasks\done\`; `PROGRESS.md` appears.
+2. Server: start `server\supervise.ps1`. Within a minute task 001 moves to `tasks\in-progress\` and then `tasks\done\`; `PROGRESS.md` appears.
 3. Watch task 003 (verify the skeleton) get planned and merged. If it defers, read the task file's last lines; that is the first real bug for you or a Claude Code session with the `godot-check` skill.
 4. Leave. Come back in a few days. Read `PROGRESS.md`, then `tasks\deferred\`.
 
 ## D. When you come back
 
-`PROGRESS.md`, then `reports/playtest-<date>.md` (what the bot saw last night), then `builds\reapers-relics-<date>\ReapersRelics.exe` to play it yourself, then `tasks\deferred\`.
+`PROGRESS.md` (open incidents are at the bottom), `incidents\` for anything the studio could not fix itself, then `reports/playtest-<date>.md` (what the bot saw last night), then `builds\reapers-relics-<date>\ReapersRelics.exe` to play it yourself, then `tasks\deferred\`.
 
 ## E. Later, when you feel like it
 

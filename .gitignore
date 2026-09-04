@@ -43,3 +43,9 @@ builds/*
 reports/playtests/
 reports/proofs/
 reports/screenshots/
+
+RESTART_REQUESTED
+reports/health.json
+reports/last_good.txt
+incidents/.index.json
+.pytest_cache/

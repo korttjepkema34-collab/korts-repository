@@ -9,3 +9,4 @@ Get-Content .env | Where-Object { $_ -match '^\s*[^#][^=]*=' } | ForEach-Object 
 $env:REPO_ROOT = (Resolve-Path "..").Path
 $env:PYTHONPATH = "$env:REPO_ROOT;$PSScriptRoot"
 .\.venv\Scripts\python.exe -m orchestrator.main
+exit $LASTEXITCODE

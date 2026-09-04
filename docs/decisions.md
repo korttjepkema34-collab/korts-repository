@@ -73,3 +73,5 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-04 | Levels are ASCII data rendered by MapBuilder with palette placeholders until art exists | Playable before art; the coder never lays out tiles. |
 | 2026-09-04 | Nightly Windows build to builds/, last 7 kept | Something to double-click on return. |
 | 2026-09-04 | Input action names fixed in project.godot (move_*, attack, dodge, interact) | Bots and proof runs depend on them. |
+| 2026-09-04 | Safety nets: supervisor with rollback, dependency healing, incidents with Detected/Diagnosis/Plan/Attempts/Resolution, an engineer that fixes studio code behind `pytest tests` with 3 attempts, optional ntfy notifications | Job-level nets existed; nothing protected the studio itself. docs/23. |
+| 2026-09-04 | The studio's own tests in tests/ are the merge gate for server/, worker/, shared/, scripts/; one test per fixed bug | Prevents the engineer entrenching mistakes. |

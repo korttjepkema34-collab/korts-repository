@@ -14,6 +14,9 @@ kinds: [stub, image, music, sfx, train]
 # Local tool endpoints (each tool runs as its own app on this machine).
 tools:
   comfyui: http://127.0.0.1:8188
+  # If ComfyUI is unreachable for a minute the worker runs this (at most every 10 min):
+  comfyui_start_cmd: powershell -File C:\studio-tools\ComfyUI\run-comfyui.ps1
+  acestep_start_cmd: powershell -File C:\studio\worker\services\run-audio-api.ps1
   # comfyui_output_dir: C:/ComfyUI/output   # optional: copy outputs from disk instead of HTTP /view
   acestep: http://127.0.0.1:8190
   # Training (docs/15-training.md). Python of the training venv made by training/setup.ps1.

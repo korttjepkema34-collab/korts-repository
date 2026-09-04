@@ -80,7 +80,7 @@ Model picks and alternatives: `docs/04-models.md`.
    Only the reviewer moves things to `approved/` or `rejected/`.
 5. **Never commit to `main`.** Work on a branch named `<role>/<task-id>-<slug>`. The orchestrator
    merges after headless tests pass.
-6. **Generated binaries do not go in git.** `assets/` is synced with Syncthing. Only source,
+6. **Generated binaries do not go in git.** Changes to the studio's own code (`server/`, `worker/`, `shared/`, `scripts/`) merge only when `pytest tests` passes; add a test for every bug fixed. `assets/` is synced with Syncthing. Only source,
    config, docs, and the Godot project's own small resources are committed.
 7. **Log decisions.** Anything that changes architecture, model choice, or conventions gets a line
    in `docs/decisions.md`. If you are unsure whether something is decided, check there first.
@@ -103,6 +103,7 @@ Model picks and alternatives: `docs/04-models.md`.
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)
 - Decision log: `docs/decisions.md`
 - Open questions for the human: `docs/open-questions.md` (read on return; nothing blocks on them)
+- Safety nets (supervision, healing, incidents, the engineer with rollback): `docs/23-safety-nets.md`; open incidents in `incidents/`
 - Human setup, in order, with a preflight check: `START-HERE.md`, `scripts/doctor.py`
 - Progress: `PROGRESS.md`, `reports/`, `tasks/deferred/` (the human's to-do list)
 - Server stack: `server/docker-compose.yml`

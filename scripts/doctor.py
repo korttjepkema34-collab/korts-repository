@@ -115,6 +115,14 @@ def check_server() -> None:
     tmpl = Path(os.environ.get("APPDATA", "")) / "Godot" / "export_templates" if os.environ.get("APPDATA") else None
     has_tmpl = bool(tmpl and tmpl.exists() and any(tmpl.rglob("windows_release_x86_64.exe")))
     rec("PASS" if has_tmpl else "WARN", "Godot export templates installed" if has_tmpl else "Godot export templates missing (nightly build skipped)", "" if has_tmpl else "Godot editor: Editor > Manage Export Templates > Download")
+    hp = ROOT / "reports" / "health.json"
+    if hp.exists():
+        import time as _t
+        age = _t.time() - json.loads(hp.read_text()).get("ts", 0)
+        rec("PASS" if age < 180 else "WARN", f"orchestrator health file {int(age)} s old" if age < 180 else f"orchestrator not running (health file {int(age / 60)} min old)", "" if age < 180 else "start server\\supervise.ps1")
+    inc = ROOT / "incidents"
+    open_inc = [p for p in inc.glob("*.md") if "status: open" in p.read_text()] if inc.exists() else []
+    rec("PASS" if not open_inc else "WARN", "no open incidents" if not open_inc else f"{len(open_inc)} open incident(s): " + ", ".join(p.name for p in open_inc[:3]), "" if not open_inc else "read incidents/*.md; each has a Plan section")
     if not (ROOT / "style" / "references" / "palette.png").exists():
         rec("FAIL", "style/references/palette.png missing", "git checkout -- style/references")
 

@@ -35,6 +35,35 @@ def load_config() -> dict:
     return yaml.safe_load(cfg_path.read_text())
 
 
+_tool_down_since: dict = {}
+
+
+def tool_up(cfg: dict, key: str, path: str) -> bool:
+    """Probe a local tool; if it stays down, run its start command from config (once per 10 min)."""
+    import requests
+    base = cfg.get("tools", {}).get(key)
+    if not base:
+        return False
+    try:
+        requests.get(base.rstrip("/") + path, timeout=4)
+        _tool_down_since.pop(key, None)
+        return True
+    except Exception:
+        now = time.time()
+        since = _tool_down_since.setdefault(key, now)
+        cmd = cfg.get("tools", {}).get(key + "_start_cmd")
+        last = _tool_down_since.get(key + ":healed", 0)
+        if cmd and now - since > 60 and now - last > 600:
+            _tool_down_since[key + ":healed"] = now
+            log.warning("%s down for %ds; running start command", key, int(now - since))
+            import subprocess
+            subprocess.Popen(cmd, shell=True)
+        return False
+
+
+KIND_TOOL = {"image": ("comfyui", "/system_stats"), "music": ("acestep", "/health"), "sfx": ("acestep", "/health")}
+
+
 def gaming_mode(cfg: dict) -> bool:
     return (HERE / cfg.get("gaming_mode_file", "GAMING_MODE")).exists()
 
@@ -101,9 +130,14 @@ def main() -> None:
             q.heartbeat(r, name, "llm-lock")
             time.sleep(10)
             continue
-        q.heartbeat(r, name, "idle")
+        # Only claim kinds whose tool is actually reachable; the others wait on the queue instead of failing.
+        live = [k for k in kinds if k.value not in KIND_TOOL or tool_up(cfg, *KIND_TOOL[k.value])]
+        down = [k.value for k in kinds if k not in live]
+        q.heartbeat(r, name, "idle" if not down else "idle (down: " + ",".join(down) + ")")
+        if not live:
+            time.sleep(cfg.get("poll_timeout_s", 30)); continue
         # Prefer the kind whose model is already loaded to avoid thrashing.
-        order = ([current_kind] if current_kind else []) + [k for k in kinds if k != current_kind]
+        order = ([current_kind] if current_kind and current_kind in live else []) + [k for k in live if k != current_kind]
         job = q.claim(r, order, timeout_s=cfg.get("poll_timeout_s", 30))
         if job is None:
             continue

@@ -5,6 +5,7 @@ If the human asks how to set up or what is missing: `START-HERE.md` and `scripts
 
 Then, depending on what you are doing:
 
+- Safety nets and incidents: `docs/23-safety-nets.md`, `incidents/`; the studio's own tests: `tests/`
 - How the whole thing runs, who calls what, when: `docs/22-how-it-runs.md`
 - Planning or architecture work: `docs/03-architecture.md`, `docs/decisions.md`
 - Choosing or configuring models: `docs/04-models.md` and `docs/20-research-notes.md`
