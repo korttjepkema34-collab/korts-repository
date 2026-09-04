@@ -59,7 +59,10 @@ func _on_peer_disconnected(peer_id: int) -> void:
 
 
 static func wants_server() -> bool:
-	return "--server" in OS.get_cmdline_user_args() or DisplayServer.get_name() == "headless"
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	if "--connect" in args:
+		return false  # an explicit client, even when headless (playtest bots)
+	return "--server" in args or DisplayServer.get_name() == "headless"
 
 
 static func connect_address() -> String:

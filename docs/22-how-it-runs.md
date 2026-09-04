@@ -120,3 +120,24 @@ images (palette swatch, the two mock frames, the character sheet once approved) 
 IP-Adapter, the pixel-art LoRA in the workflow, the post-processor snapping to the palette, the
 deterministic checks, and the rubric. Consistency is enforced five times before a human would
 have to notice.
+
+## Module map (for the engineer and anyone reading the code)
+
+| File | Responsibility |
+|---|---|
+| `server/orchestrator/main.py` | the loop: cycle order, results, code/content jobs, task closing, planning, backlog, daily pass, incidents wiring, restart flag |
+| `planner.py` | task -> jobs via the orchestrator model; asset-type templates; validation repair; backlog generation |
+| `coder.py` | the coder tool loop on a branch; gate (Godot 3 scan, lint, tests); merge; traces |
+| `engineer.py` | same loop for the studio's own code; gate is compile + pytest + no test deletion; restart request |
+| `writer.py`, `levels.py` | text and level jobs with deterministic validators |
+| `reviewer.py`, `checks.py` | vision rubric review; mechanical image checks |
+| `vision.py` | windowed screenshots, visual_check, proof runs |
+| `playtest.py`, `export.py` | nightly bots + report + bug tasks; nightly Windows build |
+| `health.py`, `incidents.py`, `notify.py` | health file, dependency healing, git sanity; incident files; ntfy pushes |
+| `llm.py` | clients, model slots, GPU routing, the escalation and vision ladders |
+| `docsearch.py`, `rag.py` | engine class-reference search; embedding retrieval over docs and code |
+| `state.py`, `gitops.py`, `wake.py`, `report.py`, `traces.py`, `training.py`, `godot.py`, `mcp_bridge.py` | job state; git helpers; wake-on-LAN; daily report; run traces; training jobs; headless Godot runner; optional editor MCP |
+| `shared/jobs.py`, `shared/queue.py` | job/result models and kinds; Redis reliable queue |
+| `worker/worker.py`, `worker/handlers/*`, `worker/postprocess.py`, `worker/normalmap.py` | GPU worker loop with tool probes and the VRAM lock; ComfyUI, audio, train handlers; palette post-processing; normal maps |
+| `game/scripts/*.gd` | Config, Net, Clock, Telemetry autoloads; MapBuilder; dev scripts (screenshot, proof, bot, run_scene) |
+| `scripts/*` | doctor, bootstrap, gen_items, eval_reviewer, dump/fetch docs, build index, install gdUnit4 |

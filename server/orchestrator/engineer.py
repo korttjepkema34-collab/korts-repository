@@ -17,6 +17,7 @@ from pathlib import Path
 from . import gitops, llm
 
 log = logging.getLogger("engineer")
+_BASELINE: dict = {}
 ALLOWED = ("server/", "worker/", "shared/", "scripts/", "tests/")
 MAX_STEPS = 40
 TOOLS = [
@@ -38,7 +39,13 @@ def _safe(repo: Path, rel: str) -> Path:
     return p
 
 
-def gate(repo: Path) -> tuple[bool, str]:
+def count_tests(repo: Path) -> int:
+    return sum(p.read_text(errors="ignore").count("def test_") for p in (repo / "tests").glob("test_*.py"))
+
+
+def gate(repo: Path, baseline_tests: int | None = None) -> tuple[bool, str]:
+    if baseline_tests is not None and count_tests(repo) < baseline_tests:
+        return False, f"test count dropped from {baseline_tests} to {count_tests(repo)}; tests may not be deleted"
     files = [str(p) for d in ALLOWED for p in (repo / d).rglob("*.py") if ".venv" not in p.parts]
     p = subprocess.run([sys.executable, "-m", "py_compile", *files], capture_output=True, text=True, timeout=300)
     if p.returncode != 0:
@@ -61,7 +68,7 @@ def _exec(repo: Path, name: str, args: dict) -> str:
     if name == "write_file":
         p = _safe(repo, args["path"]); p.parent.mkdir(parents=True, exist_ok=True); p.write_text(args["content"]); return f"wrote {args['path']}"
     if name == "run_tests":
-        ok, out = gate(repo); return ("PASS\n" if ok else "FAIL\n") + out
+        ok, out = gate(repo, _BASELINE.get("n")); return ("PASS\n" if ok else "FAIL\n") + out
     return "ERROR: unknown tool"
 
 
@@ -72,6 +79,8 @@ def run(repo: Path, signature: str, incident_path: Path, escalate: bool = True) 
     branch = "engineer/" + re.sub(r"[^a-z0-9]+", "-", signature.lower())[:40]
     gitops.new_branch(repo, branch, base)
     model, oai, _gpu = llm.coder_route(escalate)
+    baseline = count_tests(repo)
+    _BASELINE["n"] = baseline
     system = ("You are the studio's engineer. You fix bugs in the orchestrator, worker and shared Python code of an "
               "autonomous game studio. Read the incident, find the root cause in the code, write the smallest fix, "
               "add or extend a test in tests/ that would have caught it, run run_tests until it passes, then finish. "
@@ -102,7 +111,7 @@ def run(repo: Path, signature: str, incident_path: Path, escalate: bool = True) 
                 messages.append({"role": "tool", "tool_call_id": tc.id, "content": out[:12000]})
             if done:
                 break
-        ok, out = gate(repo)
+        ok, out = gate(repo, baseline)
         if not ok:
             return False, "gate failed:\n" + out[-2000:]
         if not gitops.commit_paths(repo, [d.rstrip("/") for d in ALLOWED], f"engineer: {summary or signature}"[:200]):

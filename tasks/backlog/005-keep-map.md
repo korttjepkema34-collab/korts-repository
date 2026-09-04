@@ -12,4 +12,4 @@ lamps with cables, eight 12x8 plots for Holds, spawn markers.
 - Loads headless; `visual_check` describes a walled town with a gatehouse, houses, a tower and a pond.
 - `y_sort_enabled` on the root; `Roofs` layer separate; collision on walls, water, pond edge.
 - Markers: `PlayerSpawn`, `HesperSpawn`, `CutterSpawn`, `Tower`, `Gate`, `Plot01..08`.
-- Building footprints and door positions in `data/keep.json`.
+- Building footprints and door positions in `data/maps/keep.json`.

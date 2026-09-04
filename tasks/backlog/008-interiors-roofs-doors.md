@@ -8,7 +8,7 @@ Buildings are part of the world. Roofs fade when a player is inside the footprin
 close, lock, and break; walls block movement and pathing.
 
 ## Acceptance
-- `Roofs` TileMapLayer fades to 15% alpha over 0.2 s when the local player enters a footprint from `data/keep.json`, restores on exit.
+- `Roofs` TileMapLayer fades to 15% alpha over 0.2 s when the local player enters a footprint from `data/maps/keep.json`, restores on exit.
 - Door scene: states closed/open/locked/broken, health from `data/build.json`, server-authoritative interaction, blocks movement when closed.
 - Camera2D zooms to 1.5x inside a building, 1x outside, tweened.
 - `visual_check` of a Reaper inside the guild house shows the interior with the roof faded.
