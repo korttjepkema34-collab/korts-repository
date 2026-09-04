@@ -50,7 +50,7 @@ Key rules: **the server never calls the gaming PC directly** (it enqueues, the w
 **the studio never waits for a human** (`docs/12-autonomy.md`). Code and planning continue when
 the gaming PC is off; only art and audio wait for it.
 
-Details: `docs/03-architecture.md`. Job format: `docs/08-job-schema.md` and `shared/jobs.py`.
+Who calls what, when, and how things end: `docs/22-how-it-runs.md`. Details: `docs/03-architecture.md`. Job format: `docs/08-job-schema.md` and `shared/jobs.py`.
 
 ## 4. Roles you can take
 
