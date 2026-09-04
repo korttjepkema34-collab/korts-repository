@@ -68,3 +68,4 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-03 | `docs/lessons.md` auto-distilled from failure-then-success runs, fed to the coder | Cheapest form of learning; needs no GPU. |
 | 2026-09-03 | FLUX.2 klein 4B + pixel-art, walk-cycle and 4-view LoRAs recommended as the image upgrade; SDXL stays default until the workflow is exported | Fits 12 GB; the walk-cycle LoRA targets animation consistency. |
 | 2026-09-03 | Bootstrap scripts for both machines | Setup was the last real blocker to hands-off. |
+| 2026-09-04 | START-HERE.md is the single human setup path; scripts/doctor.py is the preflight that names what is missing | Setup was spread over two docs and two scripts; one ordered page plus a checker is the honest 'easy'. |

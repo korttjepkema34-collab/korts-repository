@@ -1,6 +1,7 @@
 # Claude Code entry point
 
 This repository's instructions for AI models live in **AGENTS.md**. Read it first.
+If the human asks how to set up or what is missing: `START-HERE.md` and `scripts/doctor.py`.
 
 Then, depending on what you are doing:
 

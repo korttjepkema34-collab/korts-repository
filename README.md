@@ -54,6 +54,11 @@ scripts/             <- wake-on-LAN, Tailscale ACL example, override/train/activ
 
 ## Quick start
 
+**Read `START-HERE.md`.** It is the whole of the human's part, in order, with a doctor script that
+names anything still missing.
+
+The short version:
+
 1. Read `docs/06-setup-server.md` and bring up the server stack with `docker compose up -d`.
 2. Read `docs/07-setup-gpu-worker.md` and start `worker/worker.py` on the gaming PC.
 3. Drop a task file into `tasks/backlog/` and watch the orchestrator turn it into jobs.

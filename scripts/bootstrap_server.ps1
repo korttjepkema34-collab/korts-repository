@@ -20,3 +20,6 @@ Set-Location server; docker compose up -d; Set-Location $repo
 .\studio.ps1 scripts\eval_reviewer.py --checks-only
 Write-Host ""
 Write-Host "Server ready. Start the loop with server\run-orchestrator.ps1 (and put it in Task Scheduler)."
+Write-Host ""
+Write-Host "--- doctor ---"
+.\studio.ps1 scripts\doctor.py

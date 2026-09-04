@@ -98,6 +98,7 @@ Model picks and alternatives: `docs/04-models.md`.
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)
 - Decision log: `docs/decisions.md`
 - Open questions for the human: `docs/open-questions.md` (read on return; nothing blocks on them)
+- Human setup, in order, with a preflight check: `START-HERE.md`, `scripts/doctor.py`
 - Progress: `PROGRESS.md`, `reports/`, `tasks/deferred/` (the human's to-do list)
 - Server stack: `server/docker-compose.yml`
 - GPU worker: `worker/worker.py`, config in `worker/config.yaml`

@@ -2,6 +2,7 @@
 name: studio-status
 description: Report what the unattended studio has done: progress, queue, tasks, deferred items, recent commits. Use when asked "what happened", "status", "progress", or on return after days away.
 ---
+0. If nothing has ever run: `python scripts/doctor.py` (server) or `--gpu` (gaming PC) tells the human what is missing; `START-HERE.md` is the order.
 1. Read `PROGRESS.md` and the newest file in `reports/`.
 2. List `tasks/in-progress/`, `tasks/deferred/` (the human's to-do list) and the last 5 of `tasks/done/`.
 3. If Redis is reachable: `redis-cli -a $REDIS_PASSWORD LLEN jobs:image` etc., and `GET worker:gpu:status`.

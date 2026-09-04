@@ -40,3 +40,6 @@ Write-Host ""
 Write-Host "ComfyUI ready at $comfy. Start it with: powershell -File $run"
 Write-Host "Optional upgrade (FLUX.2 klein 4B + pixel-art and sprite-sheet LoRAs): see worker\workflows\README.md"
 Write-Host "Then: copy worker\config.example.yaml to worker\config.yaml, set the server's Tailscale IP, and run worker\run.ps1"
+Write-Host ""
+Write-Host "--- doctor ---"
+& "$repo\worker\.venv\Scripts\python.exe" "$repo\scripts\doctor.py" --gpu 2>$null; if ($LASTEXITCODE -ne 0) { Write-Host "(run worker\run.ps1 once to create its venv, then: worker\.venv\Scripts\python.exe scripts\doctor.py --gpu)" }
