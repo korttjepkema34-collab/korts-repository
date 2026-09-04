@@ -8,7 +8,7 @@ Tie the prototype together: Hesper gives the quest, the party clears the Undercr
 reactor home, wires it to the wall, and survives the night that follows.
 
 ## Acceptance
-- `data/quests.json` with four steps; `data/dialogue.json` with Hesper's lines in the world-bible voice.
+- `data/quests.json` (from a `text` job, content quests) with four steps; `data/dialogue.json` (a `text` job, content dialogue) with Hesper's lines. The coder loads them; it does not write them.
 - Interacting with the tower with the reactor powers the gate lamps (lighting layer) and unlocks night 4's wave table.
 - Character save per peer in `user://saves/<name>.json`: position, relics, quest state, hold reference.
 - Two clients on one dedicated server complete the quest together; a solo client completes it alone.

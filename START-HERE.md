@@ -15,7 +15,8 @@ afternoon. **After each block, run the doctor and fix what it names until it say
 5. `.\scripts\bootstrap_server.ps1` (pulls models, makes the venv, starts Redis and Forgejo, installs gdUnit4, dumps and indexes the docs). About 60 GB of downloads.
 6. `.\studio.ps1 scripts\doctor.py` and fix anything marked FAIL.
 7. Windows: enable auto-login (`netplwiz`, untick "users must enter a password"), set the power plan to never sleep, pause Windows Update for the week.
-8. Task Scheduler: new task, trigger "At log on", action `powershell -File C:\studio\server\run-orchestrator.ps1`, "Run only when user is logged on". Do not start it yet.
+8. In the Godot editor once: Editor > Manage Export Templates > Download, so the nightly Windows build works.
+9. Task Scheduler: new task, trigger "At log on", action `powershell -File C:\studio\server\run-orchestrator.ps1`, "Run only when user is logged on". Do not start it yet.
 
 ## B. Gaming PC (Windows, the GPU box)
 
@@ -35,7 +36,11 @@ afternoon. **After each block, run the doctor and fix what it names until it say
 3. Watch task 003 (verify the skeleton) get planned and merged. If it defers, read the task file's last lines; that is the first real bug for you or a Claude Code session with the `godot-check` skill.
 4. Leave. Come back in a few days. Read `PROGRESS.md`, then `tasks\deferred\`.
 
-## D. Later, when you feel like it
+## D. When you come back
+
+`PROGRESS.md`, then `reports/playtest-<date>.md` (what the bot saw last night), then `builds\reapers-relics-<date>\ReapersRelics.exe` to play it yourself, then `tasks\deferred\`.
+
+## E. Later, when you feel like it
 
 `docs/16-when-you-get-home.md`: the learning loop (grade the reviewer ten minutes a week, train a style LoRA from approved art).
 `worker/workflows/README.md`: the FLUX.2 klein upgrade for better sprites and walk cycles.

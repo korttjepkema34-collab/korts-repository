@@ -25,7 +25,7 @@ from pathlib import Path
 from shared import queue as q
 from shared.jobs import Job, JobKind, ResultStatus
 
-from . import checks, coder, gitops, planner, report, reviewer, training, wake
+from . import checks, coder, export, gitops, levels, planner, playtest, report, reviewer, training, wake, writer
 from .state import State
 
 log = logging.getLogger("orchestrator")
@@ -247,6 +247,31 @@ def run_code_jobs(st: State, escalate: bool = False) -> None:
         return  # one coder run per cycle; they are long
 
 
+# ---------------------------------------------------------------- 3b. text and level jobs (in-process, CPU)
+def run_content_jobs(st: State) -> None:
+    for jid, meta in list(st.data["jobs"].items()):
+        kind = meta.get("kind")
+        if kind not in ("text", "level") or meta.get("status") != "pending":
+            continue
+        task_id = meta["task"]; tf = task_file(task_id)
+        st.set_job(jid, "running")
+        escalate = bool(meta.get("escalate")) or should_escalate(st)
+        try:
+            fn = writer.run_text_job if kind == "text" else levels.run_level_job
+            ok, msg = fn(REPO, meta.get("spec", {}), meta.get("notes"), escalate)
+        except Exception as e:
+            ok, msg = False, f"{kind} job crashed: {e}"
+            log.exception("%s job crashed", kind)
+        if ok:
+            st.set_job(jid, "ok", summary=msg)
+            gitops.commit_paths(REPO, ["game/data"], f"{task_id}: {kind} {msg[:120]}")
+            if tf: append_log(tf, f"{kind.upper()} OK {jid}: {msg[:300]}")
+        else:
+            st.set_job(jid, "failed", error=msg[:1500])
+            if tf: append_log(tf, f"{kind.upper()} FAILED {jid}: {msg[:400]}")
+        return
+
+
 # ---------------------------------------------------------------- 4. close tasks
 def close_tasks(st: State) -> None:
     for tf in list(IN_PROGRESS.glob("*.md")):
@@ -331,6 +356,17 @@ def daily(r, st: State) -> None:
             ev(f"queued training job {job.id} ({job.spec.get('recipe')})")
     except Exception:
         log.exception("auto-train check failed")
+    # Nightly playtest and build: proof that the game runs, and something to double-click on return.
+    if os.environ.get("PLAYTEST_DAILY", "1") == "1":
+        try:
+            playtest.run(REPO, ev)
+        except Exception:
+            log.exception("playtest failed")
+    if os.environ.get("BUILD_DAILY", "1") == "1":
+        try:
+            export.build(REPO, ev)
+        except Exception:
+            log.exception("build failed")
     report.write(REPO, st, q.queue_depths(r), q.worker_alive(r, WORKER), EVENTS)
     if gitops.commit_paths(REPO, ["tasks", "reports", "PROGRESS.md", "docs", "style"], f"studio: daily checkpoint {time.strftime('%Y-%m-%d')}"):
         gitops.push(REPO, gitops.current_branch(REPO))
@@ -343,6 +379,7 @@ def cycle(r, st: State) -> None:
         ev(f"disk low ({free_gb():.1f} GB free); pausing new work"); return
     reap_stale(r, st)
     handle_results(r, st)
+    run_content_jobs(st)
     run_code_jobs(st)
     close_tasks(st)
     plan_next(r, st)

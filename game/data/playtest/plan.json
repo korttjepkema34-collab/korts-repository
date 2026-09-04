@@ -1,0 +1,14 @@
+{
+  "_comment": "Nightly playtest plan. Actions must exist in project.godot [input]. Keep it short; the point is to see the game run, not to win it.",
+  "screenshot_every": 4,
+  "steps": [
+    {"action": "move_right", "seconds": 3},
+    {"action": "move_down", "seconds": 2},
+    {"action": "attack", "seconds": 2, "taps": 4},
+    {"action": "move_left", "seconds": 3},
+    {"action": "dodge", "seconds": 1, "taps": 1},
+    {"action": "move_up", "seconds": 2},
+    {"action": "interact", "seconds": 1, "taps": 1},
+    {"action": "", "seconds": 3}
+  ]
+}

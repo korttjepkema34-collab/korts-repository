@@ -1,6 +1,6 @@
 # 05 - Team roles
 
-Five roles. Each has a system prompt in `agents/`. The orchestrator is the only one that reads the
+Eight roles: five with prompts that produce work, plus writer, level designer and playtester added 2026-09-04 (see docs/21-levels-writing-playtests.md). Each has a system prompt in `agents/`. The orchestrator is the only one that reads the
 task board directly; everyone else receives jobs.
 
 | Role | Responsibilities | Inputs | Outputs | Tools |

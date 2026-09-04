@@ -212,6 +212,21 @@ func test_it() -> void:
 `KinematicBody2D` -> `CharacterBody2D`; `change_scene(` -> `change_scene_to_file(`;
 `.empty()` -> `.is_empty()`; `PoolStringArray` -> `PackedStringArray`; `TileMap` -> `TileMapLayer`.
 
+## Maps from data (never lay out tiles by hand)
+
+```gdscript
+var map: MapBuilder = MapBuilder.new()
+add_child(map)
+map.build("fallows")                         # data/maps/fallows.json, validated by the level designer job
+var spawn: Vector2 = map.get_node("PlayerSpawn").position
+var exits: Array[Node] = map.find_children("Exit*", "Marker2D")
+var in_water: bool = bool(map.entry_at(player.global_position).get("slow", false))
+```
+
+Swap the placeholder draw for real tiles by iterating `map.rows` and calling `TileMapLayer.set_cell`
+with the atlas coords from `data/tileset_map.json` (task 005). Input actions are fixed:
+`move_left/right/up/down`, `attack`, `dodge`, `interact`.
+
 ## Normal maps for 2D lights
 
 Approved sprites and tiles come with a `<name>.n.png` normal map when the job asked for

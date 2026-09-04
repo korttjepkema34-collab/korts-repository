@@ -38,7 +38,9 @@ Source of truth: `shared/jobs.py` (pydantic models) and `shared/schema/job.schem
 | `music` | `handlers/acestep.py` | prompt, duration_s, bpm, lyrics (optional), seed |
 | `sfx` | `handlers/acestep.py` (Stable Audio) | prompt, duration_s, seed, count |
 | `train` | `handlers/train.py` | recipe (sdxl_lora, coder, reviewer), dataset (assets/training/datasets/<name>), base_model, extra_args, stale_after_s |
-| `code` | not a worker job; the orchestrator dispatches the coder agent directly | spec, branch, files |
+| `code` | not a worker job; the orchestrator dispatches the coder agent directly | goal, acceptance, scene, proof |
+| `text` | in-process writer (CPU) | content (dialogue, quests, items, names, signs), brief, count, target |
+| `level` | in-process level designer (CPU) | name, goal, width, height, markers_required |
 | `review` | not a worker job; orchestrator runs the reviewer model on the server | path, criteria |
 
 ## Result

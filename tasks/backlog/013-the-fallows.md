@@ -4,7 +4,7 @@ roles: artist-2d, coder, reviewer
 depends_on: 004, 010
 
 ## Goal
-First open zone: suburbs gone to meadow, day scavenging, the night waves' source. Instanced per party.
+Plan as: a `level` job (name fallows, 40x24, markers PlayerSpawn, Exit, EnemySpawn x6, NpcSpawn) -> a `code` job that loads it with MapBuilder and adds the entry/exit triggers -> a `text` job for Old Cutter's lines. First open zone: suburbs gone to meadow, day scavenging, the night waves' source. Instanced per party.
 
 ## Acceptance
 - Tileset additions: tall grass, ivy, overpass pieces, wrecked cars, intact-house set with enterable interiors. Approved.

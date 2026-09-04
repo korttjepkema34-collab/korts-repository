@@ -1,0 +1,29 @@
+{
+  "_comment": "ASCII map legend. char -> tile name, layer, walkable, placeholder palette colour (index into the 16-colour palette) used until real tiles exist.",
+  "legend": {
+    ".": {"tile": "ash",      "layer": "ground", "walk": true,  "colour": 2},
+    ",": {"tile": "moss",     "layer": "ground", "walk": true,  "colour": 14},
+    "=": {"tile": "cobble",   "layer": "ground", "walk": true,  "colour": 3},
+    "~": {"tile": "water",    "layer": "ground", "walk": false, "colour": 13, "slow": true},
+    "s": {"tile": "soil",     "layer": "ground", "walk": true,  "colour": 7},
+    "p": {"tile": "plank",    "layer": "ground", "walk": true,  "colour": 8, "indoor": true},
+    "#": {"tile": "wall",     "layer": "walls",  "walk": false, "colour": 4},
+    "W": {"tile": "keep_wall","layer": "walls",  "walk": false, "colour": 3},
+    "D": {"tile": "door",     "layer": "walls",  "walk": true,  "colour": 9, "door": true},
+    "G": {"tile": "gate",     "layer": "walls",  "walk": true,  "colour": 10, "door": true},
+    "r": {"tile": "roof",     "layer": "roofs",  "walk": true,  "colour": 1},
+    "T": {"tile": "tree",     "layer": "props",  "walk": false, "colour": 14},
+    "f": {"tile": "fence",    "layer": "props",  "walk": false, "colour": 8},
+    "b": {"tile": "barrel",   "layer": "props",  "walk": false, "colour": 9},
+    "c": {"tile": "crate",    "layer": "props",  "walk": false, "colour": 9},
+    "l": {"tile": "lamp",     "layer": "props",  "walk": false, "colour": 11, "light": true},
+    "h": {"tile": "hearth",   "layer": "props",  "walk": false, "colour": 15, "light": true, "hearth": true},
+    "x": {"tile": "scrap",    "layer": "props",  "walk": false, "colour": 3},
+    "L": {"tile": "tower",    "layer": "props",  "walk": false, "colour": 1},
+    "P": {"tile": "ash",      "layer": "ground", "walk": true,  "colour": 2, "marker": "PlayerSpawn"},
+    "N": {"tile": "ash",      "layer": "ground", "walk": true,  "colour": 2, "marker": "NpcSpawn"},
+    "E": {"tile": "ash",      "layer": "ground", "walk": true,  "colour": 2, "marker": "EnemySpawn"},
+    "X": {"tile": "cobble",   "layer": "ground", "walk": true,  "colour": 3, "marker": "Exit"},
+    "H": {"tile": "plank",    "layer": "ground", "walk": true,  "colour": 8, "marker": "PlotOrigin", "indoor": true}
+  }
+}

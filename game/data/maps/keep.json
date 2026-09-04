@@ -1,0 +1,25 @@
+{
+  "name": "keep",
+  "width": 30,
+  "height": 17,
+  "rows": [
+    "WWWWWWWWWWWWWWGGWWWWWWWWWWWWWW",
+    "W..,.....l....==....l....~~~~W",
+    "W.rrrrrr......==......L..~~~~W",
+    "W.rrrrrr..rrrr==rrrrr....~~~~W",
+    "W.#pppp#..#pp#==#ppp#........W",
+    "W.#pppp#..#pp#==#pppD..bb....W",
+    "W.#ppppD..#ppD==#ppp#..c.....W",
+    "W.##D###..##D#==#####........W",
+    "W...,.....N...==......x..T...W",
+    "W============================W",
+    "W.HHHH....HHHH==.,....HHHH...W",
+    "W.HHHH..T.HHHH==......HHHH.l.W",
+    "W.ssss....ffff==..h...ffff...W",
+    "W.ssss.N..........,...,......W",
+    "W.ffff.....l..P=........T....W",
+    "W.......T.....==.......x.....W",
+    "WWWWWWWWWWWWWWXXWWWWWWWWWWWWWW"
+  ],
+  "markers_note": "P spawn, N NPCs (Hesper by the guild house, Cutter by the garden), X exits at the bottom road, H plot origins, h hearth, l lamps, L tower, G the gate."
+}

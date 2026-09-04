@@ -112,6 +112,9 @@ def check_server() -> None:
             rec("WARN", "GPU coder endpoint not reachable right now (falls back to CPU)", "start Ollama on the gaming PC with OLLAMA_HOST=0.0.0.0:11434")
     else:
         rec("WARN", "CODER_BASE_URL_GPU not set: code jobs stay on the CPU model", "optional: ollama pull qwen3.6:27b on the gaming PC and set CODER_BASE_URL_GPU")
+    tmpl = Path(os.environ.get("APPDATA", "")) / "Godot" / "export_templates" if os.environ.get("APPDATA") else None
+    has_tmpl = bool(tmpl and tmpl.exists() and any(tmpl.rglob("windows_release_x86_64.exe")))
+    rec("PASS" if has_tmpl else "WARN", "Godot export templates installed" if has_tmpl else "Godot export templates missing (nightly build skipped)", "" if has_tmpl else "Godot editor: Editor > Manage Export Templates > Download")
     if not (ROOT / "style" / "references" / "palette.png").exists():
         rec("FAIL", "style/references/palette.png missing", "git checkout -- style/references")
 

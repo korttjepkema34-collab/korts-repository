@@ -69,3 +69,7 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-03 | FLUX.2 klein 4B + pixel-art, walk-cycle and 4-view LoRAs recommended as the image upgrade; SDXL stays default until the workflow is exported | Fits 12 GB; the walk-cycle LoRA targets animation consistency. |
 | 2026-09-03 | Bootstrap scripts for both machines | Setup was the last real blocker to hands-off. |
 | 2026-09-04 | START-HERE.md is the single human setup path; scripts/doctor.py is the preflight that names what is missing | Setup was spread over two docs and two scripts; one ordered page plus a checker is the honest 'easy'. |
+| 2026-09-04 | Three roles added: writer (`text` jobs), level designer (`level` jobs, ASCII maps with reachability validation), playtester (nightly bots + vision report + auto-filed bug tasks) | Nobody wrote, nobody laid out levels, nobody played the game. docs/21. |
+| 2026-09-04 | Levels are ASCII data rendered by MapBuilder with palette placeholders until art exists | Playable before art; the coder never lays out tiles. |
+| 2026-09-04 | Nightly Windows build to builds/, last 7 kept | Something to double-click on return. |
+| 2026-09-04 | Input action names fixed in project.godot (move_*, attack, dodge, interact) | Bots and proof runs depend on them. |

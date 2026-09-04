@@ -38,6 +38,8 @@ GPU worker (gpu) pulls job when online and not gaming  ->  runs tool  ->  writes
 reviewer (server, vision model) checks output vs style bible  ->  assets/approved/ or rejected/
 coder (server, in-process) edits game/ with file tools, headless Godot gate  ->  merged or retried
 task closes  ->  tasks/done/ (all jobs passed) or tasks/deferred/ (caps hit; retried daily)
+text/level jobs  ->  writer / level designer run on the CPU, validated, saved to game/data/, committed
+nightly  ->  playtest (dedicated server + two bots), vision report, bug tasks filed; Windows build to builds/
 backlog empty  ->  orchestrator generates next tasks from docs/10-game-design.md
 daily  ->  reports/YYYY-MM-DD.md + PROGRESS.md, committed and pushed
 always ->  every coder run and reviewer verdict is traced to data/traces/ (training data)
@@ -61,6 +63,9 @@ Each role has a system prompt in `agents/`. Load the one you are acting as.
 | 2D artist | `agents/artist-2d.md` | gpu (ComfyUI), later server too | small LLM + SDXL/FLUX |
 | Audio | `agents/audio.md` | gpu (ACE-Step, Stable Audio Open), later server | small LLM + audio model |
 | Reviewer / QA | `agents/reviewer.md` | server (vision model) | vision-language model |
+| Writer | `agents/writer.md` | server (CPU, `text` jobs) | orchestrator model; validated by rules |
+| Level designer | `agents/level-designer.md` | server (CPU, `level` jobs) | orchestrator model; ASCII maps validated for reachability |
+| Playtester | `agents/playtester.md` | server, nightly | vision model over bot screenshots + telemetry + error log |
 | Trainer | no prompt; `training/` scripts | gpu (`train` jobs) | not an LLM role: kohya / Unsloth runs |
 
 Model picks and alternatives: `docs/04-models.md`.

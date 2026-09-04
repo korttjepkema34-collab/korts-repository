@@ -36,3 +36,10 @@ dump.rdb
 
 # Godot class reference dump (regenerate with scripts/dump_godot_docs)
 server/godot-docs/
+
+# nightly builds and playtest captures
+builds/*
+!builds/.gitkeep
+reports/playtests/
+reports/proofs/
+reports/screenshots/

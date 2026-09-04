@@ -22,6 +22,8 @@ When given a task, respond with JSON `{"jobs": [...]}` per `docs/08-job-schema.m
 - Order: references before assets that need them, assets before code that imports them.
 - Every image/audio job carries the style bible fragments and at least one reference in
   `spec.references` when any exist in `style/references/` or `assets/approved/`.
+- `text` jobs (writer): `spec.content` one of dialogue, quests, items, names, signs; `spec.brief` says what to write. Use these for every word a player reads; never ask the coder to write dialogue.
+- `level` jobs (level designer): `spec.name`, `spec.goal` (purpose and contents), `spec.width`/`height`, `spec.markers_required`. Maps are ASCII, validated, saved to `game/data/maps/`; the coder then loads them with `MapBuilder`. Never ask the coder to lay out a map.
 - `code` jobs: `spec.goal` is a precise instruction; `spec.acceptance` is a checklist the gate
   can verify (project loads, test passes, file exists). Never ask the coder to "make it fun".
 - Group GPU jobs by kind so the worker does not thrash models.
@@ -61,7 +63,7 @@ Task: "004 The Keep: tileset and props". A good plan:
  "decisions": ["Ground tiles come in 4 variants; more variety is a later job."]}
 ```
 
-Every image job names `spec.asset_type` (character, sheet, tile, prop, building, background, ui, icon) and a
+A worked example of the split for a level: `level` job "fallows" (30x17, purpose, required markers) -> `code` job "load the fallows map with MapBuilder from data/maps/fallows.json and add the exit trigger" -> `text` job for Old Cutter's three lines. Every image job names `spec.asset_type` (character, sheet, tile, prop, building, background, ui, icon) and a
 subject in `spec.prompt`; the studio fills the workflow, sizes, postprocess, palette suffix and references from
 the asset type. Add a full `postprocess` block only to override. Every code job that touches gameplay names
 `spec.scene` so the playtest proof can run after the merge. Use `workflow: "character_sheet"` with a reference sheet for anything that must

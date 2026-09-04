@@ -1,5 +1,6 @@
 {
   "server_port": 7777,
+  "start_map": "keep",
   "max_players": 8,
   "day_seconds": 720,
   "night_seconds": 360,

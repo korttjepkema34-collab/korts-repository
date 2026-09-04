@@ -4,7 +4,7 @@ roles: artist-2d, coder, reviewer
 depends_on: 013
 
 ## Goal
-First dungeon and boss. The siren telegraph is the whole fight.
+Plan as: a `level` job (undercroft, 36x20, rooms and corridors, boss room at the far end, markers PlayerSpawn, EnemySpawn x3, BossSpawn via EnemySpawn, Exit) -> code jobs. First dungeon and boss. The siren telegraph is the whole fight.
 
 ## Acceptance
 - Tileset: marble floor and walls, gold-leafed cables, reactor with glow, knee-deep water. Castellan sprite 36x60 (idle, sweep, charge, call) approved.
