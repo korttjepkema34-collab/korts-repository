@@ -50,6 +50,11 @@ assets/              <- generated assets: incoming / approved / rejected (synced
 data/                <- traces, retrieval index, fetched docs (server-only, not in git)
 training/            <- dataset builders, fine-tune recipes, eval, reviewer server
 scripts/             <- wake-on-LAN, Tailscale ACL example, override/train/activate helpers
+tests/               <- the studio's own pytest suite; merge gate for studio code
+incidents/           <- problems with the studio itself: diagnosis, plan, attempts, resolution
+eval/                <- reviewer evaluation set
+reports/             <- daily reports, playtests, health, model usage (mostly ignored by git)
+builds/              <- nightly Windows builds (ignored by git)
 ```
 
 ## Quick start

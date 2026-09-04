@@ -10,6 +10,10 @@ task board directly; everyone else receives jobs.
 | **2D artist** | Sprites, tilesets, backgrounds, UI art, concept art | Job with description, style bible, references | PNGs in `assets/incoming/<id>/` + sidecar JSON | ComfyUI (SDXL/FLUX, LoRAs, IP-Adapter) |
 | **Audio** | Music tracks, SFX, placeholder voice | Job with mood/tempo/length or SFX description | `.ogg`/`.wav` in `assets/incoming/<id>/` + sidecar | ACE-Step, Stable Audio Open, Kokoro |
 | **Trainer** | Fine-tune the style LoRA, coder and reviewer on the studio's own approved work | `train` job with recipe + dataset built on the server | LoRA / merged model in `assets/training/models/` + manifest | kohya sd-scripts, Unsloth, `training/` (docs/15) |
+| **Writer** | Dialogue, quests, item flavour, names, signs in the world-bible voice | `text` job with content type and brief | JSON under `game/data/`, validated for voice and shape | orchestrator model, CPU |
+| **Level designer** | Map layouts as ASCII with the fixed legend | `level` job with name, size, purpose, required markers | `game/data/maps/<name>.json`, validated for reachability | orchestrator model, CPU |
+| **Playtester** | Judge the running build from bot screenshots, telemetry and error logs; file bugs | nightly pass | `reports/playtest-<date>.md`, bug tasks | vision model (cloud rung optional) |
+| **Engineer** | Fix the studio's own code when an incident repeats | open `studio-bug` incident | merged fix behind `pytest tests`, restart request | escalation ladder |
 | **Reviewer** | QA every generated asset against the style bible; judge the coder's screenshots. Code branches are gated automatically by the headless Godot check in `coder.py`, not by this role | Asset + style bible + references, or a scene screenshot + expectation | Verdict JSON, file moved to `approved/` or `rejected/` | Vision model |
 
 ## Escalation ladder
