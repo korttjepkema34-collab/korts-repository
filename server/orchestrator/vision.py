@@ -92,7 +92,7 @@ def proof_check(repo: Path, proof: dict) -> str:
         content.append({"type": "image_url", "image_url": {"url": "data:image/png;base64," + _b64.b64encode(buf.getvalue()).decode()}})
     try:
         import json as _json
-        resp = llm.client(llm.slot_for(llm.reviewer_model())).chat.completions.create(
+        resp = llm.vision_route().chat.completions.create(
             model=llm.reviewer_model(), temperature=0.0, response_format={"type": "json_object"},
             messages=[{"role": "user", "content": content}])
         d = _json.loads(resp.choices[0].message.content or "{}")

@@ -17,7 +17,8 @@ afternoon. **After each block, run the doctor and fix what it names until it say
 7. Windows: enable auto-login (`netplwiz`, untick "users must enter a password"), set the power plan to never sleep, pause Windows Update for the week.
 8. In the Godot editor once: Editor > Manage Export Templates > Download, so the nightly Windows build works.
 9. Task Scheduler: new task, trigger "At log on", action `powershell -File C:\studio\server\supervise.ps1`, "Run only when user is logged on". The supervisor keeps the loop alive and rolls back bad self-fixes (docs/23). Do not start it yet.
-10. Optional: install the free ntfy app on your phone, make a topic, and set `NOTIFY_URL` in `server\.env` for a daily one-liner and incident pushes.
+10. Optional, recommended: free cloud escalation for the hard problems. On the server run `ollama signin`; make an OpenRouter key and put it in `OPENROUTER_API_KEY`; leave `ESCALATION_LADDER` as shipped. Details and the privacy caveat: `docs/24-cloud-escalation.md`.
+11. Optional: install the free ntfy app on your phone, make a topic, and set `NOTIFY_URL` in `server\.env` for a daily one-liner and incident pushes.
 
 ## B. Gaming PC (Windows, the GPU box)
 

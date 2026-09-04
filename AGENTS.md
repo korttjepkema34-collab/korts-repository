@@ -103,6 +103,7 @@ Model picks and alternatives: `docs/04-models.md`.
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)
 - Decision log: `docs/decisions.md`
 - Open questions for the human: `docs/open-questions.md` (read on return; nothing blocks on them)
+- Free cloud escalation ladder (Ollama Cloud, OpenRouter): `docs/24-cloud-escalation.md`
 - Safety nets (supervision, healing, incidents, the engineer with rollback): `docs/23-safety-nets.md`; open incidents in `incidents/`
 - Human setup, in order, with a preflight check: `START-HERE.md`, `scripts/doctor.py`
 - Progress: `PROGRESS.md`, `reports/`, `tasks/deferred/` (the human's to-do list)

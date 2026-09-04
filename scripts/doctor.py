@@ -104,6 +104,15 @@ def check_server() -> None:
     rec("PASS" if free > float(env.get("MIN_FREE_GB", 20)) else "FAIL", f"disk free {free:.0f} GB", "free space; the loop pauses below MIN_FREE_GB")
     backlog = list((ROOT / "tasks" / "backlog").glob("*.md"))
     rec("PASS" if backlog else "WARN", f"{len(backlog)} tasks in backlog", "" if backlog else "the orchestrator will generate tasks; fine")
+    ladder = [x.strip() for x in env.get("ESCALATION_LADDER", "").split(",") if x.strip()]
+    cloud = [x for x in ladder if x.startswith("ollama:") and x.endswith("-cloud")]
+    orr = [x for x in ladder if x.startswith("openrouter:")]
+    if cloud:
+        rec("WARN", f"Ollama Cloud rungs configured ({len(cloud)}); verify once: ollama run {cloud[0].split(':', 1)[1]} \"say hi\"", "ollama signin on the server if that fails")
+    if orr:
+        rec("PASS" if env.get("OPENROUTER_API_KEY") else "WARN", f"OpenRouter rungs configured ({len(orr)})" + ("" if env.get("OPENROUTER_API_KEY") else " but OPENROUTER_API_KEY is empty: they are skipped"), "" if env.get("OPENROUTER_API_KEY") else "set OPENROUTER_API_KEY or remove the openrouter rungs")
+    if not ladder:
+        rec("WARN", "no cloud escalation ladder: hard problems use the local model only", "optional: see docs/24-cloud-escalation.md")
     gpu_url = env.get("CODER_BASE_URL_GPU", "")
     if gpu_url:
         try:

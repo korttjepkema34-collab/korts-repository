@@ -99,7 +99,7 @@ def _judge(repo: Path, shots: list[Path]) -> dict:
         buf = io.BytesIO(); im.save(buf, format="PNG")
         content.append({"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()}})
     try:
-        resp = llm.client(llm.slot_for(llm.reviewer_model())).chat.completions.create(
+        resp = llm.vision_route().chat.completions.create(
             model=llm.reviewer_model(), temperature=0.0, response_format={"type": "json_object"},
             messages=[{"role": "system", "content": llm.load_role(repo, "playtester")}, {"role": "user", "content": content}])
         return json.loads(resp.choices[0].message.content or "{}")

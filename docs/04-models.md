@@ -70,6 +70,13 @@ worker wait before loading image models. When the gaming PC is off, the CPU MoE 
 thing for escalated code jobs. Set it up: `ollama pull qwen3.6:27b` on the gaming PC and
 `OLLAMA_HOST=0.0.0.0:11434` there; firewall the port to the tailnet. Research: `docs/20-research-notes.md`.
 
+## Escalation climbs a free cloud ladder first (2026-09-04)
+
+`ESCALATION_LADDER`: Ollama Cloud models (`-cloud`, after `ollama signin`) and OpenRouter `:free`
+models are tried in order for escalated work only, with cooldowns and daily caps, and the local
+`gpt-oss:120b` is always the last rung. `VISION_LADDER` does the same for playtest and proof
+judgements. Details, limits and the privacy caveat: `docs/24-cloud-escalation.md`.
+
 ## Escalation is free too
 
 Decision: strictly free. When the fast model fails a task (caps hit, task deferred), the daily
