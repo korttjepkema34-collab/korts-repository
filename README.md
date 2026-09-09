@@ -36,3 +36,7 @@ personal/business notes, keys, tasks, and reports live outside the checkout.
 
 Reaper's Relics references: [game design](docs/10-game-design.md), [world bible](docs/14-world-bible.md),
 [style bible](style/style-bible.md), [Godot conventions](docs/09-godot-conventions.md).
+
+Owner requirements: [REQUIREMENTS.md](docs/assistant/REQUIREMENTS.md).
+Model discovery/switching: [routing design](docs/assistant/OPENROUTER-ROUTING.md).
+Reusable worker procedures: [skill catalog](docs/assistant/SKILLS.md).

@@ -32,3 +32,11 @@ Implementation decisions for this setup revision:
 Open details needed during setup: free disk; actual installed versions; eligible Ollama cloud models;
 OpenRouter candidate behavior; private business checkout; pinned Godot/add-on versions; GPU gaming
 schedule; final UI taste; authenticated service connections; actual overnight recovery behavior.
+
+## Owner clarification — 2026-09-09
+
+OpenRouter is primary for important cloud work; discover free models and evaluate/switch by task.
+Three sections are game, general/side projects (existing personal scope), and business including
+website, tax and money work. Obsidian is the chosen private knowledge interface. Add worker skills
+with explicit tool requirements. See REQUIREMENTS.md and SKILLS.md; pending capabilities remain
+listed in ACCEPTANCE.md.

@@ -53,3 +53,14 @@ Record actual results in `VERIFICATION.md`; do not infer success from code inspe
 Current media profiles intentionally block. Current draft_ready means deliverables are prepared;
 verified_candidate means configured checks and cloud review passed on that isolated candidate.
 Neither label means published, fully integrated, or that every possible test was performed.
+
+## Additional confirmed requirements (2026-09-09)
+
+- [ ] Free OpenRouter inventory refresh, dated model cards and evidence-based capability routing.
+- [ ] Automatic qualified cloud switching with persistent handoff and actual-model audit trail.
+- [ ] Important execution work delegated to qualified cloud workers, not only cloud plan/review.
+- [ ] General / side projects UI label and per-subproject context boundaries in all sections.
+- [ ] Business finance/tax cloud-backed role and connected, verified calculation/source tools.
+- [ ] Tool-aware skill assignment and evaluated memory-to-skill promotion.
+
+Requirements: REQUIREMENTS.md. Routing design: OPENROUTER-ROUTING.md. Authored skills: SKILLS.md.

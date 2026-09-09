@@ -1,6 +1,7 @@
 # The brain: Obsidian + retrieval + task state
 
-Obsidian is a good editor for this, but it is not required for the assistant to remember.
+Obsidian is the owner-selected knowledge editor and reference workspace for this setup.
+The assistant retrieves its underlying notes directly; memory remains portable.
 Its vault is a local folder of Markdown notes. The assistant reads those same files. No paid
 Obsidian Sync/Publish or commercial license is required for this setup. Sources:
 [Obsidian storage](https://obsidian.md/help/data-storage), [pricing](https://obsidian.md/pricing).
@@ -71,3 +72,10 @@ WAL/SHM companions, to an existing backup location. Restart afterward. Restore t
 set `ASSISTANT_HOME` to that folder, run status/search, and compare a known task and note. Git history
 is not a substitute for a backup of private state. Do not live-sync an active SQLite file between PCs.
 Only the server owns task state; the gaming PC is an execution resource.
+
+## General side projects and model knowledge
+
+The existing `personal` scope is the General / side projects section, including random projects.
+Use named subfolders and project index notes; automated subproject isolation remains pending.
+Store evaluated model strengths/weaknesses with dated evidence as OPENROUTER-ROUTING.md specifies.
+Link lessons to task evidence and proposed skills in SKILLS.md.
