@@ -1,3 +1,5 @@
+> **Repository navigation:** [Where everything belongs](docs/assistant/REPOSITORY-MAP.md) · [Approved studio rules](docs/assistant/authority/README.md)
+
 # Kort's personal assistant, business helper, and game studio
 
 A cloud-led assistant running on two existing Windows PCs, with editable local workers,

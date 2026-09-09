@@ -79,3 +79,7 @@ The existing `personal` scope is the General / side projects section, including 
 Use named subfolders and project index notes; automated subproject isolation remains pending.
 Store evaluated model strengths/weaknesses with dated evidence as OPENROUTER-ROUTING.md specifies.
 Link lessons to task evidence and proposed skills in SKILLS.md.
+
+## Approved knowledge policy
+
+See [Obsidian and GitHub rules](authority/OBSIDIAN-AND-GITHUB.md) for authority ownership, proposed/approved knowledge, conflict-safe rule updates and mailbox projections. The current FTS implementation does not enforce note approval metadata or per-subproject boundaries. These remain implementation gates.

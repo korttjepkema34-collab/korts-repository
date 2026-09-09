@@ -53,3 +53,7 @@ Task-specific quality routing and automatic promotion remain excluded pending re
 Owner approved the consolidated plan and documentation preparation. Preserve existing hardware, qualified free cloud leadership, private project scopes and replaceable specialist profiles. The browser office follows the approved pixel-art reference with connected rooms, character movement, expressions and real event-driven handoffs. Use the newer assistant runtime and SQLite-first display projection; do not reactivate the legacy studio loop or add Redis solely for animation.
 
 Deliver simulator, real read-only view, safe parallel scheduling and interactive controls in separately reviewed stages. Keep model choices as candidates until qualified. Pause affected cloud decisions when privacy/free-route requirements cannot be met; no paid/local-leader fallback. Weekly roster reporting remains planned and inactive. This approval permits preparing documentation; publication and feature implementation remain separate gates. See WORKFORCE-PLAN.md.
+
+## Owner-approved authority and Obsidian rules — 2026-09-09
+
+The owner approved publication of the version 0.2 authority package. See authority/README.md. It formalizes mandatory independent review, cloud technical judgment, owner publication approval, bounded repairs, a persistent private mailbox, and Obsidian/GitHub knowledge ownership. It supersedes the legacy “never wait” instruction. Runtime enforcement and live qualification remain pending; do not infer new permissions or activated profiles from documentation alone.

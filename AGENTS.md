@@ -1,3 +1,5 @@
+> **Approved studio authority:** Read [the authority index](docs/assistant/authority/README.md). It supersedes conflicting legacy instructions below. Pause blocked actions, record decisions for Kort, and continue independent authorized work.
+
 > **Current assistant setup (2026-09-09):** Read [the current setup guide](docs/assistant/SETUP.md). Cloud models lead and approve; local models never take over. No new GPU or paid inference is planned. The older game studio loop below is preserved for migration, not approved for unattended operation under the current requirements.
 
 # AGENTS.md - read me first
@@ -54,9 +56,7 @@ game, world, and art bibles. New integration work must meet `docs/assistant/ACCE
    in `docs/decisions.md`. If you are unsure whether something is decided, check there first.
 8. **Check licences** before a generated asset ships. Note the generator and its licence in the
    asset's sidecar `.json`.
-9. **Never wait for the human.** The studio runs unattended for days. When you would have asked
-   a question, take the most conservative reasonable answer, log it in `docs/decisions.md`
-   marked "(auto)", and continue. Stop affected jobs when required cloud review, permission, or verification is unavailable; report blockers and continue independent work. Never spend money or expose services outside the tailnet. See `docs/12-autonomy.md`.
+9. **Escalate blockers without stalling unrelated work.** Follow the approved mailbox and work rules. Do not guess missing authority or business policy. Persist evidence and pause affected tasks when required review, permission or verification is unavailable; continue independent authorized work. The legacy unattended policy is superseded.
 10. **Verify before claiming.** Run the tests, open the scene, look at the image. Report what
    actually happened, including failures.
 
@@ -69,7 +69,7 @@ game, world, and art bibles. New integration work must meet `docs/assistant/ACCE
 - Item data is generated: edit `scripts/gen_items.py`, never `game/data/{weapons,armor,classes,rarities}.json`
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)
 - Decision log: `docs/decisions.md`
-- Open questions for the human: `docs/open-questions.md` (read on return; nothing blocks on them)
+- Open questions for the human: `docs/open-questions.md` (legacy reference; current blockers follow the authority mailbox rules)
 - Free cloud escalation ladder (Ollama Cloud, OpenRouter): `docs/24-cloud-escalation.md`
 - Safety nets (supervision, healing, incidents, the engineer with rollback): `docs/23-safety-nets.md`; open incidents in `incidents/`
 - Human setup, in order, with a preflight check: `START-HERE.md`, `scripts/doctor.py`

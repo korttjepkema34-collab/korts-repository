@@ -78,3 +78,16 @@ Planning approved; no boxes below imply the office already exists.
 - [ ] Stage E: controller-mediated authenticated commands, acknowledgments, permissions and audit verified.
 
 Review each stage before starting the next. SQLite remains the first display source; legacy Redis integration is superseded for this feature. See LIVE-WORKFORCE-HANDOFF.md and WORKFORCE-PLAN.md.
+
+## Approved studio authority implementation gates
+
+Policy approved: [authority index](authority/README.md). Documentation approval does not close these gates.
+
+- [ ] Enforce knowledge status/provenance and per-subproject access boundaries.
+- [ ] Implement conflict-safe rule adoption and task revision pinning.
+- [ ] Implement persistent private mailbox and revision-bound responses with duplicate-effect prevention.
+- [ ] Generate scoped Obsidian reports and owner-only navigation from authoritative state.
+- [ ] Enforce independent review and bounded repairs across model changes.
+- [ ] Verify actual Windows vault operation and backup restore.
+
+The early office simulator was accepted as a demo and privately published separately. It does not satisfy all Stage B animation requirements. Further office development is deferred in issue #2; real runtime integration is still pending.
