@@ -85,3 +85,10 @@ game, world, and art bibles. New integration work must meet `docs/assistant/ACCE
 For new work, apply `.claude/skills/plan-execute-test-review/SKILL.md`: plan, execute,
 verify, then present the concrete result for owner review before publishing or merging.
 Local preparation and testing should proceed autonomously within the authorized scope.
+
+## Live Workforce planning
+
+For the approved browser-office direction read `docs/assistant/WORKFORCE-PLAN.md` and
+`docs/assistant/LIVE-WORKFORCE-HANDOFF.md`. Use the newer `assistant/` runtime and staged review.
+The office, safe concurrency and GPU/media integration remain pending. Do not implement the
+older uploaded handoff against the legacy unattended loop. Model candidates are not activated defaults.

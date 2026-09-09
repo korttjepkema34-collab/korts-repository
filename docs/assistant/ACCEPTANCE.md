@@ -59,9 +59,22 @@ Neither label means published, fully integrated, or that every possible test was
 - [x] Free OpenRouter inventory, dated synthetic evaluation cards and opt-in evidence-gated route ordering.
 - [ ] Task-specific capability benchmarks and live model qualification.
 - [ ] Automatic qualified cloud switching with persistent handoff and actual-model audit trail.
-- [ ] Important execution work delegated to qualified cloud workers, not only cloud plan/review.
+- [x] Bounded cloud execution adapters (`cloud-code` and `cloud-draft`) implemented; live task/model qualification remains required. See CLOUD-WORKERS-REVIEW.md.
 - [ ] General / side projects UI label and per-subproject context boundaries in all sections.
 - [ ] Business finance/tax cloud-backed role and connected, verified calculation/source tools.
 - [ ] Tool-aware skill assignment and evaluated memory-to-skill promotion.
 
 Requirements: REQUIREMENTS.md. Routing design: OPENROUTER-ROUTING.md. Authored skills: SKILLS.md.
+
+## Live Workforce delivery gates
+
+Planning approved; no boxes below imply the office already exists.
+
+- [ ] Stage B: labeled simulator, approved office style, walking/handoff, all key states, accessible details and narrow viewport verified without inference.
+- [ ] Stage C: real `assistant/` transitions, scoped sanitized snapshots/events, ordering, restart/reconnect, stale evidence, bounded clients and failure isolation verified.
+- [ ] Stage C: private gateway access and origin/session rules verified before real private data is exposed; mutations disabled.
+- [ ] Stage C: gateway/browser CPU and RAM measured separately; comparable inference runs with office off/on recorded. Handoff budgets are targets, not results.
+- [ ] Stage D: cloud/local overlap and exclusive GPU leases verified, including gaming, crash recovery, unload confirmation and duplicate-effect prevention.
+- [ ] Stage E: controller-mediated authenticated commands, acknowledgments, permissions and audit verified.
+
+Review each stage before starting the next. SQLite remains the first display source; legacy Redis integration is superseded for this feature. See LIVE-WORKFORCE-HANDOFF.md and WORKFORCE-PLAN.md.

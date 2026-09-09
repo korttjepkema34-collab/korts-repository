@@ -55,3 +55,11 @@ Sources checked during preparation: [Ollama Claude Code integration](https://doc
 [OpenRouter Claude Code integration](https://openrouter.ai/docs/cookbook/coding-agents/claude-code-integration),
 [Qwen 4B](https://ollama.com/library/qwen3.5:4b), [Qwen 9B](https://ollama.com/library/qwen3.5:9b).
 Recheck account/model facts when installing; no changing model ID is treated as permanently available.
+
+## Expanded specialist research bench
+
+The owner approved retaining the expanded bench in [WORKFORCE-PLAN.md](WORKFORCE-PLAN.md), not activating every model. That table covers larger server MoE/background candidates, smaller GPU coding/vision/review candidates and ComfyUI media. The initial candidates above describe the earlier setup; neither list is a measured winner roster. Runtime defaults and private profiles are unchanged by this documentation.
+
+The cloud shortlist includes Nemotron Ultra, Nex-N2.5-Pro and Inkling, with other candidates retained for evaluation. Recheck exact free endpoint IDs and privacy terms. Do not convert names directly into executable configuration. File size does not establish runtime memory fit; record exact artifact revision, quant, runtime compatibility, measured context, peak RAM/VRAM, load time and quality.
+
+Use 15–20 representative orchestration cases covering dependencies, hardware contention, gaming, cloud outage, privacy, failed evidence, review, restart and model handoff. Test image delivery through the actual adapter separately. Different model families offer review diversity, not guaranteed correctness. Keep vendor claims and transcript opinion scores separate from observed measurements. No automatic promotion or model downloads are authorized here.

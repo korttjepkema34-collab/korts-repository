@@ -29,4 +29,16 @@ be checked on the actual server; Tkinter import/compilation alone is not a visua
 Use truthful status labels: awaiting cloud, awaiting worker, awaiting review, approved draft,
 verified candidate, blocked. Never label a draft as a deployed change. Pausing should say it takes
 effect after the active step. Show which model/provider performed review and whether vision/audio
-was actually supplied. The final personal styling, name, avatar and web/mobile preference are open.
+was actually supplied. The browser office visual direction is approved below; detailed sprite assets and product naming remain refinements.
+
+## Approved Live Workforce visual direction
+
+The owner approved a detailed pixel-art office: dark navy navigation and panels, warm interior lights, city windows, two connected floors, visible stairs/walkways and distinct characters. The supplied reference is external to this repository; do not claim it is a working UI or reference a missing committed image.
+
+Rooms: Cloud HQ, Server Room, GPU Studio, Creative Studio, World Room, Review Room and Lounge. Atlas, Forge, Pixel, Scout, Scribe and Judge are initial display identities mapped to real specialist IDs. Rooms represent activity; Creative Studio and GPU Studio share one physical GPU. Visual grouping must not merge distinct runtime roles or concurrent instances.
+
+Implement walking, carrying work, handoff, working, waiting, needs-user, error and celebration. Bubbles summarize real events; expressions are UI state. Animations never delay scheduling. The reference's character sheets and theme options are presentation examples, not required permanent panels. Weather, room editing, pets and alternate themes are later scope.
+
+Support a responsive browser view with readable agent details and keyboard selection. On small screens use pan/zoom or scrolling plus an accessible status list. Reduced motion updates position without walking. Pause hidden-tab animation and keep sound off. Details and notifications respect project access boundaries.
+
+Delivery order and verification: [WORKFORCE-PLAN.md](WORKFORCE-PLAN.md) and [LIVE-WORKFORCE-HANDOFF.md](LIVE-WORKFORCE-HANDOFF.md). The existing desktop shell remains available; the browser view is not yet implemented.

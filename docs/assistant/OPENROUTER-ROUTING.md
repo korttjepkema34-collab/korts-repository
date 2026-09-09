@@ -99,3 +99,15 @@ rate-limit outage, failed-quality evaluation, vision request without vision supp
 mid-handoff. Demonstrate important work moving between two qualified free cloud models with
 preserved evidence and no local/paid takeover. Display inventory, evidence cards, routing reason
 and a per-task qualified-model override in the UI. The richer switching/GUI scenario remains pending; basic catalog and routing failure paths have offline tests.
+
+## Approved workforce extension requirements
+
+The existing catalog and ordered fallback calls remain as implemented. The following are planned requirements, not new runtime guarantees:
+
+- Apply price, capability, qualification and project/provider privacy eligibility before routing. When no eligible free cloud leader exists, persist and pause affected decisions; never silently choose paid inference or local leadership.
+- Qualify real modalities and tool behavior through the actual harness. A provider supporting images does not establish that the current text adapter delivers images.
+- Coordinate minute/day budgets across planning, execution and review; reserve capacity for review/recovery, honor retry hints and use bounded backoff/cooldowns. Application invocation estimates are not account-wide provider request counts.
+- Preserve task/run IDs, source revision, accepted artifacts and remaining criteria across model switches. Discovery alone never activates a model.
+- Plan a weekly human-facing roster summary alongside runtime freshness checks. No automation is created by this documentation. Reports recommend changes; they never activate routes automatically.
+
+See [WORKFORCE-PLAN.md](WORKFORCE-PLAN.md) for staged delivery. The free endpoint privacy restrictions cannot be solved by dropping a `:free` suffix or letting a local specialist approve itself.

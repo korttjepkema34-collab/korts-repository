@@ -97,3 +97,5 @@ Added cloud-code/cloud-draft adapters through the existing free-only Claude Code
 two planner-visible cloud specialist profiles and successful execution provenance. Tests and
 separate review/integration gates remain required. Serial execution and shared route qualification
 remain limitations; publication awaits the owner's review.
+
+| 2026-09-09 | Owner approved Live Workforce planning against the newer assistant runtime, SQLite-first display state and staged review | Current direction and scope are in [assistant/DECISIONS.md](assistant/DECISIONS.md) and [assistant/WORKFORCE-PLAN.md](assistant/WORKFORCE-PLAN.md). Legacy Redis/local-leadership instructions do not govern this feature; implementation remains pending. |

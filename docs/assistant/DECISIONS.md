@@ -47,3 +47,9 @@ Added catalog inventory/cache, six-case synthetic evaluations, private model car
 ordering of explicitly qualified routes using fresh matching evidence. All passing candidates
 meet the same screening threshold; latency breaks ties and is not an intelligence score.
 Task-specific quality routing and automatic promotion remain excluded pending real evaluations.
+
+## Owner approved workforce planning direction — 2026-09-09
+
+Owner approved the consolidated plan and documentation preparation. Preserve existing hardware, qualified free cloud leadership, private project scopes and replaceable specialist profiles. The browser office follows the approved pixel-art reference with connected rooms, character movement, expressions and real event-driven handoffs. Use the newer assistant runtime and SQLite-first display projection; do not reactivate the legacy studio loop or add Redis solely for animation.
+
+Deliver simulator, real read-only view, safe parallel scheduling and interactive controls in separately reviewed stages. Keep model choices as candidates until qualified. Pause affected cloud decisions when privacy/free-route requirements cannot be met; no paid/local-leader fallback. Weekly roster reporting remains planned and inactive. This approval permits preparing documentation; publication and feature implementation remain separate gates. See WORKFORCE-PLAN.md.
