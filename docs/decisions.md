@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # Decision log
 
 Append-only. One line per decision, newest at the bottom. Format: date, decision, reason.
@@ -77,3 +79,23 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 | 2026-09-04 | The studio's own tests in tests/ are the merge gate for server/, worker/, shared/, scripts/; one test per fixed bug | Prevents the engineer entrenching mistakes. |
 | 2026-09-04 | Escalation climbs a free cloud ladder (Ollama Cloud `-cloud` models, OpenRouter `:free`) with hourly cooldowns and daily caps; local model always last; routine work stays local; cloud vision optional for playtest/proof judgements | Free better models for the rare hard problems; never a dependency. docs/24. |
 | 2026-09-04 | Audit pass: headless clients with --connect are clients (playtest bot fix); tasks point at data/maps/keep.json; engineer gate forbids shrinking the test count; pytest and fakeredis in server requirements; roles table, repo map, module map and env docs completed | Owner asked for a full check before first run. |
+
+
+## 2026-09-09: Current cloud-led assistant
+
+User confirmed no server GPU or new purchases, free cloud leadership, and personal/business/game scope. Implemented `assistant/` foundation; supersedes local-led legacy runtime. See `assistant/DECISIONS.md` and `assistant/ACCEPTANCE.md`. Native media integrations and live device qualification remain open.
+
+## Owner review and task integration
+
+Owner requested plan → execute → test → present for review before publication. Prepared a reusable
+workflow skill and serial per-task integration branch with candidate tests/cloud review and final
+combined checks/cloud review. No automatic conflict resolution or publication. Fix awaits review.
+
+## Cloud execution workers — prepared for owner review
+
+Added cloud-code/cloud-draft adapters through the existing free-only Claude Code route layer,
+two planner-visible cloud specialist profiles and successful execution provenance. Tests and
+separate review/integration gates remain required. Serial execution and shared route qualification
+remain limitations; publication awaits the owner's review.
+
+| 2026-09-09 | Owner approved Live Workforce planning against the newer assistant runtime, SQLite-first display state and staged review | Current direction and scope are in [assistant/DECISIONS.md](assistant/DECISIONS.md) and [assistant/WORKFORCE-PLAN.md](assistant/WORKFORCE-PLAN.md). Legacy Redis/local-leadership instructions do not govern this feature; implementation remains pending. |

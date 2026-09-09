@@ -1,93 +1,44 @@
-# Reaper's Relics · AI game dev team
+> **Repository navigation:** [Where everything belongs](docs/assistant/REPOSITORY-MAP.md) · [Approved studio rules](docs/assistant/authority/README.md)
 
-A self-hosted, mostly-free "AI game studio" that builds a game in **Godot 4** using a team of
-specialised AI workers, running across two machines on a private Tailscale network.
+# Kort's personal assistant, business helper, and game studio
 
-> **If you are an AI model reading this repo:** start with [`AGENTS.md`](AGENTS.md). It explains
-> the project, the machines, your role options, and the rules. The `docs/` folder holds the full
-> design and every decision made so far.
+A cloud-led assistant running on two existing Windows PCs, with editable local workers,
+a custom desktop UI, and an Obsidian-compatible memory vault. No new GPU or paid inference.
 
-## The game
+**Start with [the complete setup guide](docs/assistant/SETUP.md).** This branch implements a
+working foundation for cloud planning/review, local drafts, isolated code candidates, persistent
+queues, and reports. It is **not yet a complete autonomous multimedia studio**. Read the
+[acceptance checklist and remaining implementation](docs/assistant/ACCEPTANCE.md) before overnight use.
 
-**Reaper's Relics**, a 2.5D pixel-art online RPG. By day you scavenge and build. By night the
-Wired come in their hundreds. Survivor.io hordes, Stardew's look and daylight loop, Elden Ring
-bosses and stamina, Minecraft-style building, one day/night clock. Near-future feudal dystopia:
-medieval cyberpunk. Design in `docs/10-game-design.md`, world in `docs/14-world-bible.md`, the
-approved look in `style/references/mock-day.png` and `mock-night.png`.
+| Piece | Current choice |
+|---|---|
+| Brain and reviewer | Qualified free cloud model through Claude Code; never local takeover |
+| Server | i7-10700K, 96 GB RAM, Windows, no dedicated GPU |
+| Gaming PC | Ryzen 9 7900X, 32 GB RAM, RTX 3080 Ti 12 GB |
+| Connection | Tailscale plus localhost SSH forwarding for GPU Ollama |
+| Workers | 13 editable specialist profiles; native media adapters remain to be connected |
+| Memory | Private Markdown vault + SQLite search/state; optional Obsidian editor |
+| UI | Custom Python/Tkinter desktop shell; richer chat design documented |
+| Game | Existing Reaper's Relics Godot design and source preserved |
 
-## The idea in one paragraph
+## Read in order
 
-One **orchestrator** model acts as the studio lead. It reads the task board, breaks work into
-jobs, and dispatches them to specialised **workers**: a coder (GDScript + scenes via a Godot MCP
-server), a 2D artist (ComfyUI), an audio worker (ACE-Step / Stable Audio Open), and a reviewer (vision model that checks output against the style bible).
-The human owner is the creative director and final QA. Nothing ships without their sign-off.
+1. [Setup](docs/assistant/SETUP.md) and [hardware](docs/assistant/HARDWARE.md).
+2. [Models and qualification](docs/assistant/MODELS.md), [workers](docs/assistant/WORKERS.md).
+3. [Memory](docs/assistant/MEMORY.md), [GitHub synchronization](docs/assistant/GITHUB.md).
+4. [Code and Godot](docs/assistant/CODE-AND-GAME.md), [art and audio](docs/assistant/ASSETS.md).
+5. [Integrations](docs/assistant/INTEGRATIONS.md), [UI design](docs/assistant/UI-DESIGN.md).
+6. [Decisions](docs/assistant/DECISIONS.md), [acceptance](docs/assistant/ACCEPTANCE.md), [verification](docs/assistant/VERIFICATION.md).
 
-## The machines
+AI contributors: read [AGENTS.md](AGENTS.md). New entry point: `python -m assistant.run`.
+The older `server/orchestrator/main.py` entry point is disabled because its local-led automatic
+approval/merge behavior conflicts with current requirements. Older studio modules remain migration
+material, not a second setup path. This public repository stores source and templates; actual
+personal/business notes, keys, tasks, and reports live outside the checkout.
 
-| Name | Role | Hardware | Always on? |
-|---|---|---|---|
-| `server` | Studio: orchestrator LLM, job queue, git, headless Godot tests, asset library, dedicated game server | i7-10700K, 96 GB DDR4, **no GPU yet** (12 GB card planned), Windows | Yes |
-| `gpu` | Contractor: GPU asset generation, Godot editor + MCP | Ryzen 9 7900X, 32 GB DDR5, **RTX 3080 Ti 12 GB** | No, it is also the gaming PC |
+Reaper's Relics references: [game design](docs/10-game-design.md), [world bible](docs/14-world-bible.md),
+[style bible](style/style-bible.md), [Godot conventions](docs/09-godot-conventions.md).
 
-They talk over **Tailscale**. The server never pushes work at the gaming PC; it puts jobs on a
-queue and the GPU worker pulls them whenever it is online and not in gaming mode.
-
-## Repo map
-
-```
-AGENTS.md            <- read this first if you are an AI
-CLAUDE.md            <- pointer to AGENTS.md for Claude Code
-docs/                <- vision, hardware, architecture, models, setup guides, decision log
-agents/              <- one markdown file per team role (system prompts / subagent definitions)
-shared/              <- job schema shared by orchestrator and worker
-server/              <- docker-compose + orchestrator for the always-on server
-worker/              <- GPU worker daemon for the gaming PC
-game/                <- the Godot 4 project (minimal skeleton; task 003 adds the full layout)
-style/               <- style bible + reference images every art prompt must include
-tasks/               <- file-based task board: backlog / in-progress / done
-assets/              <- generated assets: incoming / approved / rejected (synced, not in git)
-                        plus training/datasets and training/models (same sync)
-data/                <- traces, retrieval index, fetched docs (server-only, not in git)
-training/            <- dataset builders, fine-tune recipes, eval, reviewer server
-scripts/             <- wake-on-LAN, Tailscale ACL example, override/train/activate helpers
-tests/               <- the studio's own pytest suite; merge gate for studio code
-incidents/           <- problems with the studio itself: diagnosis, plan, attempts, resolution
-eval/                <- reviewer evaluation set
-reports/             <- daily reports, playtests, health, model usage (mostly ignored by git)
-builds/              <- nightly Windows builds (ignored by git)
-```
-
-## Quick start
-
-**Read `START-HERE.md`.** It is the whole of the human's part, in order, with a doctor script that
-names anything still missing.
-
-The short version:
-
-1. Read `docs/06-setup-server.md` and bring up the server stack with `docker compose up -d`.
-2. Read `docs/07-setup-gpu-worker.md` and start `worker/worker.py` on the gaming PC.
-3. Drop a task file into `tasks/backlog/` and watch the orchestrator turn it into jobs.
-
-## Unattended mode
-
-Turn it on and walk away. The orchestrator plans, delegates, reviews, retries, defers, generates
-its own backlog, and writes a daily report to `PROGRESS.md`. Nothing waits for a human. Setup
-checklist: `docs/13-before-you-walk-away.md`. Contract: `docs/12-autonomy.md`.
-
-## Self-improvement
-
-The studio records every coder run (with its gate result) and every reviewer verdict, gives
-the coder a retrieval tool over the Godot 4 docs, and can fine-tune a style LoRA, a coder and a
-reviewer on its own approved work using the gaming PC. Nothing activates itself. How it works:
-`docs/15-training.md`. What to do: `docs/16-when-you-get-home.md`.
-
-## Status
-
-**Ready for first run, pending setup.** The unattended loop, the file-based coder with a headless
-gate and playtest proofs, the rubric reviewer with deterministic checks, the GPU worker with
-palette post-processing, retrieval over the engine reference and Godot docs, traces, the training
-recipes, the world and style bibles, the item generator, the eval set and the bootstrap scripts
-are all in the repo. Nothing has run against a real Godot or ComfyUI yet: task 001 (queue smoke
-test) and task 003 (verify the skeleton) exist to prove them. Setup order: `docs/13-before-you-walk-away.md`,
-then `docs/16-when-you-get-home.md` for the learning loop. Research and reasoning behind the
-choices: `docs/20-research-notes.md`.
+Owner requirements: [REQUIREMENTS.md](docs/assistant/REQUIREMENTS.md).
+Model discovery/switching: [routing design](docs/assistant/OPENROUTER-ROUTING.md).
+Reusable worker procedures: [skill catalog](docs/assistant/SKILLS.md).

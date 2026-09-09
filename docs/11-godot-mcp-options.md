@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 11 - Godot MCP server options
 
 The coder agent needs hands inside Godot. Three viable choices as of Sept 2026. Findings from
@@ -24,3 +26,4 @@ Install the chosen server **on the home server**, not the gaming PC, and set `GO
 `server/.env`. The coder loop bridges its tools in automatically (`server/orchestrator/mcp_bridge.py`).
 The server's integrated Intel graphics is enough to run the editor. The coder keeps file tools,
 the headless gate and windowed screenshots regardless, so MCP is additive, never a dependency.
+

@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 06 - Server setup (home server, `server`, **Windows**)
 
 The server runs Windows. Decision (see `decisions.md`): keep Windows, do **not** reinstall Linux.
@@ -125,3 +127,4 @@ Then start the worker on the gaming PC and watch `assets\incoming\000-stub\` app
 Install the Nvidia driver. Native Ollama picks it up automatically. Switch the orchestrator model
 per `docs/04-models.md` and run a second copy of `worker/` on the server for `image` and `music`
 kinds (it runs on Windows too).
+

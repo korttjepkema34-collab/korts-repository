@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # Open questions
 
 Nothing here blocks the studio. It runs unattended and makes conservative choices on its own
@@ -36,3 +38,4 @@ Nothing here blocks the studio. It runs unattended and makes conservative choice
 - [ ] Nakama compose entry for scope rung 2.
 - [ ] Dedicated game server launch as a service on the Windows server.
 - [ ] Dashboard.
+

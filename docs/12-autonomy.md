@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 12 - Unattended operation
 
 The owner turns the studio on and comes back days later. No input in between. This document is
@@ -56,3 +58,4 @@ the contract for how the system behaves in that mode. Every role file assumes it
   handled by a per-call timeout that kills the Godot process.
 - If Ollama dies, the loop logs errors every cycle and keeps trying. Nothing is lost; the queue
   and state are on disk.
+

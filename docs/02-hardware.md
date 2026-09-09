@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 02 - Hardware
 
 ## Machines
@@ -74,3 +76,4 @@ connector, and that the PCIe x16 slot is free.
 Both machines are on the same **Tailscale** tailnet and the same physical LAN. Services bind to
 the Tailscale interface. The server can send Wake-on-LAN packets to the gaming PC over the LAN.
 See `docs/03-architecture.md` and `scripts/`.
+

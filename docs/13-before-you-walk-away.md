@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 13 - Before you walk away (one-time setup checklist)
 
 The studio cannot install its own tools. Do this once on each machine, run the smoke test,
@@ -74,3 +76,4 @@ its reference library from day one. Everything after this is the studio's job.
 
 Read `PROGRESS.md` first, then `tasks/deferred/`. Deferred tasks are the ones that need a
 human; everything else either got done or is still cycling.
+

@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 05 - Team roles
 
 Eight roles: five with prompts that produce work, plus writer, level designer and playtester added 2026-09-04 (see docs/21-levels-writing-playtests.md). Each has a system prompt in `agents/`. The orchestrator is the only one that reads the
@@ -29,3 +31,4 @@ task board directly; everyone else receives jobs.
 
 Milestones 1-4 use only **orchestrator, coder, 2D artist, reviewer**. Audio joins at
 milestone 5. This keeps VRAM contention and debugging surface small while the pipeline is proven.
+

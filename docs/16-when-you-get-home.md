@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 16 - When you get home: making the studio learn
 
 Everything in this branch is wired and tested against synthetic data. What is left is the part
@@ -142,3 +144,4 @@ Brainstorm, roughly in order of bang for buck. None are built yet.
 10. **Distil the reviewer into a classifier.** Once you have 1,000 verdicts, a tiny CLIP-based
     approve/reject classifier can run per image in milliseconds and pre-filter before the VL
     model looks, cutting reviewer time on CPU by most of it.
+

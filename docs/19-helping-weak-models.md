@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 19 - Helping weaker models do a better job
 
 What was done, in priority order, so a small local model can ship. Each item is live in the repo.
@@ -44,3 +46,4 @@ studio uses is local.
 
 - Real eval cases from the first week of output, replacing the synthetic seeds.
 - A second reviewer pass for animation frames (frame-to-frame consistency), once task 018 exists.
+

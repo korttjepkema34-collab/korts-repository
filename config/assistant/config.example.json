@@ -1,0 +1,52 @@
+{
+  "cloud_only_leadership": true,
+  "paid_inference_allowed": false,
+  "claude_bin": "claude",
+  "cloud_routes": [
+    {
+      "provider": "openrouter",
+      "model": "qwen/qwen3-coder:free",
+      "qualified": false
+    }
+  ],
+  "daily_caps": {
+    "openrouter": 1000,
+    "ollama-cloud": 1000
+  },
+  "cloud_timeout_seconds": 600,
+  "max_worker_attempts": 3,
+  "poll_seconds": 60,
+  "allow_cloud_context": {
+    "personal": false,
+    "business": false,
+    "game": false
+  },
+  "code_projects": {
+    "game": {
+      "execution_enabled": false,
+      "source": "",
+      "allowed_prefixes": [
+        "game/"
+      ],
+      "context_files": [
+        "game/scenes/main/main.gd"
+      ],
+      "checks": [],
+      "check_timeout_seconds": 300
+    },
+    "business": {
+      "execution_enabled": false,
+      "source": "",
+      "allowed_prefixes": [
+        "app/",
+        "components/",
+        "lib/",
+        "tests/"
+      ],
+      "context_files": [],
+      "checks": [],
+      "check_timeout_seconds": 300
+    }
+  },
+  "catalog_routing": false
+}

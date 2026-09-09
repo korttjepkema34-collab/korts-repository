@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 03 - Architecture
 
 ## Overview
@@ -110,3 +112,4 @@ boot. Gaming mode is a manual toggle so a wake never interrupts a game already r
   `scripts/tailscale-acl.example.json`.
 - Redis has a password (see `server/.env.example`). Bind to the Tailscale IP only.
 - No service is exposed via Tailscale Funnel or port forwarding.
+

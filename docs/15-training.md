@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 15 - Training the studio's own models
 
 The studio produces labelled data as a side effect of working. This document explains what is
@@ -114,3 +116,4 @@ PC, create the venv there, and set `tools.training_cmd` / `tools.training_repo_r
 Move `serve_reviewer.py` and the retrieval index there permanently; the fine-tuned reviewer
 becomes always-resident. Coder fine-tunes can also run there overnight, leaving the 3080 Ti to
 SDXL. Add `train` to the server worker's `kinds` and the queue does the rest.
+

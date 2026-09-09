@@ -1,3 +1,7 @@
+> **Approved studio authority:** Read [the authority index](docs/assistant/authority/README.md). It supersedes conflicting legacy instructions below. Pause blocked actions, record decisions for Kort, and continue independent authorized work.
+
+> **Current assistant setup (2026-09-09):** Read [the current setup guide](docs/assistant/SETUP.md). Cloud models lead and approve; local models never take over. No new GPU or paid inference is planned. The older game studio loop below is preserved for migration, not approved for unattended operation under the current requirements.
+
 # AGENTS.md - read me first
 
 You are looking at the shared repository for an **AI-run game development team** building a game
@@ -19,56 +23,23 @@ before inventing any name, place, enemy or line of dialogue, and `style/style-bi
 making or judging any art. The approved look is `style/references/mock-day.png` and `mock-night.png`. The first milestone is a playable two-player prototype on a
 dedicated server. See `docs/01-vision.md`.
 
-## 2. The two machines
+## 2. Current architecture (supersedes older studio documents)
 
-| Hostname | What it is | Runs |
-|---|---|---|
-| `server` | Home server, i7-10700K, 96 GB DDR4, no GPU (12 GB card planned), **Windows**, always on | Ollama (native), Redis + Forgejo (Docker Desktop), Syncthing (native), orchestrator (native Python), headless Godot for tests, dedicated game server later |
-| `gpu` | Gaming PC, Ryzen 9 7900X, 32 GB DDR5, RTX 3080 Ti 12 GB VRAM, Windows, online when not gaming | GPU worker daemon, ComfyUI, ACE-Step, optional Godot editor for interactive sessions |
+Read `docs/assistant/SETUP.md`, `DECISIONS.md`, and `ACCEPTANCE.md` in that directory.
+The server has an i7-10700K, 96 GB RAM, Windows, **no dedicated GPU**. The gaming PC has
+Ryzen 9 7900X, 32 GB RAM, RTX 3080 Ti 12 GB. No additional GPU is planned.
 
-Connected over **Tailscale**. Use Tailscale hostnames or IPs, never public addresses.
-Full details: `docs/02-hardware.md`.
+Cloud models always plan and review through Claude Code. Only explicitly free qualified routes
+are allowed. If unavailable, persist work and wait; never use a local leader or paid fallback.
+The current `assistant/` runtime uses SQLite, private Markdown memory, and serial worker jobs;
+local Ollama workers connect through localhost or a Tailscale SSH tunnel. Editable role profiles
+are in `config/assistant/workers.json`, copied to the private runtime on initialization.
+The old Redis/media studio remains migration material; do not run its supervisor unattended.
 
-## 3. How work flows
-
-```
-human writes task  ->  tasks/backlog/*.md
-orchestrator (server) reads task, plans, emits jobs  ->  Redis queue
-GPU worker (gpu) pulls job when online and not gaming  ->  runs tool  ->  writes to assets/incoming/
-reviewer (server, vision model) checks output vs style bible  ->  assets/approved/ or rejected/
-coder (server, in-process) edits game/ with file tools, headless Godot gate  ->  merged or retried
-task closes  ->  tasks/done/ (all jobs passed) or tasks/deferred/ (caps hit; retried daily)
-text/level jobs  ->  writer / level designer run on the CPU, validated, saved to game/data/, committed
-nightly  ->  playtest (dedicated server + two bots), vision report, bug tasks filed; Windows build to builds/
-backlog empty  ->  orchestrator generates next tasks from docs/10-game-design.md
-daily  ->  reports/YYYY-MM-DD.md + PROGRESS.md, committed and pushed
-always ->  every coder run and reviewer verdict is traced to data/traces/ (training data)
-daily, if AUTO_TRAIN=1 ->  enough new data? build dataset, queue a `train` job for the GPU worker
-```
-
-Key rules: **the server never calls the gaming PC directly** (it enqueues, the worker pulls), and
-**the studio never waits for a human** (`docs/12-autonomy.md`). Code and planning continue when
-the gaming PC is off; only art and audio wait for it.
-
-Who calls what, when, and how things end: `docs/22-how-it-runs.md`. Details: `docs/03-architecture.md`. Job format: `docs/08-job-schema.md` and `shared/jobs.py`.
-
-## 4. Roles you can take
-
-Each role has a system prompt in `agents/`. Load the one you are acting as.
-
-| Role | File | Where it runs | Model tier |
-|---|---|---|---|
-| Orchestrator / studio lead | `agents/orchestrator.md` | server (CPU, MoE model) | large MoE, needs planning + tool calling |
-| Coder | `agents/coder.md` | **server** (file tools + headless gate + windowed screenshots + optional editor MCP) | strongest coder that fits in RAM |
-| 2D artist | `agents/artist-2d.md` | gpu (ComfyUI), later server too | small LLM + SDXL/FLUX |
-| Audio | `agents/audio.md` | gpu (ACE-Step, Stable Audio Open), later server | small LLM + audio model |
-| Reviewer / QA | `agents/reviewer.md` | server (vision model) | vision-language model |
-| Writer | `agents/writer.md` | server (CPU, `text` jobs) | orchestrator model; validated by rules |
-| Level designer | `agents/level-designer.md` | server (CPU, `level` jobs) | orchestrator model; ASCII maps validated for reachability |
-| Playtester | `agents/playtester.md` | server, nightly | vision model over bot screenshots + telemetry + error log |
-| Trainer | no prompt; `training/` scripts | gpu (`train` jobs) | not an LLM role: kohya / Unsloth runs |
-
-Model picks and alternatives: `docs/04-models.md`.
+Personal and business notes, credentials, reports, and generated outputs stay out of this PUBLIC
+repository. Preserve scope boundaries. A draft is not an implementation; a tested candidate is
+not an integrated change. Record actual test evidence before cloud approval. Preserve existing
+game, world, and art bibles. New integration work must meet `docs/assistant/ACCEPTANCE.md`.
 
 ## 5. Rules for every role
 
@@ -78,18 +49,14 @@ Model picks and alternatives: `docs/04-models.md`.
    references in `style/references/`. Consistency beats individual quality.
 4. **Never write directly into `assets/approved/`.** Generated output goes to `assets/incoming/`.
    Only the reviewer moves things to `approved/` or `rejected/`.
-5. **Never commit to `main`.** Work on a branch named `<role>/<task-id>-<slug>`. The orchestrator
-   merges after headless tests pass.
+5. **Never commit to `main`.** Work on a branch named `<role>/<task-id>-<slug>`. Integration requires configured tests and cloud review; current runtime does not auto-merge.
 6. **Generated binaries do not go in git.** Changes to the studio's own code (`server/`, `worker/`, `shared/`, `scripts/`) merge only when `pytest tests` passes; add a test for every bug fixed. `assets/` is synced with Syncthing. Only source,
    config, docs, and the Godot project's own small resources are committed.
 7. **Log decisions.** Anything that changes architecture, model choice, or conventions gets a line
    in `docs/decisions.md`. If you are unsure whether something is decided, check there first.
 8. **Check licences** before a generated asset ships. Note the generator and its licence in the
    asset's sidecar `.json`.
-9. **Never wait for the human.** The studio runs unattended for days. When you would have asked
-   a question, take the most conservative reasonable answer, log it in `docs/decisions.md`
-   marked "(auto)", and continue. The only hard stops are spending money and exposing a service
-   outside the tailnet: never do either; defer the task instead. See `docs/12-autonomy.md`.
+9. **Escalate blockers without stalling unrelated work.** Follow the approved mailbox and work rules. Do not guess missing authority or business policy. Persist evidence and pause affected tasks when required review, permission or verification is unavailable; continue independent authorized work. The legacy unattended policy is superseded.
 10. **Verify before claiming.** Run the tests, open the scene, look at the image. Report what
    actually happened, including failures.
 
@@ -102,7 +69,7 @@ Model picks and alternatives: `docs/04-models.md`.
 - Item data is generated: edit `scripts/gen_items.py`, never `game/data/{weapons,armor,classes,rarities}.json`
 - Task board: `tasks/backlog`, `tasks/in-progress`, `tasks/done` (one markdown file per task)
 - Decision log: `docs/decisions.md`
-- Open questions for the human: `docs/open-questions.md` (read on return; nothing blocks on them)
+- Open questions for the human: `docs/open-questions.md` (legacy reference; current blockers follow the authority mailbox rules)
 - Free cloud escalation ladder (Ollama Cloud, OpenRouter): `docs/24-cloud-escalation.md`
 - Safety nets (supervision, healing, incidents, the engineer with rollback): `docs/23-safety-nets.md`; open incidents in `incidents/`
 - Human setup, in order, with a preflight check: `START-HERE.md`, `scripts/doctor.py`
@@ -111,3 +78,17 @@ Model picks and alternatives: `docs/04-models.md`.
 - GPU worker: `worker/worker.py`, config in `worker/config.yaml`
 - Shared job schema: `shared/jobs.py`
 - Training: `training/` (recipes), `data/traces/` (labelled history), `docs/15-training.md`
+
+
+## Owner review workflow
+
+For new work, apply `.claude/skills/plan-execute-test-review/SKILL.md`: plan, execute,
+verify, then present the concrete result for owner review before publishing or merging.
+Local preparation and testing should proceed autonomously within the authorized scope.
+
+## Live Workforce planning
+
+For the approved browser-office direction read `docs/assistant/WORKFORCE-PLAN.md` and
+`docs/assistant/LIVE-WORKFORCE-HANDOFF.md`. Use the newer `assistant/` runtime and staged review.
+The office, safe concurrency and GPU/media integration remain pending. Do not implement the
+older uploaded handoff against the legacy unattended loop. Model candidates are not activated defaults.
