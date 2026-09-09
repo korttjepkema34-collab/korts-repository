@@ -84,3 +84,9 @@ Append-only. One line per decision, newest at the bottom. Format: date, decision
 ## 2026-09-09: Current cloud-led assistant
 
 User confirmed no server GPU or new purchases, free cloud leadership, and personal/business/game scope. Implemented `assistant/` foundation; supersedes local-led legacy runtime. See `assistant/DECISIONS.md` and `assistant/ACCEPTANCE.md`. Native media integrations and live device qualification remain open.
+
+## Owner review and task integration
+
+Owner requested plan → execute → test → present for review before publication. Prepared a reusable
+workflow skill and serial per-task integration branch with candidate tests/cloud review and final
+combined checks/cloud review. No automatic conflict resolution or publication. Fix awaits review.

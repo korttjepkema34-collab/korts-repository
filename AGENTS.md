@@ -79,3 +79,9 @@ game, world, and art bibles. New integration work must meet `docs/assistant/ACCE
 - Shared job schema: `shared/jobs.py`
 - Training: `training/` (recipes), `data/traces/` (labelled history), `docs/15-training.md`
 
+
+## Owner review workflow
+
+For new work, apply `.claude/skills/plan-execute-test-review/SKILL.md`: plan, execute,
+verify, then present the concrete result for owner review before publishing or merging.
+Local preparation and testing should proceed autonomously within the authorized scope.

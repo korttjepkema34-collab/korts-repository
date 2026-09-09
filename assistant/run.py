@@ -78,10 +78,18 @@ def step(store, task, config, profiles, cloud=None, worker_call=local_ask):
             data['plan_route']=route
             store.update(tid,'working',data,'Cloud plan validated and persisted')
             return
+        if any(j.get('workspace') and j['status']=='verified_candidate' and not j.get('integration')
+               for j in data['jobs']):
+            raise ValueError('Legacy candidate lacks integration evidence; recreate task from reviewed source')
         complete={j['id'] for j in data['jobs'] if j['status'] in ('approved_draft','verified_candidate')}
         for j in data['jobs']:
             if j['status'] in ('approved_draft','verified_candidate','blocked'): continue
             if not set(j['depends_on'])<=complete: continue
+            if j['status']=='awaiting_integration':
+                from . import codework
+                j['integration']=codework.integrate(store.root,tid,j,config['code_projects'][project])
+                j['status']='verified_candidate'
+                store.update(tid,'working',data,'Approved code joined private task revision');return
             if j['status'] in ('pending','repair_requested','running'):
                 profile=profiles[j['worker']]
                 if profile['adapter'] not in ('ollama-draft','code-sandbox'):
@@ -107,7 +115,7 @@ def step(store, task, config, profiles, cloud=None, worker_call=local_ask):
                 if profile['adapter']=='code-sandbox':
                     from . import codework
                     code_settings=config.get('code_projects',{}).get(project,{})
-                    workspace=codework.prepare(store.root,tid,j['id'],code_settings)
+                    workspace=codework.prepare_integrated(store.root,tid,j['id'],code_settings)
                     j['workspace']=str(workspace)
                     prompt+='\nWrite full file replacements as JSON only: {\"files\":[{\"path\":\"relative/path\",\"content\":\"full source\"}]}. No deletions. Context: '+json.dumps(codework.context(workspace,code_settings))
                 j['attempts']+=1; j['status']='running'
@@ -149,12 +157,38 @@ def step(store, task, config, profiles, cloud=None, worker_call=local_ask):
                 accepted=approved_review(review,j['acceptance'])
                 if j.get('workspace'):
                     accepted=accepted and j.get('checks_passed') is True
-                    j['status']='verified_candidate' if accepted else 'repair_requested'
+                    j['status']='awaiting_integration' if accepted else 'repair_requested'
                 else:
                     j['status']='approved_draft' if accepted else 'repair_requested'
                 store.update(tid,'working',data,'Cloud review saved');return
         if all(j['status'] in ('approved_draft','verified_candidate') for j in data['jobs']):
-            store.update(tid,'draft_ready',data,'All deliverables cloud-reviewed; code candidates passed configured checks but are not integrated or deployed')
+            if any(j.get('workspace') for j in data['jobs']):
+                from . import codework
+                settings=config['code_projects'][project]
+                workspace=codework.task_workspace(store.root,tid,settings)
+                revision=codework.git(workspace,'rev-parse','HEAD').strip()
+                if codework.git(workspace,'status','--porcelain','--untracked-files=no').strip():
+                    raise ValueError('Combined workspace changed outside approved flow')
+                checks=codework.check_candidate(workspace,settings)
+                if (not all(c['passed'] for c in checks) or
+                    codework.git(workspace,'status','--porcelain','--untracked-files=no').strip() or
+                    codework.git(workspace,'rev-parse','HEAD').strip()!=revision):
+                    data['integration_review']={'revision':revision,'checks':checks,'approved':False}
+                    store.update(tid,'blocked',data,'Combined checks failed or changed code; owner review required');return
+                base=codework.git(workspace,'config','--local','--get','assistant.base').strip()
+                combined_diff=codework.git(workspace,'diff','--no-ext-diff',base,revision)
+                if len(combined_diff)>60000:raise ValueError('Combined diff exceeds review limit; split task')
+                criteria=['Combined implementation satisfies the user goal and all job acceptance criteria']
+                review,route=cloud.ask((REPO/'config/assistant/reviewer.md').read_text(encoding='utf-8')+'\n'+json.dumps({
+                    'goal':task['goal'],'acceptance':criteria,'jobs':data['jobs'],'combined_checks':checks,
+                    'revision':revision,'combined_diff':combined_diff,'note':'Review combined evidence. Missing behavior proof fails acceptance.'}))
+                if (codework.git(workspace,'rev-parse','HEAD').strip()!=revision or
+                    codework.git(workspace,'status','--porcelain','--untracked-files=no').strip()):
+                    raise ValueError('Combined code changed during cloud review')
+                data['integration_review']={'revision':revision,'checks':checks,'review':review,'route':route}
+                if not approved_review(review,criteria):
+                    store.update(tid,'blocked',data,'Combined cloud review needs changes; owner review required');return
+            store.update(tid,'draft_ready',data,'Deliverables and combined code reviewed; ready for owner review, not published')
         else:
             data['blocker']='Unresolved job or dependency; see job evidence and repair history'
             store.update(tid,'blocked',data,data['blocker'])

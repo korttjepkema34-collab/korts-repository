@@ -80,3 +80,10 @@ the submitted artifact; changing it requires re-review. Automatic cross-project 
 combined integration testing are remaining work, tracked in ACCEPTANCE.md.
 
 Source: [Godot CLI](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html).
+
+## Dependent work integration (prepared for owner review)
+
+The controller now gives each task a private integration branch. New worker clones start at its
+latest approved revision, so downstream source contains upstream changes. Candidates join only
+after tests and cloud review, with a stale-base rejection gate. Final combined tests and cloud
+review precede owner review. See [FIX-1-REVIEW.md](FIX-1-REVIEW.md) for behavior and limitations.

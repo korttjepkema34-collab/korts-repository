@@ -91,3 +91,63 @@ def unchanged(workspace, expected_diff):
     """A review must describe the exact tested candidate, not later edits."""
     return (git(workspace,'diff','--cached','--no-ext-diff') == expected_diff
             and not git(workspace,'diff','--no-ext-diff').strip())
+
+
+def task_workspace(root,tid,settings):
+    """One pinned source revision and integration branch per task."""
+    workspace=prepare(root,tid,'_integration',settings)
+    config=git(workspace,'config','--local','--list')
+    if not any(line.startswith('assistant.base=') for line in config.splitlines()):
+        git(workspace,'config','--local','assistant.base',git(workspace,'rev-parse','HEAD').strip())
+    return workspace
+
+
+def prepare_integrated(root,tid,jid,settings):
+    integration=task_workspace(root,tid,settings)
+    derived=dict(settings,source=str(integration))
+    return prepare(root,tid,jid,derived)
+
+
+def integrate(root,tid,job,settings):
+    """Fast-forward an exact tested and cloud-approved candidate; never merge stale work."""
+    if job.get('status') not in ('awaiting_integration','verified_candidate') or job.get('checks_passed') is not True:
+        raise ValueError('Integration requires tests and cloud approval')
+    workspace=Path(job['workspace'])
+    artifact=Path(job['artifact']).read_text(encoding='utf-8')
+    import hashlib
+    if hashlib.sha256(artifact.encode()).hexdigest()!=job['digest']:
+        raise ValueError('Approved artifact changed')
+    expected=json.loads(artifact)['diff']
+    integration=task_workspace(root,tid,settings)
+    ref='refs/heads/assistant/'+job['id']
+    # A durable per-job commit permits recovery after commit/fetch/fast-forward interruption.
+    candidate=git(workspace,'rev-parse','HEAD').strip()
+    parent=git(integration,'rev-parse','HEAD').strip()
+    marker='Assistant candidate '+job['id']
+    committed=git(workspace,'log','-1','--format=%s').strip()==marker
+    if committed:
+        if git(workspace,'diff','HEAD^','HEAD','--no-ext-diff')!=expected:
+            raise ValueError('Committed candidate does not match reviewed diff')
+        if git(workspace,'status','--porcelain','--untracked-files=no').strip():
+            raise ValueError('Committed candidate changed')
+        base=git(workspace,'rev-parse','HEAD^').strip()
+    else:
+        base=candidate
+        if not unchanged(workspace,expected):raise ValueError('Candidate changed after review')
+    if parent not in (base,candidate) or (not committed and parent!=base):
+        raise ValueError('Integration advanced; stale worker needs rebase, tests and new review')
+    if not committed:
+        git(workspace,'-c','user.name=Assistant','-c','user.email=assistant@localhost',
+            '-c','core.hooksPath='+str(empty_hooks(workspace)),'-c','commit.gpgsign=false','commit','-m',marker)
+        candidate=git(workspace,'rev-parse','HEAD').strip()
+    if git(integration,'status','--porcelain','--untracked-files=no').strip():
+        raise ValueError('Integration workspace changed outside approved flow')
+    git(integration,'fetch','--no-tags',str(workspace),ref)
+    git(integration,'-c','core.hooksPath='+str(empty_hooks(integration)),'merge','--ff-only','FETCH_HEAD')
+    return {'revision':candidate,'workspace':str(integration)}
+
+
+def empty_hooks(workspace):
+    path=Path(workspace)/'.git'/'assistant-empty-hooks'
+    path.mkdir(exist_ok=True)
+    return path.resolve()
