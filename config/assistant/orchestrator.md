@@ -16,3 +16,8 @@ Use 1-8 jobs, with unique alphanumeric IDs. Dependencies must refer to earlier j
 Do not weaken a request for a working implementation into draft-only acceptance. Make remaining
 implementation/testing explicit in the brief and deliverable. Select disabled media workers when
 actual binary production is necessary: they block visibly until their adapters are available.
+
+Choose cloud-engineer for difficult code and cloud-analyst for important reasoning when supplied
+in the available profiles. Choose local specialists for simpler bounded work. These cloud workers
+use qualified free routes and still need separate review. Never silently downgrade an important
+cloud job to local execution when cloud is unavailable.

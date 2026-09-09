@@ -173,5 +173,29 @@
     "num_ctx": 8192,
     "instructions": "You are the Personal helper. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Keep personal context scoped. Do not invent private facts or claim external actions.",
     "skills": []
+  },
+  "cloud-engineer": {
+    "name": "cloud-engineer",
+    "description": "Difficult implementation, architecture and debugging; uses qualified free cloud routes",
+    "projects": [
+      "personal",
+      "business",
+      "game"
+    ],
+    "adapter": "cloud-code",
+    "instructions": "Act as a specialized cloud worker, not the orchestrator. Complete the assigned bounded job; never approve your own output. You are the Backend specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Separate test data from live data; preserve calculations and record edge cases.",
+    "skills": []
+  },
+  "cloud-analyst": {
+    "name": "cloud-analyst",
+    "description": "Important reasoning, research synthesis and problem solving; uses qualified free cloud routes",
+    "projects": [
+      "personal",
+      "business",
+      "game"
+    ],
+    "adapter": "cloud-draft",
+    "instructions": "Act as a specialized cloud worker, not the orchestrator. Complete the assigned bounded job; never approve your own output. You are the Operations helper. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Never send messages or change live records. Cite supplied sources and identify missing current research.",
+    "skills": []
   }
 }

@@ -92,7 +92,7 @@ def step(store, task, config, profiles, cloud=None, worker_call=local_ask):
                 store.update(tid,'working',data,'Approved code joined private task revision');return
             if j['status'] in ('pending','repair_requested','running'):
                 profile=profiles[j['worker']]
-                if profile['adapter'] not in ('ollama-draft','code-sandbox'):
+                if profile['adapter'] not in ('ollama-draft','code-sandbox','cloud-draft','cloud-code'):
                     j['status']='blocked'; j['reason']='Native asset adapter must be configured and tested; no fake artifact generated'
                     store.update(tid,'working',data,j['reason']); return
                 if j['attempts']>=config.get('max_worker_attempts',3):
@@ -112,7 +112,7 @@ def step(store, task, config, profiles, cloud=None, worker_call=local_ask):
                     'references':store.search(project,j['brief']),
                     'output':'Produce a reviewable draft or code proposal. Never claim files were edited or tests ran.'})
                 code_settings=None;workspace=None
-                if profile['adapter']=='code-sandbox':
+                if profile['adapter'] in ('code-sandbox','cloud-code'):
                     from . import codework
                     code_settings=config.get('code_projects',{}).get(project,{})
                     workspace=codework.prepare_integrated(store.root,tid,j['id'],code_settings)
@@ -120,7 +120,21 @@ def step(store, task, config, profiles, cloud=None, worker_call=local_ask):
                     prompt+='\nWrite full file replacements as JSON only: {\"files\":[{\"path\":\"relative/path\",\"content\":\"full source\"}]}. No deletions. Context: '+json.dumps(codework.context(workspace,code_settings))
                 j['attempts']+=1; j['status']='running'
                 store.update(tid,'working',data,'Starting bounded worker draft')
-                try: output=worker_call(profile,prompt)
+                try:
+                    if profile['adapter'] in ('cloud-draft','cloud-code'):
+                        instruction=profile['instructions']+'\n'+prompt
+                        if profile['adapter']=='cloud-draft':
+                            instruction+='\nReturn JSON only: {"draft":"your complete deliverable"}.'
+                        response,provenance=cloud.ask(instruction)
+                        output=json.dumps(response) if workspace is not None else response.get('draft')
+                        j['execution_route']=provenance
+                    else:
+                        output=worker_call(profile,prompt)
+                        j['execution_route']={'provider':'local-ollama','model':profile.get('model','unknown')}
+                except CloudUnavailable:
+                    j['status']='pending';j['attempts']-=1
+                    store.update(tid,'awaiting_cloud',data,'Cloud worker unavailable; no local fallback')
+                    return
                 except Exception as e:
                     j['status']='pending'; j['last_error']=type(e).__name__
                     if j['attempts']>=config.get('max_worker_attempts',3): j['status']='blocked'

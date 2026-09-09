@@ -32,3 +32,9 @@ of private profile changes and deliberately publish only reusable, nonprivate te
 Morning reports include goal, status, attempts, blockers, review, proposed prevention and artifact
 paths. A root cause can remain unknown. Code marked verified_candidate passed only its configured
 checks and cloud review, not every possible acceptance test or a live deployment.
+
+## Cloud execution profiles (prepared for review)
+
+`cloud-engineer` and `cloud-analyst` extend the original 13 profiles to 15. The planner can select
+qualified free cloud execution for hard work. See [CLOUD-WORKERS-REVIEW.md](CLOUD-WORKERS-REVIEW.md)
+for the adapter behavior, migration instructions and remaining limitations.

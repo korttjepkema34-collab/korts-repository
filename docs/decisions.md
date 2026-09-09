@@ -90,3 +90,10 @@ User confirmed no server GPU or new purchases, free cloud leadership, and person
 Owner requested plan → execute → test → present for review before publication. Prepared a reusable
 workflow skill and serial per-task integration branch with candidate tests/cloud review and final
 combined checks/cloud review. No automatic conflict resolution or publication. Fix awaits review.
+
+## Cloud execution workers — prepared for owner review
+
+Added cloud-code/cloud-draft adapters through the existing free-only Claude Code route layer,
+two planner-visible cloud specialist profiles and successful execution provenance. Tests and
+separate review/integration gates remain required. Serial execution and shared route qualification
+remain limitations; publication awaits the owner's review.
