@@ -40,3 +40,10 @@ Three sections are game, general/side projects (existing personal scope), and bu
 website, tax and money work. Obsidian is the chosen private knowledge interface. Add worker skills
 with explicit tool requirements. See REQUIREMENTS.md and SKILLS.md; pending capabilities remain
 listed in ACCEPTANCE.md.
+
+## Catalog implementation — 2026-09-09
+
+Added catalog inventory/cache, six-case synthetic evaluations, private model cards and opt-in
+ordering of explicitly qualified routes using fresh matching evidence. All passing candidates
+meet the same screening threshold; latency breaks ties and is not an intelligence score.
+Task-specific quality routing and automatic promotion remain excluded pending real evaluations.

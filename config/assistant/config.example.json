@@ -47,5 +47,6 @@
       "checks": [],
       "check_timeout_seconds": 300
     }
-  }
+  },
+  "catalog_routing": false
 }

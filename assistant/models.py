@@ -70,7 +70,13 @@ class Cloud:
     def __init__(self, config, store): self.config,self.store=config,store
     def ask(self, prompt):
         errors=[]
-        for route in self.config['cloud_routes']:
+        routes=self.config['cloud_routes']
+        if self.config.get('catalog_routing') is True:
+            from .catalog import ranked_routes
+            try: routes=ranked_routes(self.store.root,self.config)
+            except Exception as e:
+                raise CloudUnavailable('Catalog refresh or evaluation data unavailable') from e
+        for route in routes:
             provider=route.get('provider','unknown')
             try:
                 validate_route(route)

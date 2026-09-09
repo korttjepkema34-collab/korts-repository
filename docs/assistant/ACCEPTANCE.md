@@ -56,7 +56,8 @@ Neither label means published, fully integrated, or that every possible test was
 
 ## Additional confirmed requirements (2026-09-09)
 
-- [ ] Free OpenRouter inventory refresh, dated model cards and evidence-based capability routing.
+- [x] Free OpenRouter inventory, dated synthetic evaluation cards and opt-in evidence-gated route ordering.
+- [ ] Task-specific capability benchmarks and live model qualification.
 - [ ] Automatic qualified cloud switching with persistent handoff and actual-model audit trail.
 - [ ] Important execution work delegated to qualified cloud workers, not only cloud plan/review.
 - [ ] General / side projects UI label and per-subproject context boundaries in all sections.

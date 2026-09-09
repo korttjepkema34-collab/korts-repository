@@ -237,3 +237,9 @@ Finish the explicitly tracked gates in [ASSETS.md](ASSETS.md), [INTEGRATIONS.md]
 and [ACCEPTANCE.md](ACCEPTANCE.md). No instructions or empty profiles count as tested integrations.
 The actual provider accounts, two Windows machines, private business checkout, Godot rendering,
 GPU generation and overnight reboot behavior cannot be verified from this repository-writing session.
+
+## OpenRouter model discovery and evaluation
+
+Use `python -m assistant.catalog refresh`, then evaluate selected free IDs and inspect their
+Obsidian model cards. Enable `catalog_routing` only after qualification. Full commands, behavior
+and limitations: [OPENROUTER-ROUTING.md](OPENROUTER-ROUTING.md).

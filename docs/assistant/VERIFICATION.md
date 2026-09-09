@@ -31,3 +31,14 @@ passing unit tests as evidence that these absent integrations work.
 
 Required next gate: follow `SETUP.md`, qualify a free cloud route, then run one real bounded task
 on the two PCs and inspect its artifact, actual test evidence, cloud review and morning report.
+
+## OpenRouter discovery/evaluation update — 2026-09-09
+
+Full repository suite: **58 passed**, one existing Pillow deprecation warning. Eleven new catalog
+checks cover pricing filters, unsupported IDs, cache freshness, failed refresh, removal, evaluation
+artifacts, qualification/fingerprint/expiry gates and adapter integration. Python compilation passed.
+A real catalog fetch returned 21 zero-priced entries, 18 explicit supported `:free` IDs. Counts are
+an observation, not a permanent inventory. No live inference evaluation was run: this environment
+has no configured home Claude Code/OpenRouter credentials. Synthetic test fixtures validate the
+pipeline; they do not establish any actual model's quality. Use the documented server evaluation
+command before enabling catalog routing.

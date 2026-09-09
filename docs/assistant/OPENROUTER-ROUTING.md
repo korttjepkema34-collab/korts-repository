@@ -1,8 +1,46 @@
 # OpenRouter discovery, evaluation and switching design
 
-Status: required design. Existing runtime validates pricing for configured routes and tries them
-in order through Claude Code. It does NOT yet discover/rank all free models, dynamically switch
-for task quality, or delegate execution to cloud workers.
+Status: catalog discovery, cached refresh, six-case smoke evaluation, private model cards and
+opt-in evidence-gated ordering of configured cloud routes are implemented in `assistant/catalog.py`.
+Run the commands below. Capability-specific benchmarks, quality-triggered mid-task switching,
+UI inventory and cloud execution workers remain pending. Do not confuse smoke results with
+comprehensive model qualification.
+
+## Use on the server
+
+From the repository, using its Python environment:
+
+```powershell
+python -m assistant.catalog refresh
+python -m assistant.catalog list
+python -m assistant.catalog evaluate "EXACT-MODEL-ID:free"
+python -m assistant.catalog rank
+```
+
+Replace the placeholder with an ID from the refreshed inventory. `refresh` makes a catalog HTTP
+request, not an inference request. `evaluate` makes six synthetic Claude Code calls to that model
+and consumes the existing allowance. It requires the configured Claude Code installation and
+OpenRouter key. It never changes qualification or enables a model automatically.
+
+Evaluation covers simple dependency ordering, a larger dependency graph, rejection of false test
+success, cloud authority, a debugging response and exact monetary arithmetic. Responses, latency,
+failures and unknown capabilities are saved under the private runtime's `models/` directory.
+Synthetic-only model cards are also written to `vault/shared/models/` for Obsidian and retrieval.
+Each evaluation is retained; the latest card is used for routing. No private project inputs enter
+this shared evaluation suite. Cards describe observations, not universal strengths/weaknesses.
+
+After inspecting the card and completing the real qualification steps in MODELS.md, add the model
+to private config.json `cloud_routes` with provider `openrouter` and `qualified: true`. Set
+`catalog_routing: true` to enable evidence-gated routing. Existing configurations remain unchanged
+until enabled. Stop/restart the runner after changing config. `rank` previews the eligible order.
+
+Enabled routing requires a matching catalog fingerprint, passing current smoke suite and evidence
+less than 30 days old. Among models that pass the same suite, average observed latency breaks the
+tie; this is not a claim that the fastest model is smartest. Qualified included Ollama routes follow
+OpenRouter. If the catalog cannot refresh after 24 hours, routing waits instead of trusting stale
+data. Every OpenRouter invocation also rechecks current free pricing. A failed invocation tries
+the next eligible configured cloud route with the same prompt; existing task evidence persists.
+Unlisted/unqualified models never become leadership candidates solely through discovery.
 
 ## Discover and distinguish availability from suitability
 
@@ -60,4 +98,4 @@ Test a removed model, nonzero/unknown pricing, free but incompatible model, stal
 rate-limit outage, failed-quality evaluation, vision request without vision support, and restart
 mid-handoff. Demonstrate important work moving between two qualified free cloud models with
 preserved evidence and no local/paid takeover. Display inventory, evidence cards, routing reason
-and a per-task qualified-model override in the UI. These capabilities remain pending.
+and a per-task qualified-model override in the UI. The richer switching/GUI scenario remains pending; basic catalog and routing failure paths have offline tests.
