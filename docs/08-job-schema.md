@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 08 - Job schema
 
 Source of truth: `shared/jobs.py` (pydantic models) and `shared/schema/job.schema.json`.
@@ -86,3 +88,4 @@ The reviewer fills `review` with `{"verdict": "approved|rejected", "reason": "..
 | `results` | list | Result JSON strings. Orchestrator `BRPOP`s. |
 | `worker:<name>:heartbeat` | string with TTL | Set every 30 s. Missing means the worker is offline. |
 | `worker:<name>:status` | string | `idle`, `busy:<kind>`, `gaming`. |
+

@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 22 - How it runs: who calls what, when, and how things end
 
 There is exactly one thing that decides work: **the orchestrator loop** on the server
@@ -141,3 +143,4 @@ have to notice.
 | `worker/worker.py`, `worker/handlers/*`, `worker/postprocess.py`, `worker/normalmap.py` | GPU worker loop with tool probes and the VRAM lock; ComfyUI, audio, train handlers; palette post-processing; normal maps |
 | `game/scripts/*.gd` | Config, Net, Clock, Telemetry autoloads; MapBuilder; dev scripts (screenshot, proof, bot, run_scene) |
 | `scripts/*` | doctor, bootstrap, gen_items, eval_reviewer, dump/fetch docs, build index, install gdUnit4 |
+

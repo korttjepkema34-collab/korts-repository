@@ -49,3 +49,12 @@ reports/health.json
 reports/last_good.txt
 incidents/.index.json
 .pytest_cache/
+
+
+# Assistant runtime and private knowledge never belong in this public repository
+.assistant-local/
+assistant/config.local.json
+assistant/workers.local.json
+**/.obsidian/workspace*.json
+**/state.sqlite*
+**/runner.lock

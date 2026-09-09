@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 04 - Models
 
 **Tags verified against the Ollama library on 2026-09-02** (via search results; the library
@@ -99,3 +101,4 @@ one-line config change if the owner ever changes their mind. Nothing in the code
 | Stable Audio Open | Stability Community | Free under revenue threshold; check |
 
 Every generated asset gets a sidecar JSON recording generator, model, licence, prompt, and seed.
+

@@ -439,6 +439,10 @@ def cycle(r, st: State) -> None:
 
 
 def main() -> None:
+    raise SystemExit("Legacy local-led loop disabled. Read docs/assistant/SETUP.md; use python -m assistant.run. Migration gates are in docs/assistant/ACCEPTANCE.md.")
+
+
+def legacy_main_not_enabled() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
     for d in (BACKLOG, IN_PROGRESS, DONE, DEFERRED, REPO / "reports"):
         d.mkdir(parents=True, exist_ok=True)
@@ -467,3 +471,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

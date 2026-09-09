@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 20 - Research notes: models, prior art, and what changed because of them (2026-09-03)
 
 ## Model re-check
@@ -78,3 +80,4 @@ installing the tools and downloading model files. `scripts/bootstrap_gpu.ps1` an
 - [Godot AI Agent Guide 2026 (Summer Engine)](https://www.summerengine.com/blog/godot-ai-agent-guide)
 - [godot-dodo: fine-tuning LLMs for GDScript](https://github.com/minosvasilias/godot-dodo)
 - [GD-Copilot-finetune](https://github.com/kparasha/GD-Copilot-finetune)
+

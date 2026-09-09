@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 23 - Safety nets: how the studio stays up and fixes itself
 
 Four layers, from cheapest to most powerful. Each one writes down what it did.
@@ -67,3 +69,4 @@ when an incident opens, a fix merges, or the engineer gives up.
   auto-login. The health file's timestamp going stale is the signal; the doctor names the cause.
 - A bug in the game's design rather than its code. Playtest reports and deferred tasks show it.
 - A wrong fix that passes the tests. The tests are the safety net; adding one per bug is the rule.
+

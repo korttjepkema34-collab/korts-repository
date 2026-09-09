@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 01 - Vision
 
 ## The pitch
@@ -44,3 +46,4 @@ creative director and final QA.
 
 Start with **three workers** (orchestrator, coder, 2D artist). Add audio once milestone 4 is
 reached. Do not try to run all five on day one.
+

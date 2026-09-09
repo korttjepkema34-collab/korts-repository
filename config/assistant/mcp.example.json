@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "assistant-memory": {
+      "command": "C:\\studio\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\studio\\scripts\\memory-mcp.py"],
+      "env": {"ASSISTANT_PROJECT": "game"}
+    }
+  }
+}

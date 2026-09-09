@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 07 - GPU worker setup (gaming PC, `gpu`)
 
 Assumes Windows 11 with an RTX 3080 Ti.
@@ -63,3 +65,4 @@ Delete the file to resume. `toggle-gaming-mode.ps1` does this and is meant for a
 BIOS: enable "Wake on LAN" / "Power On By PCI-E". Windows: Device Manager > network adapter >
 Power Management > allow this device to wake the computer, and disable Fast Startup. Note the
 adapter MAC in the server's `.env`.
+

@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 21 - Levels, writing, playtests (added 2026-09-04)
 
 Three things a studio has that the first version lacked: someone who lays out levels, someone who
@@ -44,3 +46,4 @@ Both are on by default (`PLAYTEST_DAILY`, `BUILD_DAILY` in `server/.env`).
 
 `project.godot` defines `move_left/right/up/down` (WASD), `attack` (J), `dodge` (Space),
 `interact` (E). Bots and proof runs use these names; the coder must not rename them.
+

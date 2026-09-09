@@ -1,3 +1,5 @@
+> **Setup migration notice:** For the personal/business/game assistant, [assistant/SETUP.md](assistant/SETUP.md) and [assistant/DECISIONS.md](assistant/DECISIONS.md) supersede older model, hardware, autonomy and installation choices below. Game design remains preserved.
+
 # 24 - Free cloud escalation: Ollama Cloud and OpenRouter
 
 The main loop stays local. Escalation, the rare work where a better model changes the outcome,
@@ -53,3 +55,4 @@ When the gaming PC is online its coder is inserted before the local rung.
    but recommended: buy $10 of credit once to lift the daily limit from 50 to 1000 for good.
 3. Leave `ESCALATION_LADDER` as the example or edit the order. The doctor reports which rungs
    are configured.
+
