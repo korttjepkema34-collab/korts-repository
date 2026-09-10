@@ -16,7 +16,7 @@ Obsidian Sync/Publish or commercial license is required for this setup. Sources:
 
 The graph in Obsidian helps you navigate notes. It does not automatically give the model semantic
 reasoning or retrieval. The implemented search uses SQLite FTS5, is local/free, and returns paths,
-text and content digests. Existing Godot embedding retrieval remains in the legacy studio; it is
+text, content digests, knowledge status and provenance. Existing Godot embedding retrieval remains in the legacy studio; it is
 not a requirement for the new memory system. Add semantic search only if tests show keyword search
 misses useful notes. Do not require a separate vector database just to call it a brain.
 
@@ -34,8 +34,32 @@ private notes. Obsidian can open the server's local folder with no subscription.
 
 ## Note templates
 
-A fact note should have: title, scope, source, observed date, confirmed/proposed status, content,
-related note links and a supersedes field when needed. Use ordinary Markdown links for portability.
+A knowledge note can use this small, dependency-free frontmatter format:
+
+```markdown
+---
+note_id: pricing-rules-v2
+project: business
+subproject: mountain-men
+kind: specification
+status: approved
+producer: Kort
+sources: owner decision 2026-09-09
+observed_date: 2026-09-09
+updated_date: 2026-09-09
+evidence_ids: task-123
+reviewer: Judge
+approved_revision: rev-2
+supersedes: pricing-rules-v1
+---
+# Pricing rules
+```
+
+Supported statuses are `proposed`, `reviewed`, `approved`, `superseded` and `disputed`.
+Notes without metadata remain searchable but default to `proposed`. Normal searches omit
+`superseded` notes and rank approved knowledge first; history searches can include them. Invalid or
+path-conflicting scope metadata is returned as `disputed` with a visible metadata error. The vault
+path—not text written inside a note—owns its access boundary.
 
 A failure lesson should have: symptom, reproduction, evidence, hypotheses tried, confirmed cause
 (or unknown), repair, verification, regression check, scope, proposed skill, review status.
@@ -45,7 +69,8 @@ controller's own permissions. Skills are procedural memory, not model weight tra
 ## Retrieval and lifecycle
 
 Run `python -m assistant.run index` after edits, or let each runner pass refresh the index. Searches
-return only the selected project's notes and `shared/`. Removed notes disappear after reindexing.
+return only the selected project's notes and `shared/`. A task with a subproject sees project-root
+notes plus its own subfolder, never sibling subprojects. Removed notes disappear after reindexing.
 Symlink escapes and oversized files are excluded. The index's snippets are data, not instructions.
 
 Initialization copies bibles once without replacing edits. After a Git update, compare canonical
@@ -56,8 +81,9 @@ and preserve the former decision as superseded. Do not blindly replace the vault
 
 `config/assistant/mcp.example.json` shows the Windows command and path. Replace `C:\studio` if needed.
 The helper is `scripts/memory-mcp.py`; it provides one read-only `memory_search(query)` tool. The
-process's `ASSISTANT_PROJECT` determines its scope, not a query parameter chosen by a worker.
-Launch separate configured sessions for game/business/personal. Reindex first.
+process's `ASSISTANT_PROJECT` and optional `ASSISTANT_SUBPROJECT` determine its scope, not a query
+parameter chosen by a worker. Launch separate configured sessions for each authorized
+project/subproject. Reindex first.
 
 The core controller retrieves memory itself and runs cloud planning with arbitrary tools disabled.
 This MCP config is for separate interactive Claude Code sessions and later tool integration; simply
@@ -76,10 +102,15 @@ Only the server owns task state; the gaming PC is an execution resource.
 ## General side projects and model knowledge
 
 The existing `personal` scope is the General / side projects section, including random projects.
-Use named subfolders and project index notes; automated subproject isolation remains pending.
+Use named subfolders and project index notes. Create or search a pinned task with, for example,
+`--subproject mountain-men`; the stored task boundary survives restarts and is applied to both
+orchestrator and worker retrieval.
 Store evaluated model strengths/weaknesses with dated evidence as OPENROUTER-ROUTING.md specifies.
 Link lessons to task evidence and proposed skills in SKILLS.md.
 
 ## Approved knowledge policy
 
-See [Obsidian and GitHub rules](authority/OBSIDIAN-AND-GITHUB.md) for authority ownership, proposed/approved knowledge, conflict-safe rule updates and mailbox projections. The current FTS implementation does not enforce note approval metadata or per-subproject boundaries. These remain implementation gates.
+See [Obsidian and GitHub rules](authority/OBSIDIAN-AND-GITHUB.md) for authority ownership,
+proposed/approved knowledge, conflict-safe rule updates and mailbox projections. Knowledge metadata
+and path-owned per-subproject retrieval are enforced. Controlled rule adoption, promotion and
+mailbox projections remain separate implementation gates.

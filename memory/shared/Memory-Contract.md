@@ -1,3 +1,12 @@
+---
+note_id: memory-contract
+project: shared
+kind: rule
+status: approved
+producer: Kort
+sources: docs/assistant/authority/OBSIDIAN-AND-GITHUB.md
+approved_revision: authority-v0.2
+---
 # Memory contract
 
 Record facts, their source, date, project and confidence. Keep confirmed decisions separate from

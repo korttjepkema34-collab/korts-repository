@@ -146,7 +146,7 @@ rules and copies the existing game/world/style bibles. It does not overwrite lat
 
 ```powershell
 .\.venv\Scripts\python.exe -m assistant.run index
-.\.venv\Scripts\python.exe -m assistant.run search game "Keep day night"
+.\.venv\Scripts\python.exe -m assistant.run search game "Keep day night" --subproject reapers-relics
 ```
 
 Confirm a business-only note cannot appear in a game search. SQLite indexes are rebuildable; the
@@ -160,7 +160,7 @@ Start with a simple narrative/operations draft, not a major rewrite or an overni
 
 ```powershell
 .\.venv\Scripts\python.exe -m assistant.run doctor
-.\.venv\Scripts\python.exe -m assistant.run add game "Draft three short weapon descriptions consistent with the world bible."
+.\.venv\Scripts\python.exe -m assistant.run add game "Draft three short weapon descriptions consistent with the world bible." --subproject reapers-relics
 .\.venv\Scripts\python.exe -m assistant.run run --once
 .\.venv\Scripts\python.exe -m assistant.run status
 ```

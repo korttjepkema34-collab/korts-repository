@@ -59,3 +59,18 @@ class McpTests(unittest.TestCase):
                 self.assertEqual({r['scope'] for r in json.loads(reply['result']['content'][0]['text'])},{'game'})
                 self.assertIn('error',dispatch({'id':3,'method':'tools/call','params':{'name':'memory_write'}},s,'game'))
             finally:s.close()
+
+    def test_protocol_pins_subproject_from_process_configuration(self):
+        with tempfile.TemporaryDirectory() as root:
+            for sub in ('alpha','beta'):
+                p=Path(root)/'vault'/'business'/sub;p.mkdir(parents=True)
+                (p/'a.md').write_text('uniquetoken '+sub)
+            s=Store(root)
+            try:
+                s.index(Path(root)/'vault')
+                request={'id':2,'method':'tools/call','params':{'name':'memory_search',
+                    'arguments':{'query':'uniquetoken','subproject':'beta'}}}
+                reply=dispatch(request,s,'business','alpha')
+                hits=json.loads(reply['result']['content'][0]['text'])
+                self.assertEqual({h['subproject'] for h in hits},{'alpha'})
+            finally:s.close()

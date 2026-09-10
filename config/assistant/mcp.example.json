@@ -3,7 +3,7 @@
     "assistant-memory": {
       "command": "C:\\studio\\.venv\\Scripts\\python.exe",
       "args": ["C:\\studio\\scripts\\memory-mcp.py"],
-      "env": {"ASSISTANT_PROJECT": "game"}
+      "env": {"ASSISTANT_PROJECT": "game", "ASSISTANT_SUBPROJECT": "reapers-relics"}
     }
   }
 }

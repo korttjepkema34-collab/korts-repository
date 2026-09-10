@@ -1,3 +1,12 @@
+---
+note_id: assistant-decisions
+project: shared
+kind: decision
+status: approved
+producer: Kort
+sources: docs/assistant/DECISIONS.md
+approved_revision: authority-v0.2
+---
 # Assistant decisions
 
 - Zero new subscriptions or paid model inference.

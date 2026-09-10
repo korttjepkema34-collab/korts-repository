@@ -22,6 +22,8 @@ def main():
     bar=ttk.Frame(work);bar.pack(fill='x')
     project=tk.StringVar(value='game')
     ttk.Combobox(bar,textvariable=project,values=['personal','business','game'],state='readonly',width=12).pack(side='left')
+    subproject=ttk.Entry(bar,width=14);subproject.insert(0,'subproject')
+    subproject.pack(side='left',padx=(10,0))
     goal=ttk.Entry(bar);goal.pack(side='left',fill='x',expand=True,padx=10)
     table=ttk.Treeview(work,columns=('project','status','goal'),show='headings',height=8)
     for c,w in [('project',100),('status',150),('goal',630)]:table.heading(c,text=c.title());table.column(c,width=w)
@@ -35,12 +37,16 @@ def main():
         try:
             items=s.list()
             for row in table.get_children():table.delete(row)
-            for t in items:table.insert('', 'end',iid=t['id'],values=(t['project'],t['status'],t['goal'][:130]))
+            for t in items:
+                scope=t['project']+('/'+t['subproject'] if t['subproject'] else '')
+                table.insert('', 'end',iid=t['id'],values=(scope,t['status'],t['goal'][:130]))
             if chosen and table.exists(chosen[0]):table.selection_set(chosen[0])
         finally:s.close()
     def add():
         s=Store()
-        try:s.create(project.get(),goal.get());goal.delete(0,'end');refresh()
+        try:
+            selected='' if subproject.get()=='subproject' else subproject.get()
+            s.create(project.get(),goal.get(),selected);goal.delete(0,'end');refresh()
         finally:s.close()
     ttk.Button(bar,text='Add goal',command=lambda:action(add)).pack(side='right')
     def select(_=None):
@@ -66,13 +72,21 @@ def main():
     ttk.Label(knowledge,text='Search your private vault. Results stay within the selected project plus shared notes.').pack(anchor='w',pady=10)
     kb=ttk.Frame(knowledge);kb.pack(fill='x');kp=tk.StringVar(value='game')
     ttk.Combobox(kb,textvariable=kp,values=['personal','business','game'],state='readonly',width=12).pack(side='left')
+    ks=ttk.Entry(kb,width=14);ks.insert(0,'subproject');ks.pack(side='left',padx=(10,0))
     query=ttk.Entry(kb);query.pack(side='left',fill='x',expand=True,padx=10)
     results=tk.Text(knowledge,bg='#111820',fg='#dce6ef',wrap='word');results.pack(fill='both',expand=True,pady=15)
     def search():
         s=Store()
         try:
-            s.index(runtime_root()/'vault');hits=s.search(kp.get(),query.get())
-            results.delete('1.0','end');results.insert('end','\n\n'.join(h['path']+'\n'+h['body'] for h in hits) or 'No matching notes.')
+            selected='' if ks.get()=='subproject' else ks.get()
+            s.index(runtime_root()/'vault');hits=s.search(kp.get(),query.get(),subproject=selected)
+            formatted=[]
+            for h in hits:
+                meta='status='+h['status']+' • producer='+h['producer']
+                if h['subproject']:meta+=' • subproject='+h['subproject']
+                if h['metadata_errors']:meta+=' • METADATA CONFLICT'
+                formatted.append(h['path']+'\n'+meta+'\n'+h['body'])
+            results.delete('1.0','end');results.insert('end','\n\n'.join(formatted) or 'No matching notes.')
         finally:s.close()
     ttk.Button(kb,text='Search',command=lambda:action(search)).pack(side='right')
     ttk.Label(knowledge,text='Open the vault folder in Obsidian to edit notes; no paid Sync required.').pack(anchor='w')

@@ -42,3 +42,18 @@ an observation, not a permanent inventory. No live inference evaluation was run:
 has no configured home Claude Code/OpenRouter credentials. Synthetic test fixtures validate the
 pipeline; they do not establish any actual model's quality. Use the documented server evaluation
 command before enabling catalog routing.
+
+## Knowledge status and subproject isolation candidate — 2026-09-10
+
+- `python -m unittest discover -s tests/assistant -v`: **68 passed**.
+- `python -m pytest tests -q`: **82 passed** with the same existing Pillow deprecation warning.
+- `python -m compileall -q assistant`: passed; `git diff --check`: passed.
+- A clean temporary runtime completed initialization, a task created with the persisted
+  `reapers-relics` subproject, a subproject-pinned search and status inspection.
+- New checks cover knowledge status/provenance, approved-first ordering, hidden superseded history,
+  path-owned scope conflicts, sibling exclusion, task restart persistence, old database migration,
+  MCP process pinning and end-to-end cloud/worker prompt isolation.
+
+These are local Linux/offline results on the review branch. Windows, the real private Obsidian
+vault and a live Claude Code MCP session remain unverified. This slice does not implement controlled
+rule adoption, knowledge promotion or the persistent owner mailbox.

@@ -1,12 +1,13 @@
 import json
 import os
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
-from assistant.core import Store, safe_path
+from assistant.core import Store, safe_path, validate_subproject
 from assistant.models import Cloud, CloudUnavailable, validate_route, verify_free_catalog, claude_env
-from assistant.run import step, validate_plan, approved_review
+from assistant.run import step, validate_plan, approved_review, init
 
 class MemoryTests(unittest.TestCase):
     def setUp(self):
@@ -27,11 +28,24 @@ class MemoryTests(unittest.TestCase):
         for rel in ('../outside','/etc/passwd','C:\\outside','a/../../b','.'):
             with self.assertRaises(ValueError):safe_path(self.root,rel)
     def test_restart_preserves_task(self):
-        tid=self.store.create('business','Draft a procedure')
+        tid=self.store.create('business','Draft a procedure','mountain-men')
         self.store.update(tid,'awaiting_cloud',{'attempt':1})
         other=Store(self.root)
-        try:self.assertEqual(other.get(tid)['data']['attempt'],1)
+        try:
+            self.assertEqual(other.get(tid)['data']['attempt'],1)
+            self.assertEqual(other.get(tid)['subproject'],'mountain-men')
         finally:other.close()
+    def test_existing_task_database_migrates_without_data_loss(self):
+        self.store.close()
+        db=sqlite3.connect(self.root/'state.sqlite')
+        db.execute('DROP TABLE tasks')
+        db.execute('''CREATE TABLE tasks (id TEXT PRIMARY KEY, project TEXT NOT NULL,
+            goal TEXT NOT NULL, status TEXT NOT NULL, data TEXT NOT NULL, updated TEXT NOT NULL)''')
+        db.execute("INSERT INTO tasks VALUES ('old','game','Keep task','planned','{}','then')")
+        db.commit();db.close()
+        self.store=Store(self.root)
+        task=self.store.get('old')
+        self.assertEqual(task['goal'],'Keep task');self.assertEqual(task['subproject'],'')
     def test_daily_cap_persists_across_connections(self):
         self.store.reserve_call('openrouter',1);other=Store(self.root)
         try:
@@ -39,12 +53,95 @@ class MemoryTests(unittest.TestCase):
         finally:other.close()
     def test_unknown_project(self):
         with self.assertRaises(ValueError):self.store.create('other','x')
+    def test_invalid_subproject_rejected(self):
+        for value in ('../other','other/project','other project','x'*65):
+            with self.assertRaises(ValueError):validate_subproject(value)
     def test_symlink_not_indexed(self):
         vault=self.root/'vault';(vault/'game').mkdir(parents=True)
         outside=self.root/'secret.md';outside.write_text('dragon secret')
         try:(vault/'game/link.md').symlink_to(outside)
         except OSError:self.skipTest('Symlink privilege unavailable')
         self.assertEqual(self.store.index(vault),0)
+
+    def test_subproject_scope_cannot_retrieve_sibling(self):
+        vault=self.root/'vault'
+        for folder,label in [('shared','shared'),('business','project'),
+                             ('business/mountain-men','mountain'),('business/other-company','other')]:
+            p=vault/folder;p.mkdir(parents=True,exist_ok=True)
+            (p/'note.md').write_text('sharedword '+label)
+        self.store.index(vault)
+        hits=self.store.search('business','sharedword',subproject='mountain-men',limit=20)
+        self.assertEqual({h['subproject'] for h in hits},{'', 'mountain-men'})
+        self.assertNotIn('business/other-company/note.md',{h['path'] for h in hits})
+
+    def test_status_provenance_and_history_are_preserved(self):
+        vault=self.root/'vault';folder=vault/'business'/'mountain-men';folder.mkdir(parents=True)
+        approved='''---
+note_id: pricing-v2
+project: business
+subproject: mountain-men
+status: approved
+kind: specification
+producer: Kort
+sources: owner decision 2026-09-09
+observed_date: 2026-09-09
+updated_date: 2026-09-09
+evidence_ids: task-123
+reviewer: Judge
+approved_revision: rev-2
+supersedes: pricing-v1
+---
+specialtoken approved price
+'''
+        proposed=approved.replace('pricing-v2','pricing-draft').replace('status: approved','status: proposed').replace('approved price','proposed price')
+        superseded=approved.replace('pricing-v2','pricing-v1').replace('status: approved','status: superseded').replace('approved price','old price')
+        (folder/'approved.md').write_text(approved);(folder/'proposed.md').write_text(proposed)
+        (folder/'old.md').write_text(superseded)
+        self.store.index(vault)
+        hits=self.store.search('business','specialtoken',subproject='mountain-men',limit=20)
+        self.assertEqual([h['status'] for h in hits],['approved','proposed'])
+        self.assertEqual(hits[0]['note_id'],'pricing-v2');self.assertEqual(hits[0]['producer'],'Kort')
+        self.assertEqual(hits[0]['approved_revision'],'rev-2')
+        history=self.store.search('business','specialtoken',subproject='mountain-men',limit=20,include_history=True)
+        self.assertEqual([h['status'] for h in history],['approved','proposed','superseded'])
+
+    def test_metadata_cannot_move_note_to_sibling_scope(self):
+        vault=self.root/'vault';folder=vault/'business'/'mountain-men';folder.mkdir(parents=True)
+        (folder/'bad.md').write_text('''---
+project: game
+subproject: other-company
+status: approved
+---
+boundarytoken
+''')
+        self.store.index(vault)
+        self.assertEqual(self.store.search('business','boundarytoken',subproject='other-company'),[])
+        hit=self.store.search('business','boundarytoken',subproject='mountain-men')[0]
+        self.assertEqual(hit['status'],'disputed');self.assertTrue(hit['metadata_errors'])
+
+    def test_approval_label_without_provenance_is_disputed(self):
+        vault=self.root/'vault';folder=vault/'business';folder.mkdir(parents=True)
+        (folder/'claim.md').write_text('''---
+status: approved
+---
+claimtoken
+''')
+        self.store.index(vault)
+        hit=self.store.search('business','claimtoken')[0]
+        self.assertEqual(hit['status'],'disputed')
+        self.assertIn('approved knowledge requires identity, producer, source and revision',
+                      hit['metadata_errors'])
+
+    def test_init_marks_canonical_game_knowledge_approved(self):
+        installed=self.root/'installed'
+        with patch.dict(os.environ,{'ASSISTANT_HOME':str(installed)}):init()
+        seeded=Store(installed)
+        try:
+            hits=seeded.search('game','Keep',subproject='reapers-relics',limit=20)
+            game_specs=[h for h in hits if h['path'].startswith('game/') and h['kind']=='specification']
+            self.assertTrue(game_specs);self.assertEqual({h['status'] for h in game_specs},{'approved'})
+            self.assertTrue(all(h['approved_revision'] for h in game_specs))
+        finally:seeded.close()
 
 class PolicyTests(unittest.TestCase):
     def test_local_leader_rejected(self):
@@ -133,5 +230,30 @@ class PipelineTests(unittest.TestCase):
     def test_unknown_worker_blocks(self):
         self.plan['jobs'][0]['worker']='invented';self.go(FakeCloud([self.plan]))
         self.assertEqual(self.s.get(self.tid)['status'],'blocked')
+
+    def test_task_subproject_pins_cloud_and_worker_retrieval(self):
+        self.s.close();self.tmp.cleanup()
+        self.tmp=tempfile.TemporaryDirectory();self.s=Store(self.tmp.name)
+        self.tid=self.s.create('business','scopeword','alpha')
+        vault=Path(self.tmp.name)/'vault'
+        for sub,secret in [('alpha','alpha-secret'),('beta','beta-secret')]:
+            p=vault/'business'/sub;p.mkdir(parents=True)
+            (p/'note.md').write_text('scopeword '+secret)
+        self.s.index(vault)
+        self.cfg={'allow_cloud_context':{'business':True},'max_worker_attempts':2}
+        self.profiles={'writer':{'description':'Writer','projects':['business'],
+            'adapter':'ollama-draft','skills':[]}}
+        self.plan={'jobs':[{'id':'j1','worker':'writer','brief':'scopeword',
+            'acceptance':['one line'],'depends_on':[]}]}
+        prompts=[]
+        class RecordingCloud:
+            def ask(_,prompt):
+                prompts.append(prompt)
+                return self.plan,{'provider':'openrouter','model':'test:free'}
+        self.go(RecordingCloud())
+        self.assertIn('alpha-secret',prompts[0]);self.assertNotIn('beta-secret',prompts[0])
+        worker_prompts=[]
+        self.go(FakeCloud([]),lambda profile,prompt:worker_prompts.append(prompt) or 'draft')
+        self.assertIn('alpha-secret',worker_prompts[0]);self.assertNotIn('beta-secret',worker_prompts[0])
 
 if __name__=='__main__':unittest.main()

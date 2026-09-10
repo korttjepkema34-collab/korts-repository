@@ -8,7 +8,8 @@ No checklist below is a substitute for running the actual machine/provider tests
 - OpenRouter live model-price check, model alias pinning, persisted invocation budget.
 - Claude Code cloud adapter and explicit qualification command.
 - Persistent task state/events, dependency validation, bounded workers, cloud critique/repair.
-- Private Markdown vault, project-scoped FTS retrieval, source hashes, read-only memory MCP.
+- Private Markdown vault, status/provenance-aware FTS retrieval, task-pinned project/subproject
+  boundaries, source hashes and read-only memory MCP.
 - Editable worker definitions, draft artifacts and source/check evidence for isolated code candidates.
 - Initial desktop interface, setup/start/test scripts, pull-only Git sync and morning reports.
 - Legacy setup migration notices and disabled unsafe-for-current-policy unattended entry point.
@@ -83,7 +84,9 @@ Review each stage before starting the next. SQLite remains the first display sou
 
 Policy approved: [authority index](authority/README.md). Documentation approval does not close these gates.
 
-- [ ] Enforce knowledge status/provenance and per-subproject access boundaries.
+- [x] Enforce knowledge status/provenance and per-subproject access boundaries. Offline tests cover
+  sibling exclusion, path-owned scope, MCP pinning, task persistence and legacy database migration;
+  actual Windows/Obsidian operation remains part of the live qualification checklist.
 - [ ] Implement conflict-safe rule adoption and task revision pinning.
 - [ ] Implement persistent private mailbox and revision-bound responses with duplicate-effect prevention.
 - [ ] Generate scoped Obsidian reports and owner-only navigation from authoritative state.
