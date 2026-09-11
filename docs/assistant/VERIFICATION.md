@@ -104,3 +104,32 @@ not used or changed. In that extracted tree:
 The live deployment was deliberately left pending explicit owner authorization. The production
 source checkout was restored cleanly to `a95221f`; the existing assistant service remained active,
 the new runner remained inactive, and the Tjepkema homepage returned HTTP 200.
+
+## Passwordless live deployment — 2026-09-11
+
+At the owner's explicit request, the Tjepkema deployment was changed to open access as local owner
+`kort`. Focused tests proved anonymous reads and owner controls while rejecting mutations with a
+missing CSRF token or an unapproved Origin. The complete suite then passed **130 tests** with one
+expected skip, and the synthetic workflow passed **12/12**.
+
+The first production probe exposed two live-only deployment defects. `systemctl enable --now` did
+not restart the already-active legacy process after its unit changed, and nginx reload retained the
+old read-only bind-mounted configuration inode after `install` replaced the host file. The services
+were explicitly restarted and only the dashboard nginx container was recreated. The deployment
+script now performs those operations itself and validates the replacement nginx file before the
+container is recreated.
+
+Observed after repair: both assistant services active; Tjepkema homepage HTTP 200;
+`/assistant.html` HTTP 302 to `/assistant/`; dashboard and JavaScript HTTP 200; `/assistant/api/me`
+reported signed-in owner `kort`, all three projects, and open access enabled.
+
+A second restart-style check explicitly restarted both systemd services and recreated the dashboard
+container. The dashboard again opened without credentials, the runner reported `running` with a
+fresh heartbeat, and an authenticated-by-network pause/resume round trip through nginx left the
+runtime resumed. The homepage and `/assistant/` both returned HTTP 200 afterward. This check did
+not create a task or read, write, or execute any game project file.
+
+The live LAN address returned the reviewed HTML, JavaScript, and API state, but the Codex in-app
+browser's separate network sandbox could not reach the LAN address and blocked its localhost
+alias. Visual review therefore remains the earlier real-browser desktop and phone render of these
+same committed static assets; no claim is made that a new screenshot was captured after install.

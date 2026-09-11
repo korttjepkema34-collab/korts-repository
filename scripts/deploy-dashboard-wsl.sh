@@ -59,9 +59,15 @@ install -m 0644 deploy/my-assistant-dashboard.service /etc/systemd/system/my-ass
 install -m 0644 deploy/my-assistant-runner.service /etc/systemd/system/my-assistant-runner.service
 install -m 0644 deploy/tjepkema-dashboard.conf "$DASHBOARD/default.conf"
 systemctl daemon-reload
-systemctl enable --now my-assistant.service my-assistant-runner.service
+systemctl enable my-assistant.service my-assistant-runner.service
+systemctl restart my-assistant.service my-assistant-runner.service
+
+# default.conf is a read-only bind mount. `install` replaces its inode, so an nginx reload alone
+# would keep the container attached to the old file. Validate the replacement independently, then
+# recreate only this small container so Docker remounts the new inode.
+docker run --rm -v "$DASHBOARD/default.conf:/etc/nginx/conf.d/default.conf:ro" nginx:alpine nginx -t
+docker compose -f "$DASHBOARD/docker-compose.yml" up -d --force-recreate dashboard
 docker exec dashboard nginx -t
-docker exec dashboard nginx -s reload
 
 sleep 2
 systemctl is-active --quiet my-assistant.service
