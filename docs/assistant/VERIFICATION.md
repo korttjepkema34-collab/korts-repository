@@ -87,3 +87,20 @@ evidence. Current Windows results:
 
 Detailed scope and corrections: DASHBOARD-IMPLEMENTATION-2026-09-11.md. These are disposable local
 runtime results; server nginx/systemd and Tailscale access remain a separate live deployment check.
+
+## Published commit Ubuntu preflight — 2026-09-11
+
+Commit `48a32fa2c346d61818a8b5873da792625b376cb1` was pushed to
+`assistant/server-web-integration` and extracted from the server repository into an isolated
+temporary Ubuntu directory. The production runtime, systemd units, and nginx configuration were
+not used or changed. In that extracted tree:
+
+- Assistant unittest discovery passed **129 tests**, with one expected skip.
+- Every extracted file passed `scripts/check_private_leak.py`.
+- Python compilation and `sh -n scripts/deploy-dashboard-wsl.sh` passed.
+- `scripts/synthetic_e2e.py` passed **12/12** recovery and workflow checks.
+- The temporary tree was removed after verification.
+
+The live deployment was deliberately left pending explicit owner authorization. The production
+source checkout was restored cleanly to `a95221f`; the existing assistant service remained active,
+the new runner remained inactive, and the Tjepkema homepage returned HTTP 200.
