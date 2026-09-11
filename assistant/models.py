@@ -66,6 +66,24 @@ def parse_json(text):
         text='\n'.join(text.splitlines()[1:-1])
     return json.loads(text)
 
+def verify_zero_reported_cost(wrapper):
+    """Reject responses when Claude Code reports any charge or unreadable cost."""
+    reported=[]
+    if 'total_cost_usd' in wrapper: reported.append(wrapper['total_cost_usd'])
+    usage=wrapper.get('modelUsage',{})
+    if usage is None: usage={}
+    if not isinstance(usage,dict): raise CloudUnavailable('Claude Code returned invalid cost data')
+    for details in usage.values():
+        if not isinstance(details,dict): raise CloudUnavailable('Claude Code returned invalid cost data')
+        if 'costUSD' in details: reported.append(details['costUSD'])
+    for value in reported:
+        try:
+            amount=Decimal(str(value))
+        except InvalidOperation as e:
+            raise CloudUnavailable('Claude Code returned unreadable cost data') from e
+        if not amount.is_finite() or amount != 0:
+            raise CloudUnavailable('Claude Code reported nonzero inference cost')
+
 class Cloud:
     def __init__(self, config, store): self.config,self.store=config,store
     def ask(self, prompt):
@@ -86,15 +104,17 @@ class Cloud:
                 self.store.reserve_call(provider,int(self.config['daily_caps'][provider]))
                 cwd=self.store.root/'control'; cwd.mkdir(exist_ok=True)
                 # Deliberately no arbitrary tools in planning/review: controller executes validated jobs.
-                cmd=[self.config.get('claude_bin','claude'), '-p', '--model',route['model'],
+                cmd=[self.config.get('claude_bin','claude'), '--bare', '-p', '--model',route['model'],
                      '--output-format','json','--tools','', '--setting-sources','',
-                     '--strict-mcp-config','--mcp-config','{"mcpServers":{}}', '--max-turns','1']
+                     '--strict-mcp-config','--mcp-config','{"mcpServers":{}}', '--max-turns','1',
+                     '--max-budget-usd','0']
                 p=subprocess.run(cmd,input=prompt,cwd=cwd,env=env,capture_output=True,
                     text=True,encoding='utf-8',timeout=int(self.config.get('cloud_timeout_seconds',600)))
                 if p.returncode: raise CloudUnavailable('Claude Code failed; run the documented account/compatibility check')
                 wrapper=json.loads(p.stdout)
                 if wrapper.get('is_error') or wrapper.get('subtype') not in ('success',None):
                     raise CloudUnavailable('Claude Code did not complete successfully')
+                verify_zero_reported_cost(wrapper)
                 result=parse_json(wrapper.get('result',''))
                 return result, {'provider':provider,'model':route['model']}
             except Exception as e:

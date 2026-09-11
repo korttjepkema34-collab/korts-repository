@@ -6,7 +6,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from assistant.core import Store, safe_path, validate_subproject
-from assistant.models import Cloud, CloudUnavailable, validate_route, verify_free_catalog, claude_env
+from assistant.models import (Cloud, CloudUnavailable, validate_route, verify_free_catalog,
+                              verify_zero_reported_cost, claude_env)
 from assistant.run import step, validate_plan, approved_review, init
 
 class MemoryTests(unittest.TestCase):
@@ -163,6 +164,12 @@ class PolicyTests(unittest.TestCase):
     def test_missing_and_nan_pricing_rejected(self):
         for prices in ({},{'prompt':'0','completion':'NaN'}):
             with self.assertRaises(ValueError):verify_free_catalog('x:free',{'data':[{'id':'x:free','pricing':prices}]})
+    def test_reported_cost_must_be_zero(self):
+        verify_zero_reported_cost({'total_cost_usd':0,'modelUsage':{'x:free':{'costUSD':'0'}}})
+        for wrapper in ({'total_cost_usd':0.00219},
+                        {'modelUsage':{'x:free':{'costUSD':'unknown'}}},
+                        {'modelUsage':[]}):
+            with self.assertRaises(CloudUnavailable):verify_zero_reported_cost(wrapper)
     def test_env_removes_paid_provider_and_pins_aliases(self):
         with patch.dict(os.environ,{'ANTHROPIC_API_KEY':'paid','CLAUDE_CODE_USE_BEDROCK':'1','OPENROUTER_API_KEY':'test'}):
             e=claude_env({'provider':'openrouter','model':'x:free'})

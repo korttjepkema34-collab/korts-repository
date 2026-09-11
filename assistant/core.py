@@ -7,7 +7,7 @@ import re
 import sqlite3
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 PROJECTS = ('personal', 'business', 'game')
 SCOPES = ('shared', *PROJECTS)
@@ -23,10 +23,11 @@ def runtime_root():
 
 def safe_path(root, relative):
     root = Path(root).resolve()
-    rel = Path(relative)
-    if rel.is_absolute() or '..' in rel.parts or ':' in str(rel) or '\\' in str(rel):
+    raw = str(relative)
+    rel = PurePosixPath(raw)
+    if rel.is_absolute() or '..' in rel.parts or ':' in raw or '\\' in raw:
         raise ValueError('Expected a relative path without traversal')
-    target = (root / rel).resolve()
+    target = root.joinpath(*rel.parts).resolve()
     if root not in target.parents:
         raise ValueError('Path escapes root')
     return target
