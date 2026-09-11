@@ -34,7 +34,7 @@ class CloudCodeTests(unittest.TestCase):
     setUp=test_codework.CandidateTests.setUp
     tearDown=test_codework.CandidateTests.tearDown
     def test_real_checks_and_integration(self):
-        store=Store(self.root/'runtime');tid=store.create('game','Change value')
+        store=Store(self.root/'runtime');tid=store.create('game','Change value');[__import__('assistant.state',fromlist=['x']).grant_cloud_consent(store.db,x,'test') for x in ('personal','business','game')]
         config={'allow_cloud_context':{'game':True},'code_projects':{'game':self.settings}}
         profiles={'engineer':{'adapter':'cloud-code','instructions':'Implement code.','description':'Hard code','projects':['game'],'skills':[]}}
         criterion='Combined implementation satisfies the user goal and all job acceptance criteria'

@@ -10,7 +10,8 @@ At the 2026-09-09 audit, `claude/ai-game-dev-team-godot-0ir8yf` was identical to
 
 | Location | Purpose |
 |---|---|
-| `assistant/` | Current assistant runtime |
+| `assistant/` | Current assistant runtime (runner, dashboard `web.py` + `web_static/`, backups, health) |
+| `scripts/` (assistant) | `install-runner-service.ps1`, `gpu-tunnel.ps1`, `synthetic_e2e.py`, `check_private_leak.py`, `make_sample_project.py` |
 | `config/assistant/` | Shareable configuration and worker templates |
 | `docs/assistant/authority/` | Approved studio authority documents |
 | `docs/assistant/` | Current setup, architecture, acceptance and memory guidance |

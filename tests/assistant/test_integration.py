@@ -44,7 +44,7 @@ class IntegrationTests(unittest.TestCase):
         w=codework.prepare_integrated(self.root,'task','a',self.settings)
         self.assertEqual((w/'game/main.py').read_text(),'value = 1\n')
     def test_pipeline_inherits_then_combined_review(self,final_approved=True):
-        store=Store(self.root/'runtime');tid=store.create('game','Implement backend then UI')
+        store=Store(self.root/'runtime');tid=store.create('game','Implement backend then UI');[__import__('assistant.state',fromlist=['x']).grant_cloud_consent(store.db,x,'test') for x in ('personal','business','game')]
         profiles={'coder':{'adapter':'code-sandbox','projects':['game'],'description':'code','skills':[]}}
         config={'allow_cloud_context':{'game':True},'code_projects':{'game':self.settings},'max_worker_attempts':3}
         calls=[]
@@ -82,7 +82,7 @@ class IntegrationTests(unittest.TestCase):
     def test_combined_failure_not_ready(self):
         a=self.approved('a');codework.integrate(self.root,'task',a,self.settings)
         a['status']='verified_candidate';a['depends_on']=[];a['integration']={'revision':'fixture'}
-        store=Store(self.root);tid=store.create('game','combined goal')
+        store=Store(self.root);tid=store.create('game','combined goal');[__import__('assistant.state',fromlist=['x']).grant_cloud_consent(store.db,x,'test') for x in ('personal','business','game')]
         # Use the same task workspace ID for this persisted task.
         workspace=codework.task_workspace(self.root,tid,self.settings)
         a['workspace']=str(workspace)
@@ -98,3 +98,26 @@ class IntegrationTests(unittest.TestCase):
 
     def test_combined_cloud_rejection_blocks_completion(self):
         self.test_pipeline_inherits_then_combined_review(final_approved=False)
+
+
+class ExportTests(unittest.TestCase):
+    setUp=test_codework.CandidateTests.setUp
+    tearDown=test_codework.CandidateTests.tearDown
+    def test_owner_approved_export_with_rollback_and_conflict_detection(self):
+        from assistant import control, export
+        from assistant.core import PROJECTS
+        IntegrationTests.test_pipeline_inherits_then_combined_review(self)
+        store=Store(self.root/'runtime')
+        try:
+            tid=store.list()[0]['id']
+            config={'code_projects':{'game':self.settings}}
+            with self.assertRaises(ValueError):export.export(store,config,tid)   # not approved yet
+            control.decide(store,'kort',PROJECTS,tid,True)
+            result=export.export(store,config,tid)
+            self.assertTrue(result['applies']);self.assertEqual(len(result['patches']),2)
+            readme=(Path(result['folder'])/'README.txt').read_text()
+            self.assertIn(result['base'],readme);self.assertIn('Nothing has been merged',readme)
+            self.assertEqual((self.source/'game/main.py').read_text(),'value = 1\n')   # real checkout untouched
+            (self.source/'game/main.py').write_text('value = 42\n');codework.git(self.source,'commit','-am','conflicting')
+            self.assertFalse(export.export(store,config,tid)['applies'])
+        finally:store.close()

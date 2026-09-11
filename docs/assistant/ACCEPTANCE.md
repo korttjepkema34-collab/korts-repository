@@ -38,13 +38,21 @@ Record actual results in `VERIFICATION.md`; do not infer success from code inspe
 - [ ] Backup/restore reproduces a note, task and artifact.
 - [ ] Overnight schedule, reboot/login, deadline and report inspected on the server.
 
+## Implemented offline on `assistant/overnight-runtime` (2026-09-11, awaiting owner review)
+
+Persistent runner service and installer, resume/leases/retries/task dependencies, audited cloud
+consent, invocation provenance, dashboard controls and authentication, sanitized events and
+workforce view, mailbox, conversations, gaming mode and GPU lease, benchmarks/qualification,
+cloud cost/substitution enforcement, backups, health monitoring, patch export, connector gate.
+See OPERATIONS.md and OVERNIGHT-2026-09-11.md. Live boxes below stay unchecked until run on the PCs.
+
 ## Explicit implementation gaps before the full requested system is complete
 
 - [ ] Connect native image/sprite/audio adapters to this controller with actual artifact transport.
 - [ ] Add actual screenshot/image/audio input to qualified cloud review where the task requires it.
-- [ ] Shared GPU leases across LLM/media/game jobs, with health checks and crash recovery.
+- [ ] Shared GPU leases across LLM/media/game jobs, with health checks and crash recovery. (Lease, gaming mode and health implemented offline; media/game consumers not yet connected.)
 - [ ] Concurrent cloud planning and independent local work with ownership/dependency tests.
-- [ ] Rich streaming chat, inline profile editor and artifact previews in the custom UI.
+- [ ] Rich streaming chat, inline profile editor and artifact previews in the custom UI. (Conversations, SSE status and artifact previews implemented offline; inline profile editor not yet.)
 - [ ] Adaptive repository context/tool loop beyond fixed configured code input files.
 - [ ] Cross-project PR creation/integration and combined tests behind explicit authority boundaries.
 - [ ] Automated lessons/skill proposal review and versioned promotion UI.

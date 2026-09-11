@@ -14,12 +14,26 @@ SCOPES = ('shared', *PROJECTS)
 KNOWLEDGE_STATUSES = ('proposed', 'reviewed', 'approved', 'superseded', 'disputed')
 SUBPROJECT_RE = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$')
 
+SAFE_STATUS_TEXT = {
+    'planned': 'Waiting for a cloud plan', 'working': 'Work in progress',
+    'awaiting_cloud': 'Waiting for a qualified free cloud route', 'blocked': 'Blocked; see task evidence',
+    'draft_ready': 'Ready for owner review', 'cancelled': 'Cancelled by owner',
+    'owner_approved': 'Approved by owner', 'owner_rejected': 'Rejected by owner',
+    'waiting_dependency': 'Waiting for another task', 'cooling_down': 'Retrying after a cooldown',
+    'needs_input': 'Waiting for your answer', 'awaiting_plan_approval': 'Plan waits for your approval',
+}
+
 def now():
     return datetime.now(timezone.utc).isoformat()
 
 def runtime_root():
     # Outside the Git checkout by default, including private vault contents and all artifacts.
-    return Path(os.environ.get('ASSISTANT_HOME', str(Path.home() / 'KortAssistant'))).expanduser().resolve()
+    root = Path(os.environ.get('ASSISTANT_HOME', str(Path.home() / 'KortAssistant'))).expanduser().resolve()
+    repo = Path(__file__).resolve().parents[1]
+    if root == repo or repo in root.parents:
+        # The checkout is public on GitHub: private vault, tasks and artifacts must never live in it.
+        raise ValueError('ASSISTANT_HOME must be outside the Git checkout')
+    return root
 
 def safe_path(root, relative):
     root = Path(root).resolve()
@@ -137,20 +151,33 @@ class Store:
           reviewer UNINDEXED, approved_revision UNINDEXED, supersedes UNINDEXED,
           metadata_errors UNINDEXED, digest UNINDEXED, body)''')
         self.db.commit()
+        from .state import ensure_schema
+        ensure_schema(self.db)
 
     def close(self): self.db.close()
 
-    def create(self, project, goal, subproject=''):
+    def create(self, project, goal, subproject='', after=None, confirm_plan=False):
         if project not in PROJECTS or not goal.strip() or len(goal) > 30000:
             raise ValueError('Valid project and nonempty goal up to 30000 characters required')
         subproject = validate_subproject(subproject)
+        after = list(after or [])
+        if len(after) > 20: raise ValueError('At most 20 task dependencies')
+        for dep in after:
+            # Dependencies never cross projects: that would leak one scope's results into another.
+            if self.get(dep)['project'] != project:
+                raise ValueError('Task dependencies must stay inside one project')
         tid = uuid.uuid4().hex
+        data = {'after': after} if after else {}
+        if confirm_plan:
+            data['confirm_plan'] = True
         with self.db:
             self.db.execute('''INSERT INTO tasks
                 (id,project,goal,status,data,updated,subproject) VALUES (?,?,?,?,?,?,?)''',
-                (tid, project, goal, 'planned', '{}', now(), subproject))
+                (tid, project, goal, 'planned', json.dumps(data), now(), subproject))
             self.db.execute('INSERT INTO events(task_id,at,kind,detail) VALUES (?,?,?,?)',
                 (tid, now(), 'created', 'User goal recorded'))
+        from .state import emit
+        emit(self.db, project, 'task.created', 'New task recorded', task_id=tid)
         return tid
 
     def get(self, tid):
@@ -161,13 +188,30 @@ class Store:
     def list(self):
         return [self.get(r[0]) for r in self.db.execute('SELECT id FROM tasks ORDER BY updated DESC')]
 
-    def update(self, tid, status, data, detail=''):
-        self.get(tid)
+    def update(self, tid, status, data, detail='', force=False):
+        previous = self.get(tid)['status']
         with self.db:
-            self.db.execute('UPDATE tasks SET status=?,data=?,updated=? WHERE id=?',
-                (status, json.dumps(data), now(), tid))
+            # An owner cancellation/decision made while the runner was mid-step must not be
+            # overwritten by the runner's next write. Owner controls pass force=True.
+            cur = self.db.execute('''UPDATE tasks SET status=?,data=?,updated=? WHERE id=?
+                AND (? OR status NOT IN ('cancelled','owner_approved','owner_rejected'))''',
+                (status, json.dumps(data), now(), tid, int(bool(force))))
+            if cur.rowcount == 0:
+                return False
             self.db.execute('INSERT INTO events(task_id,at,kind,detail) VALUES (?,?,?,?)',
                 (tid, now(), status, detail[:8000]))
+        # Display-safe projection: fixed text per status, never the private detail string.
+        from .state import emit
+        task = self.get(tid)
+        if previous == status:
+            return True  # no duplicate display event for bookkeeping writes
+        emit(self.db, task['project'], 'task.'+status, SAFE_STATUS_TEXT.get(status, 'Task state changed'), task_id=tid)
+        return True
+
+    def save_data(self, tid, data):
+        """Persist controller bookkeeping (retry timers) without a lifecycle event."""
+        with self.db:
+            self.db.execute('UPDATE tasks SET data=? WHERE id=?', (json.dumps(data), tid))
 
     def reserve_call(self, provider, cap):
         day = datetime.now(timezone.utc).date().isoformat()

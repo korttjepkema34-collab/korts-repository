@@ -220,7 +220,7 @@ class FakeCloud:
 
 class PipelineTests(unittest.TestCase):
     def setUp(self):
-        self.tmp=tempfile.TemporaryDirectory();self.s=Store(self.tmp.name)
+        self.tmp=tempfile.TemporaryDirectory();self.s=Store(self.tmp.name);[__import__('assistant.state',fromlist=['x']).grant_cloud_consent(self.s.db,x,'test') for x in ('personal','business','game')]
         self.tid=self.s.create('game','Draft a dialogue')
         self.cfg={'allow_cloud_context':{'game':True},'max_worker_attempts':2}
         self.profiles={'writer':{'description':'Writer','projects':['game'],'adapter':'ollama-draft','skills':[]}}
@@ -263,7 +263,7 @@ class PipelineTests(unittest.TestCase):
 
     def test_task_subproject_pins_cloud_and_worker_retrieval(self):
         self.s.close();self.tmp.cleanup()
-        self.tmp=tempfile.TemporaryDirectory();self.s=Store(self.tmp.name)
+        self.tmp=tempfile.TemporaryDirectory();self.s=Store(self.tmp.name);[__import__('assistant.state',fromlist=['x']).grant_cloud_consent(self.s.db,x,'test') for x in ('personal','business','game')]
         self.tid=self.s.create('business','scopeword','alpha')
         vault=Path(self.tmp.name)/'vault'
         for sub,secret in [('alpha','alpha-secret'),('beta','beta-secret')]:

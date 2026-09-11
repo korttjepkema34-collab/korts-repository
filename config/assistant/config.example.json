@@ -48,5 +48,14 @@
       "check_timeout_seconds": 300
     }
   },
-  "catalog_routing": false
+  "catalog_routing": false,
+  "require_zero_cost_evidence": true,
+  "require_model_evidence": true,
+  "require_qualified_workers": true,
+  "max_task_retries": 8,
+  "retry_base_seconds": 60,
+  "retry_max_seconds": 3600,
+  "catalog_recheck_hours": 6,
+  "min_free_disk_gb": 20,
+  "backup_max_age_hours": 36
 }

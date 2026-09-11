@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import time
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -61,15 +62,67 @@ def claude_env(route):
     return env
 
 def parse_json(text):
-    text=text.strip()
-    if text.startswith('```'):
-        text='\n'.join(text.splitlines()[1:-1])
-    return json.loads(text)
+    """Parse a model's JSON answer, recovering common small-model formatting faults.
 
-def openrouter_ask(model, prompt, timeout=120, max_tokens=4096):
+    Accepted recoveries: code fences anywhere, leading/trailing prose, a <think> block, and
+    trailing commas. Anything else still fails, so a malformed answer is a repairable error rather
+    than a silently guessed result."""
+    if not isinstance(text,str): raise ValueError('Model output is not text')
+    text=text.strip()
+    try: return json.loads(text)
+    except ValueError: pass
+    import re
+    text=re.sub(r'<think>.*?</think>','',text,flags=re.S).strip()
+    fence=re.search(r'```(?:json)?\s*\n(.*?)\n```',text,flags=re.S)
+    if fence: text=fence.group(1).strip()
+    decoder=json.JSONDecoder()
+    for i,ch in enumerate(text):
+        if ch not in '{[': continue
+        candidate=text[i:]
+        for attempt in (candidate, re.sub(r',(\s*[}\]])',r'\1',candidate)):
+            try: return decoder.raw_decode(attempt)[0]
+            except ValueError: continue
+        break  # only the first JSON-looking start is considered; no guessing deeper
+    raise ValueError('Model output is not valid JSON')
+
+class RouteRejected(CloudUnavailable):
+    """A call completed but its evidence failed policy (substitution or cost); result discarded."""
+    def __init__(self, outcome, message):
+        super().__init__(message); self.outcome=outcome
+
+RATE_LIMIT_MARKERS=('429','rate limit','rate-limit','too many requests','quota')
+
+def openrouter_key_usage(fetch=None):
+    """Return the key's cumulative usage (credits) from /api/v1/key, or raise.
+
+    A `limit` of null there means the key has no credit limit configured on OpenRouter; it is not
+    an error and not evidence of free usage. Usage deltas are the cost evidence used here."""
+    fetch=fetch or request_json
     token=os.environ.get('OPENROUTER_API_KEY','')
     if not token: raise CloudUnavailable('OPENROUTER_API_KEY is not set')
-    response=request_json('https://openrouter.ai/api/v1/chat/completions',{
+    data=fetch('https://openrouter.ai/api/v1/key',headers={'Authorization':'Bearer '+token},timeout=30)
+    info=data.get('data',data) if isinstance(data,dict) else {}
+    usage=Decimal(str(info.get('usage')))
+    if not usage.is_finite(): raise ValueError('Unknown key usage')
+    return usage, {'limit': info.get('limit'), 'is_free_tier': info.get('is_free_tier'),
+                   'limit_remaining': info.get('limit_remaining')}
+
+def check_models(route, wrapper, require_evidence=True):
+    """Every model that actually served the request must be the pinned model."""
+    usage=wrapper.get('modelUsage')
+    actual=sorted(usage.keys()) if isinstance(usage,dict) else []
+    if not actual and require_evidence:
+        raise RouteRejected('rejected_model_missing','No model usage evidence returned')
+    substituted=[m for m in actual if m!=route['model']]
+    if substituted:
+        raise RouteRejected('rejected_model_substitution','Unexpected model served the request')
+    return actual
+
+def openrouter_ask(model, prompt, timeout=120, max_tokens=4096, fetch=None):
+    fetch = fetch or request_json
+    token=os.environ.get('OPENROUTER_API_KEY','')
+    if not token: raise CloudUnavailable('OPENROUTER_API_KEY is not set')
+    response=fetch('https://openrouter.ai/api/v1/chat/completions',{
         'model':model,'stream':False,'temperature':0,'max_tokens':max_tokens,
         'provider':{'allow_fallbacks':False},
         'reasoning':{'effort':'none','exclude':True},
@@ -79,16 +132,23 @@ def openrouter_ask(model, prompt, timeout=120, max_tokens=4096):
     },{'Authorization':'Bearer '+token,'HTTP-Referer':'http://127.0.0.1/assistant.html',
        'X-Title':'Korts Assistant'},timeout=timeout)
     usage=response.get('usage') or {}
-    if 'cost' not in usage: raise CloudUnavailable('OpenRouter response did not report cost')
-    verify_zero_reported_cost({'total_cost_usd':usage['cost']})
+    if 'cost' not in usage: raise RouteRejected('rejected_cost_missing', 'OpenRouter response did not report cost')
+    try:
+        verify_zero_reported_cost({'total_cost_usd':usage['cost']})
+    except CloudUnavailable as exc:
+        raise RouteRejected('rejected_cost_nonzero', str(exc)) from exc
     actual=str(response.get('model',''))
+    if not actual:
+        raise RouteRejected('rejected_model_missing', 'OpenRouter response did not identify the serving model')
     if actual not in (model,model.removesuffix(':free')):
-        raise CloudUnavailable('OpenRouter returned a different model than requested')
+        raise RouteRejected('rejected_model_substitution', 'OpenRouter returned a different model than requested')
     choices=response.get('choices') or []
     if not choices: raise CloudUnavailable('OpenRouter returned no response choice')
     content=(choices[0].get('message',{}).get('content') or '').strip()
     if not content: raise CloudUnavailable('OpenRouter returned no visible content')
-    return parse_json(content),{'provider':'openrouter','model':model,'actual_model':actual,'cost_usd':usage['cost']}
+    return parse_json(content),{'provider':'openrouter','model':model,'actual_models':[actual],
+                                'cost_usd':usage['cost'],
+                                'cost_evidence':{'method':'response_usage','delta':str(usage['cost'])}}
 
 def verify_zero_reported_cost(wrapper):
     """Reject responses when Claude Code reports any charge or unreadable cost."""
@@ -109,8 +169,23 @@ def verify_zero_reported_cost(wrapper):
             raise CloudUnavailable('Claude Code reported nonzero inference cost')
 
 class Cloud:
-    def __init__(self, config, store): self.config,self.store=config,store
+    def __init__(self, config, store, fetch=None, runner=None):
+        self.config,self.store=config,store
+        self.fetch=fetch or request_json
+        self.runner=runner or subprocess.run
+        self.context={}
+    def _record(self, route, outcome, started, prompt, required=False, **extra):
+        from .state import record_invocation
+        try:
+            record_invocation(self.store.db, route.get('provider','unknown'), route.get('model','unknown'), outcome,
+                duration_ms=int((time.monotonic()-started)*1000), prompt=prompt,
+                task_id=self.context.get('task_id'), job_id=self.context.get('job_id'),
+                purpose=self.context.get('purpose'), **extra)
+        except Exception:
+            if required:
+                raise
     def ask(self, prompt):
+        from .state import route_available, route_result
         errors=[]
         routes=self.config['cloud_routes']
         if self.config.get('catalog_routing') is True:
@@ -118,17 +193,26 @@ class Cloud:
             try: routes=ranked_routes(self.store.root,self.config)
             except Exception as e:
                 raise CloudUnavailable('Catalog refresh or evaluation data unavailable') from e
+        require_cost=self.config.get('require_zero_cost_evidence',True)
         for route in routes:
             provider=route.get('provider','unknown')
+            started=time.monotonic()
             try:
                 validate_route(route)
+                if hasattr(self.store,'db') and not route_available(self.store.db,route):
+                    errors.append(provider+': cooldown');continue
                 if provider=='openrouter':
-                    verify_free_catalog(route['model'],request_json('https://openrouter.ai/api/v1/models'))
+                    verify_free_catalog(route['model'],self.fetch('https://openrouter.ai/api/v1/models'))
                 self.store.reserve_call(provider,int(self.config['daily_caps'][provider]))
                 if provider=='openrouter':
-                    return openrouter_ask(route['model'],prompt,
+                    result, evidence = openrouter_ask(route['model'], prompt,
                         timeout=int(self.config.get('cloud_timeout_seconds',120)),
-                        max_tokens=int(self.config.get('cloud_max_tokens',4096)))
+                        max_tokens=int(self.config.get('cloud_max_tokens',4096)), fetch=self.fetch)
+                    self._record(route, 'ok', started, prompt, required=True,
+                        actual_models=evidence['actual_models'], cost_evidence=evidence['cost_evidence'],
+                        result=json.dumps(result))
+                    route_result(self.store.db, route, True)
+                    return result, evidence
                 env=claude_env(route)
                 cwd=self.store.root/'control'; cwd.mkdir(exist_ok=True)
                 # Deliberately no arbitrary tools in planning/review: controller executes validated jobs.
@@ -136,17 +220,37 @@ class Cloud:
                      '--output-format','json','--tools','', '--setting-sources','',
                      '--strict-mcp-config','--mcp-config','{"mcpServers":{}}', '--max-turns','1',
                      '--max-budget-usd','0']
-                p=subprocess.run(cmd,input=prompt,cwd=cwd,env=env,capture_output=True,
+                p=self.runner(cmd,input=prompt,cwd=cwd,env=env,capture_output=True,
                     text=True,encoding='utf-8',timeout=int(self.config.get('cloud_timeout_seconds',600)))
-                if p.returncode: raise CloudUnavailable('Claude Code failed; run the documented account/compatibility check')
-                wrapper=json.loads(p.stdout)
-                if wrapper.get('is_error') or wrapper.get('subtype') not in ('success',None):
+                try: wrapper=json.loads(p.stdout or '{}')
+                except ValueError: wrapper={}
+                text=(str(wrapper.get('result',''))+' '+(p.stderr or '')[-2000:]).lower()
+                if p.returncode or wrapper.get('is_error') or wrapper.get('subtype') not in ('success',None):
+                    limited=any(m in text for m in RATE_LIMIT_MARKERS)
+                    self._record(route,'rate_limited' if limited else 'failed',started,prompt)
+                    route_result(self.store.db,route,False,'rate limited' if limited else 'call failed',rate_limited=limited)
                     raise CloudUnavailable('Claude Code did not complete successfully')
                 verify_zero_reported_cost(wrapper)
+                actual=check_models(route,wrapper,self.config.get('require_model_evidence',True))
+                evidence={'method':'none'}
                 result=parse_json(wrapper.get('result',''))
-                return result, {'provider':provider,'model':route['model']}
+                # Claude Code's total_cost_usd is its own price estimate, not the provider's bill; it is recorded only.
+                self._record(route,'ok',started,prompt,required=True,actual_models=actual,
+                    cost_reported={'claude_code_estimate_usd':wrapper.get('total_cost_usd')},
+                    cost_evidence=evidence,result=wrapper.get('result',''))
+                route_result(self.store.db,route,True)
+                return result, {'provider':provider,'model':route['model'],'actual_models':actual,'cost_evidence':evidence}
+            except RouteRejected as e:
+                self._record(route,e.outcome,started,prompt,actual_models=None,
+                    cost_evidence={'reason':str(e)})
+                route_result(self.store.db,route,False,e.outcome,base_seconds=1800)
+                errors.append(provider+': '+e.outcome)
             except Exception as e:
                 # Avoid logging CLI stderr or keys. Full model outputs stay in private runtime only.
+                limited=any(m in str(e).lower() for m in RATE_LIMIT_MARKERS)
+                outcome='rate_limited' if limited else 'failed'
+                self._record(route,outcome,started,prompt)
+                route_result(self.store.db,route,False,outcome,rate_limited=limited)
                 errors.append(provider+': '+type(e).__name__)
         raise CloudUnavailable('No qualified free cloud route completed: '+', '.join(errors))
 
@@ -159,6 +263,7 @@ def local_ask(worker, prompt):
     if model.endswith(('-cloud',':cloud')): raise ValueError('Local worker cannot silently use cloud')
     data=request_json(base+'/api/chat',{'model':model,'stream':False,
         'think':worker.get('think',False),
+        'keep_alive':worker.get('keep_alive','10m'),
         'messages':[{'role':'system','content':worker['instructions']}, {'role':'user','content':prompt}],
         'options':{'num_ctx':worker.get('num_ctx',8192),'num_predict':4096}},timeout=600)
     return data['message']['content']

@@ -57,3 +57,25 @@ Deliver simulator, real read-only view, safe parallel scheduling and interactive
 ## Owner-approved authority and Obsidian rules — 2026-09-09
 
 The owner approved publication of the version 0.2 authority package. See authority/README.md. It formalizes mandatory independent review, cloud technical judgment, owner publication approval, bounded repairs, a persistent private mailbox, and Obsidian/GitHub knowledge ownership. It supersedes the legacy “never wait” instruction. Runtime enforcement and live qualification remain pending; do not infer new permissions or activated profiles from documentation alone.
+
+## Persistent runtime and private dashboard candidate — 2026-09-11
+
+Prepared on branch `assistant/overnight-runtime` for owner review (not merged): persistent runner
+with leases, retries and task dependencies; audited per-project cloud consent in addition to
+config; OpenRouter cost evidence by key-usage delta and rejection of substituted models; exclusive
+GPU lease and gaming mode; authenticated loopback/Tailscale-only dashboard with audited controls;
+conversations, plan confirmation and clarifying questions; backups, health monitoring, benchmarks,
+patch export with rollback points and a connector policy gate. Live qualification remains required.
+See OPERATIONS.md and OVERNIGHT-2026-09-11.md.
+
+## Private dashboard and pixel office candidate — 2026-09-11
+
+The dashboard opens on a real-state pixel office named The Night Shift, with the task, inbox,
+knowledge and system tools in one responsive shell. Callsigns, room assignments and named character
+palettes live in the private runtime's `office.json`, seeded from `config/assistant/office.json` and
+included in backups. Project filtering is enforced from the authenticated server projection.
+
+Simulation is an explicit browser-only preview with a persistent label and no controller calls.
+Arbitrary configured CSS is disallowed so the existing `style-src 'self'` policy stays intact.
+Actual mutations continue through authenticated controller endpoints and the audit log. See
+DASHBOARD-IMPLEMENTATION-2026-09-11.md for the implementation and verification record.

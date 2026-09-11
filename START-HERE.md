@@ -2,7 +2,8 @@
 
 Follow [docs/assistant/SETUP.md](docs/assistant/SETUP.md) in order. It covers both Windows PCs,
 Claude Code, free cloud routes, Ollama, Tailscale, private memory, the UI, code checks, and an
-overnight acceptance run. Keep [the acceptance checklist](docs/assistant/ACCEPTANCE.md) beside it.
+overnight acceptance run. Day-to-day operation (runner service, dashboard, gaming mode, backups):
+[docs/assistant/OPERATIONS.md](docs/assistant/OPERATIONS.md). Keep [the acceptance checklist](docs/assistant/ACCEPTANCE.md) beside it.
 
 The old bootstrap/supervisor instructions belong to a superseded local-led design. Do not use
 them for the current assistant. The new server requires no dedicated GPU, Redis, or Docker.

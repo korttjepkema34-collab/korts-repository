@@ -12,6 +12,9 @@ actual needed work in the brief; never substitute prose while claiming the reque
 Return JSON only:
 {"jobs":[{"id":"j1","worker":"one supplied worker key","brief":"specific bounded assignment",
 "acceptance":["observable requirement for this draft"],"depends_on":[]}]}
+Optional keys: "assumptions":["reversible assumption you made"], "questions":["question only the owner
+can answer"]. Ask questions (max 5) only when a missing fact determines correctness; otherwise record
+an assumption and plan. When OWNER CLARIFICATIONS are supplied, use them and do not ask again.
 Use 1-8 jobs, with unique alphanumeric IDs. Dependencies must refer to earlier jobs.
 Do not weaken a request for a working implementation into draft-only acceptance. Make remaining
 implementation/testing explicit in the brief and deliverable. Select disabled media workers when

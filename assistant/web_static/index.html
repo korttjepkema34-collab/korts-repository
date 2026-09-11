@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kort's Assistant</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23f2d37b' d='M2 2h12v12H2z'/%3E%3Cpath fill='%230b1628' d='M4 4h3v3H4zm5 0h3v3H9zM5 10h6v2H5z'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/app.css">
+<script src="/static/app.js" defer></script>
+</head>
+<body>
+<div id="login-view" hidden>
+  <form id="login-form" class="card login">
+    <h1>Kort's Assistant</h1>
+    <label>User <input name="user" autocomplete="username" required></label>
+    <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+    <button type="submit">Sign in</button>
+    <p id="login-error" class="error" role="alert"></p>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <aside class="sidebar">
+    <div class="identity"><span class="identity-mark" aria-hidden="true">K</span><div><strong>Kort's AI</strong><small>Personal assistant</small></div></div>
+    <nav class="tabs" aria-label="Primary navigation">
+      <button data-tab="office" aria-current="page"><span aria-hidden="true">▦</span> Office <b id="nav-office-count">0</b></button>
+      <button data-tab="tasks"><span aria-hidden="true">☷</span> Tasks</button>
+      <button data-tab="inbox"><span aria-hidden="true">▣</span> Needs you <b id="nav-mail-count">0</b></button>
+      <button data-tab="knowledge"><span aria-hidden="true">▤</span> Knowledge</button>
+      <button data-tab="system"><span aria-hidden="true">▥</span> System <b id="nav-system-count">0</b></button>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div id="sidebar-health" class="sidebar-health"><i></i><strong>Checking systems</strong><small>Waiting for heartbeat</small></div>
+    <div class="sidebar-controls owner-only"><button id="btn-pause">Ⅱ Pause</button><button id="btn-gaming">⌁ Gaming</button></div>
+    <div class="sidebar-user"><span id="sidebar-user">user</span><button id="btn-notify" title="Browser notifications for items that need you" aria-label="Notifications">♢ <span id="mail-count">0</span></button><button id="btn-logout">↪</button></div>
+  </aside>
+  <div class="workspace">
+  <header class="top">
+    <div class="page-heading"><strong id="page-title">Office</strong><small id="page-subtitle">Your specialists, live. Select anyone to inspect their work.</small></div>
+    <div id="pills" class="pills" aria-live="polite"></div>
+  </header>
+  <div id="banner" class="banner" hidden role="status"></div>
+
+  <main>
+    <section id="tab-tasks" class="tab" hidden>
+      <div class="split">
+        <aside class="card list-pane">
+          <form id="add-form" class="add">
+            <select name="project" id="add-project" aria-label="Project"></select>
+            <input name="subproject" placeholder="subproject (optional)" aria-label="Subproject">
+            <textarea name="goal" rows="3" placeholder="What should the assistant do?" required aria-label="Goal"></textarea>
+            <input name="after" placeholder="after task IDs (optional, comma separated)" aria-label="Depends on">
+            <label class="row"><input type="checkbox" name="confirm_plan" class="auto" checked> Show me the plan before work starts</label>
+            <button type="submit">Add task</button>
+          </form>
+          <input id="chat-search" placeholder="Search conversations" aria-label="Search conversations">
+          <ul id="search-results" class="task-list"></ul>
+          <div class="filter">
+            <select id="filter-project" aria-label="Filter by project"><option value="">All projects</option></select>
+          </div>
+          <ul id="task-list" class="task-list"></ul>
+        </aside>
+        <article id="task-detail" class="card detail"><p class="muted">Select a task.</p></article>
+      </div>
+    </section>
+
+    <section id="tab-office" class="tab">
+      <div class="war-shell">
+        <div class="war-heading">
+          <div><span class="eyebrow">LIVE WORKFORCE</span><h2>The Night Shift</h2><p>Real activity from your assistant runtime.</p></div>
+          <div class="office-tools"><label>Project <select id="office-project"><option value="">All projects</option></select></label><button id="btn-preview">✦ Preview motion</button></div>
+        </div>
+        <div class="preview-banner" id="preview-banner" hidden><strong>SIMULATED PREVIEW</strong><span>Animation demonstration only — no task or worker is being changed.</span><button id="btn-stop-preview">Stop</button></div>
+        <div class="war-legend"><span><i class="live"></i>Working</span><span><i class="wait"></i>Waiting</span><span><i class="alert"></i>Needs you</span><span><i></i>Offline / unavailable</span></div>
+        <div class="war-room" id="office" aria-label="Live workforce office">
+          <div class="skyline" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="office-floor upper">
+            <section class="room cloud-hq" data-room="cloud"><b>☁ CLOUD HQ</b><div class="room-prop mission-board"><span>TASK FLOW</span><em id="office-task-count">0 ACTIVE</em></div><div class="window-pair" aria-hidden="true"></div><div class="agent-dock"></div></section>
+            <section class="room review-room" data-room="review"><b>⚖ REVIEW ROOM</b><div class="room-prop review-board">QUALITY<br>GATE</div><div class="wall-clock" aria-hidden="true"></div><div class="agent-dock"></div></section>
+            <section class="room world-room" data-room="world"><b>✦ WORLD ROOM</b><div class="books" aria-hidden="true"></div><div class="map-board" aria-hidden="true"></div><div class="agent-dock"></div></section>
+          </div>
+          <div class="office-divider"><span>⇢ TASK HANDOFF ROUTE ⇢</span></div>
+          <div class="office-floor lower">
+            <section class="room server-room" data-room="server"><b>▥ SERVER ROOM</b><div class="rack" aria-hidden="true"></div><div class="cpu-meter" aria-hidden="true">CPU<br>RAM</div><div class="agent-dock"></div></section>
+            <section class="room forge-room" data-room="forge"><b>⌘ GPU STUDIO</b><div class="monitor" aria-hidden="true"></div><div class="gpu-tower" id="gpu-tower" aria-hidden="true"></div><div class="agent-dock"></div></section>
+            <section class="room creative-room" data-room="creative"><b>▧ CREATIVE STUDIO</b><div class="swatches" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="agent-dock"></div></section>
+            <section class="room lounge-room" data-room="lounge"><b>☕ LOUNGE</b><div class="sofa" aria-hidden="true"></div><div class="agent-dock"></div></section>
+          </div>
+        </div>
+        <div class="war-footer">
+          <p><strong>Select any specialist</strong><span>Inspect their role, model, machine, current assignment, and open the associated task conversation.</span></p>
+          <div id="office-status" class="office-status">Waiting for live state…</div>
+        </div>
+      </div>
+      <div class="activity-card">
+        <div class="activity-head"><div><span class="eyebrow">EVENT STREAM</span><h2>Recent activity</h2></div><span class="live-label"><i></i>LIVE</span></div>
+        <ol id="feed" class="feed" reversed></ol>
+      </div>
+    </section>
+
+    <section id="tab-inbox" class="tab" hidden>
+      <div class="card"><h2>Needs your attention</h2><div id="inbox"></div></div>
+    </section>
+
+    <section id="tab-knowledge" class="tab" hidden>
+      <div class="split">
+        <aside class="card list-pane">
+          <input id="note-q" placeholder="Search notes" aria-label="Search notes">
+          <ul id="note-list" class="task-list"></ul>
+        </aside>
+        <article id="note-detail" class="card detail"><p class="muted">Select a note.</p></article>
+      </div>
+    </section>
+
+    <section id="tab-system" class="tab" hidden>
+      <div class="grid2">
+        <div class="card"><h2>Health</h2><table id="health" class="tbl"></table>
+          <button id="btn-backup" class="owner-only">Back up now</button></div>
+        <div class="card"><h2>Cloud routes</h2><table id="routes" class="tbl"></table>
+          <h3>Calls in the last 24 h</h3><table id="calls" class="tbl"></table></div>
+        <div class="card"><h2>Cloud context permission</h2><div id="consent"></div></div>
+        <div class="card"><h2>Audit log</h2><table id="audit" class="tbl"></table></div>
+      </div>
+    </section>
+  </main>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="dlg-form">
+    <h2 id="dlg-title"></h2>
+    <p id="dlg-text"></p>
+    <textarea id="dlg-input" rows="5" hidden></textarea>
+    <div class="row">
+      <button value="cancel" formnovalidate>Cancel</button>
+      <button value="ok" id="dlg-ok">OK</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="viewer" class="viewer">
+  <form method="dialog"><div class="row"><h2 id="viewer-title"></h2><button value="close">Close</button></div></form>
+  <pre id="viewer-body"></pre>
+</dialog>
+<dialog id="agent-viewer" class="agent-viewer">
+  <form method="dialog"><button class="dialog-close" value="close" aria-label="Close specialist details">×</button></form>
+  <div id="agent-viewer-body"></div>
+</dialog>
+</body>
+</html>

@@ -11,7 +11,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the UI specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Use screenshots when available; do not infer visual success from source alone.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "backend": {
     "name": "Backend specialist",
@@ -24,7 +27,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Backend specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Separate test data from live data; preserve calculations and record edge cases.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "visual-qa": {
     "name": "Visual QA",
@@ -38,7 +44,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Visual QA. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. A screenshot path without image access is not visual evidence. Flag missing captures.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "debugger": {
     "name": "Debugger",
@@ -53,7 +62,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Debugger. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Distinguish symptoms, hypotheses and confirmed causes. Do not repeat a failed hypothesis.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "optimizer": {
     "name": "Performance specialist",
@@ -67,7 +79,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Performance specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Request a baseline and before/after measurement; never optimize by intuition alone.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "operations": {
     "name": "Operations helper",
@@ -81,7 +96,10 @@
     "model": "qwen3.5:4b",
     "num_ctx": 8192,
     "instructions": "You are the Operations helper. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Never send messages or change live records. Cite supplied sources and identify missing current research.",
-    "skills": []
+    "skills": [],
+    "device": "cpu",
+    "keep_alive": "15m",
+    "qualified": false
   },
   "game-coder": {
     "name": "Game engineer",
@@ -94,7 +112,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Game engineer. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Preserve Reapers Relics design. Use matching engine reference; no Godot 3 syntax.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "environment": {
     "name": "Environment artist",
@@ -107,7 +128,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Environment artist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Require ComfyUI workflow, style references, seed, license and actual preview.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "sprites": {
     "name": "Sprite animator",
@@ -120,7 +144,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Sprite animator. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Require fixed grid, palette, transparency, alignment and animation preview.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "narrative": {
     "name": "Narrative editor",
@@ -133,7 +160,10 @@
     "model": "qwen3.5:4b",
     "num_ctx": 8192,
     "instructions": "You are the Narrative editor. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Read the canonical world bible; preserve names and item identifiers.",
-    "skills": []
+    "skills": [],
+    "device": "cpu",
+    "keep_alive": "15m",
+    "qualified": false
   },
   "audio": {
     "name": "Audio producer",
@@ -146,7 +176,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Audio producer. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Distinguish SFX from speech/music. Require playable audio and clipping/loop checks.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "level-designer": {
     "name": "Level designer",
@@ -159,7 +192,10 @@
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
     "instructions": "You are the Level designer. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Preserve map schema and prove traversal before accepting gameplay.",
-    "skills": []
+    "skills": [],
+    "device": "gpu",
+    "keep_alive": "5m",
+    "qualified": false
   },
   "personal-helper": {
     "name": "Personal helper",
@@ -172,7 +208,10 @@
     "model": "qwen3.5:4b",
     "num_ctx": 8192,
     "instructions": "You are the Personal helper. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Keep personal context scoped. Do not invent private facts or claim external actions.",
-    "skills": []
+    "skills": [],
+    "device": "cpu",
+    "keep_alive": "15m",
+    "qualified": false
   },
   "cloud-engineer": {
     "name": "cloud-engineer",

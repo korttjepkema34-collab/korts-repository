@@ -57,3 +57,33 @@ command before enabling catalog routing.
 These are local Linux/offline results on the review branch. Windows, the real private Obsidian
 vault and a live Claude Code MCP session remain unverified. This slice does not implement controlled
 rule adoption, knowledge promotion or the persistent owner mailbox.
+
+## Persistent runtime, dashboard and operations branch — 2026-09-11
+
+- `python -m unittest discover -s tests/assistant -v`: **126 passed** (Linux sandbox).
+- `python scripts/synthetic_e2e.py`: **12/12** checks passed (real runner process; fake Claude Code
+  executable and fake Ollama; includes kill -9 recovery and clean-folder restore).
+- Headless Chromium render of the dashboard at 1400 px and 390 px with synthetic data: no console errors.
+- `python -m compileall -q assistant scripts`, `git diff --check`, `scripts/check_private_leak.py` over all tracked files: passed.
+- Not run: legacy `pytest tests` (package index unavailable in the sandbox; legacy code unchanged),
+  anything on Windows, Tailscale, real Ollama/OpenRouter/Claude Code, real vault. See OVERNIGHT-2026-09-11.md.
+
+## Integrated Windows runtime and dashboard — 2026-09-11
+
+The overnight runtime was integrated with the existing direct OpenRouter and Windows-safe path
+work, then repaired where review found false GPU cancellation and missing required cloud audit
+evidence. Current Windows results:
+
+- Assistant unittest suite: **129 passed**, with one symlink-privilege skip.
+- Full repository pytest suite: **142 passed**, with one symlink-privilege skip and the existing Pillow
+  deprecation warning.
+- Synthetic runner/recovery pipeline: **12/12 passed**.
+- Python compilation, JavaScript syntax, and `git diff --check`: passed.
+- Automated Edge checks at desktop and phone sizes found zero console errors and zero failed
+  requests. Preview issued zero write requests; keyboard agent selection, all navigation pages,
+  authorized project filtering, contained phone panning and lack of page overflow were verified.
+- Desktop office, worker details, preview, tasks, system, inbox, and phone captures were visually
+  inspected. Defects found during rendering were fixed and the affected checks repeated.
+
+Detailed scope and corrections: DASHBOARD-IMPLEMENTATION-2026-09-11.md. These are disposable local
+runtime results; server nginx/systemd and Tailscale access remain a separate live deployment check.

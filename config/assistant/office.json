@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "title": "The Night Shift",
+  "workers": {
+    "orchestrator": {
+      "callsign": "Atlas",
+      "room": "cloud",
+      "palette": "atlas"
+    },
+    "reviewer": {
+      "callsign": "Judge",
+      "room": "review",
+      "palette": "judge"
+    },
+    "ui": {
+      "callsign": "Pixel",
+      "room": "creative",
+      "palette": "pixel"
+    },
+    "backend": {
+      "callsign": "Forge",
+      "room": "forge",
+      "palette": "forge"
+    },
+    "visual-qa": {
+      "callsign": "Iris",
+      "room": "review",
+      "palette": "scout"
+    },
+    "debugger": {
+      "callsign": "Scout",
+      "room": "server",
+      "palette": "scout"
+    },
+    "optimizer": {
+      "callsign": "Tempo",
+      "room": "review",
+      "palette": "violet"
+    },
+    "operations": {
+      "callsign": "Ops",
+      "room": "server",
+      "palette": "gold"
+    },
+    "game-coder": {
+      "callsign": "Rune",
+      "room": "forge",
+      "palette": "rune"
+    },
+    "environment": {
+      "callsign": "Moss",
+      "room": "creative",
+      "palette": "moss"
+    },
+    "sprites": {
+      "callsign": "Flip",
+      "room": "creative",
+      "palette": "pixel"
+    },
+    "narrative": {
+      "callsign": "Scribe",
+      "room": "world",
+      "palette": "scribe"
+    },
+    "audio": {
+      "callsign": "Echo",
+      "room": "creative",
+      "palette": "violet"
+    },
+    "level-designer": {
+      "callsign": "Mapper",
+      "room": "world",
+      "palette": "gold"
+    },
+    "personal-helper": {
+      "callsign": "Sage",
+      "room": "world",
+      "palette": "moss"
+    },
+    "cloud-engineer": {
+      "callsign": "Nimbus",
+      "room": "forge",
+      "palette": "forge"
+    },
+    "cloud-analyst": {
+      "callsign": "Oracle",
+      "room": "world",
+      "palette": "scout"
+    }
+  }
+}

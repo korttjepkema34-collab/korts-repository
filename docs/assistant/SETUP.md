@@ -199,6 +199,10 @@ The default keeps execution disabled until that environment and commands are con
 
 ## 9. Overnight operation and recovery
 
+> **New (2026-09-11 branch):** the persistent runner service, dashboard, gaming mode, backups and
+> monitoring are described in [OPERATIONS.md](OPERATIONS.md). The notes below about `runner.lock`
+> describe the older bounded run; the lock is now a lease that recovers from crashes by itself.
+
 Only after all core acceptance checks pass:
 
 ```powershell
