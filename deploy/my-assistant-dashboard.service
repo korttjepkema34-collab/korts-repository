@@ -1,0 +1,21 @@
+[Unit]
+Description=Kort private assistant dashboard
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kortt
+WorkingDirectory=/srv/my-assistant/source
+EnvironmentFile=-/srv/my-assistant/.env
+Environment=ASSISTANT_HOME=/srv/my-assistant/runtime
+ExecStart=/usr/bin/python3 -m assistant.web serve
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/srv/my-assistant/runtime
+
+[Install]
+WantedBy=multi-user.target

@@ -7,6 +7,8 @@ const S = { me: null, overview: null, tasks: [], selected: null, detail: null, e
   lastBeat: 0, es: null, refreshTimer: null, note: null, notifyOk: false, officeProject: '', preview: null };
 const MAX_EVENTS = 300;
 const $ = (id) => document.getElementById(id);
+const APP_BASE = location.pathname.replace(/\/[^/]*$/, '').replace(/\/$/, '');
+const appUrl = (path) => APP_BASE + (path.startsWith('/') ? path : '/' + path);
 
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
@@ -35,7 +37,7 @@ async function api(path, opts = {}) {
   }
   if (init.method === 'POST' && S.me && S.me.csrf) init.headers['X-CSRF-Token'] = S.me.csrf;
   let res;
-  try { res = await fetch(path, init); }
+  try { res = await fetch(appUrl(path), init); }
   catch (e) { showBanner('Cannot reach the assistant server. Showing last known data.'); throw e; }
   if (res.status === 401 && path !== '/api/login') { showLogin(); throw new Error('Sign in required'); }
   const type = res.headers.get('Content-Type') || '';
@@ -275,7 +277,7 @@ function renderDetail() {
     const row = el('div', { class: 'row' });
     if (j.has_artifact) {
       row.append(el('button', { onclick: () => showText(j.id + ' artifact', base + '/artifact/' + j.id) }, 'Preview'));
-      row.append(el('a', { class: 'btn', href: base + '/artifact/' + j.id + '?download=1', download: '' }, 'Download'));
+      row.append(el('a', { class: 'btn', href: appUrl(base + '/artifact/' + j.id + '?download=1'), download: '' }, 'Download'));
     }
     if (['draft_ready', 'blocked', 'working', 'owner_rejected'].includes(t.status) && j.status !== 'verified_candidate')
       row.append(el('button', { onclick: async () => {
@@ -429,7 +431,8 @@ function stopPreview() {
 }
 $('btn-preview').addEventListener('click', () => {
   if (S.preview) return; S.preview = { step: 0, timer: null }; $('preview-banner').hidden = false; $('btn-preview').disabled = true;
-  S.preview.timer = setInterval(() => { if (document.hidden) return; S.preview.step++; renderOffice(); }, 1200); renderOffice();
+  S.preview.timer = setInterval(() => { if (document.hidden) return; S.preview.step++; renderOffice();
+    animateHandoff(S.preview.step % 2 ? 'orchestrator' : 'ui', S.preview.step % 2 ? 'ui' : 'reviewer'); }, 1200); renderOffice();
 });
 $('btn-stop-preview').addEventListener('click', stopPreview);
 $('office-project').addEventListener('change', (e) => { S.officeProject = e.target.value; renderOffice(); });
@@ -439,11 +442,14 @@ function animateHandoff(from, to) {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || $('tab-office').hidden) return;
     const a = $('agent-' + from); const b = $('agent-' + to); if (!a || !b) return;
     const ra = a.getBoundingClientRect(); const rb = b.getBoundingClientRect();
-    const t = el('div', { class: 'token', 'aria-hidden': 'true' });
-    t.style.left = ra.left + ra.width / 2 + 'px'; t.style.top = ra.top + ra.height / 2 + 'px';
+    const t = el('div', { class: 'handoff-runner', 'aria-hidden': 'true' },
+      el('span', { class: 'pixel-person' }), el('span', { class: 'task-parcel' }));
     document.body.append(t);
-    requestAnimationFrame(() => { t.style.transform = `translate(${rb.left - ra.left}px, ${rb.top - ra.top}px)`; });
-    setTimeout(() => t.remove(), 1200);
+    const start = `translate(${ra.left + ra.width / 2 - 16}px, ${ra.top + ra.height / 2 - 24}px)`;
+    const end = `translate(${rb.left + rb.width / 2 - 16}px, ${rb.top + rb.height / 2 - 24}px)`;
+    const motion = t.animate([{ transform: start }, { transform: start, offset: .15 }, { transform: end }],
+      { duration: 950, easing: 'steps(10, end)' });
+    motion.onfinish = () => t.remove(); motion.oncancel = () => t.remove();
   } catch (_) { /* animation failures never matter */ }
 }
 
@@ -474,7 +480,7 @@ function scheduleRefresh() {
 // ---------------------------------------------------------------- live connection
 function connect() {
   if (S.es) S.es.close();
-  const es = new EventSource('/api/stream?cursor=' + S.cursor);
+  const es = new EventSource(appUrl('/api/stream?cursor=' + S.cursor));
   S.es = es;
   es.addEventListener('evt', (m) => { try { onEvent(JSON.parse(m.data)); } catch (_) {} });
   es.addEventListener('beat', (m) => { S.lastBeat = Date.now(); showBanner(''); try { S.cursor = Math.max(S.cursor, JSON.parse(m.data).cursor); } catch (_) {} });

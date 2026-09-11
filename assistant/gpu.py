@@ -106,10 +106,11 @@ def gpu_endpoints(profiles):
 
 
 def enter_gaming(db, profiles, actor='owner', cancel_active=False, fetch=_fetch, wait_seconds=0, sleep=time.sleep):
-    """Stop new GPU work, optionally interrupt active work, unload GPU models and verify VRAM.
+    """Stop new GPU work, wait safely for active work, unload GPU models and verify VRAM.
 
     Returns a report dict. VRAM release is only reported as confirmed when /api/ps on every GPU
-    endpoint answered and listed no loaded model; an unreachable endpoint is 'unconfirmed'."""
+    endpoint answered and listed no loaded model; an unreachable endpoint is 'unconfirmed'.
+    `cancel_active` is retained for CLI compatibility but cannot terminate an in-flight HTTP call."""
     set_setting(db, 'gaming_mode', True)
     emit(db, 'system', 'gpu.gaming', 'Gaming mode on: no new GPU work will start')
     active = lease_holder(db)

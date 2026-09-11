@@ -1,8 +1,8 @@
 # Operations: runner, dashboard, gaming mode, backups and monitoring
 
-Status: implemented and tested offline on branch `assistant/overnight-runtime` (2026-09-11).
-Nothing in this document has been run on the Windows server or gaming PC yet. Follow the
-"first run on the server" checklist at the end before trusting any of it unattended.
+Status: integrated and tested in a disposable Windows runtime on branch
+`assistant/server-web-integration` (2026-09-11). The older adapter is still live on the server;
+follow the first-run checklist before trusting the replacement unattended.
 
 ## The two PCs and their services
 
@@ -98,16 +98,16 @@ the Tailscale ACL as well (`scripts/tailscale-acl.example.json`).
 
 The live view uses server-sent events with cursor resume; after a gap it resynchronizes from
 SQLite. A missing heartbeat shows a "stale" banner. The dashboard is a separate process: closing
-it or a browser error cannot affect the runner. The pixel-art office (issue #2) is still separate
-and not implemented here; this Workforce tab is a plain status view fed by the same events.
+it or a browser error cannot affect the runner. The Office landing page is a real-state pixel
+workspace; its clearly labeled Preview mode is browser-only and never changes runner state.
 
 ## Gaming mode
 
 `python -m assistant.run gaming on` (or the header button):
 
 1. New GPU work stops immediately (jobs wait without spending attempts).
-2. Active GPU work is allowed to finish by default; `--cancel-active` interrupts it instead (it
-   retries later, attempt refunded).
+2. Active GPU work keeps the GPU lease until its HTTP request exits. `--cancel-active` is retained
+   for compatibility but reports that an in-flight request cannot be killed safely.
 3. Every model loaded on GPU endpoints is unloaded through Ollama (`keep_alive: 0`).
 4. `/api/ps` is re-read; VRAM is reported **released** only when no model remains, otherwise
    **unconfirmed** (e.g. the PC was already asleep).
@@ -179,6 +179,22 @@ external write needs your mailbox approval of that exact payload (answer `approv
 approval is consumed once so restarts cannot repeat an external effect. All attempts are audited.
 
 ## First run on the server (checklist)
+
+### Tjepkema Server page integration
+
+The reviewed deployment package is under `deploy/` and `scripts/deploy-dashboard-wsl.sh`. It keeps
+the existing homepage's **My Assistant** link, redirects `/assistant.html` to `/assistant/`, and
+reverse-proxies that path to the assistant's Tailscale-only listener at
+`100.72.202.38:8772`. Static files, API calls, downloads and SSE use the `/assistant/` base path;
+nginx does not claim the site-wide `/api` or `/static` routes.
+
+The script requires the exact approved commit, refuses a dirty or different checkout, runs the
+assistant tests, compilation, privacy scan and synthetic recovery test before changing services,
+backs up the old systemd/nginx/assistant-page files, initializes the runtime without overwriting
+private configuration, prompts for the owner account only if none exists, installs separate runner
+and dashboard services, validates nginx, reloads it, and probes both the direct and proxied pages.
+The nginx container's reachability to the target address and the configuration syntax were checked
+before review. Do not run the script until the owner approves the prepared commit.
 
 1. `git fetch` and check out this branch in a **copy** of the runtime first
    (`$env:ASSISTANT_HOME="$HOME\KortAssistant-test"`), run `python -m assistant.run init`.

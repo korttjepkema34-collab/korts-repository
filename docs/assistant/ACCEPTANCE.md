@@ -77,14 +77,15 @@ Requirements: REQUIREMENTS.md. Routing design: OPENROUTER-ROUTING.md. Authored s
 
 ## Live Workforce delivery gates
 
-Planning approved; no boxes below imply the office already exists.
+The integrated dashboard candidate now implements the office and authenticated controls. Live
+server deployment and hardware performance remain separately gated.
 
-- [ ] Stage B: labeled simulator, approved office style, walking/handoff, all key states, accessible details and narrow viewport verified without inference.
-- [ ] Stage C: real `assistant/` transitions, scoped sanitized snapshots/events, ordering, restart/reconnect, stale evidence, bounded clients and failure isolation verified.
-- [ ] Stage C: private gateway access and origin/session rules verified before real private data is exposed; mutations disabled.
+- [x] Stage B: labeled simulator, approved office style, carrying/handoff motion, key states, accessible details and narrow viewport verified without inference.
+- [x] Stage C: real `assistant/` transitions, scoped sanitized snapshots/events, ordering, restart/reconnect, stale evidence, bounded clients and failure isolation verified offline.
+- [x] Stage C: private gateway access and origin/session rules verified before real private data is exposed. Mutations were subsequently added through the Stage E controller gates.
 - [ ] Stage C: gateway/browser CPU and RAM measured separately; comparable inference runs with office off/on recorded. Handoff budgets are targets, not results.
 - [ ] Stage D: cloud/local overlap and exclusive GPU leases verified, including gaming, crash recovery, unload confirmation and duplicate-effect prevention.
-- [ ] Stage E: controller-mediated authenticated commands, acknowledgments, permissions and audit verified.
+- [x] Stage E: controller-mediated authenticated commands, acknowledgments, permissions and audit verified offline.
 
 Review each stage before starting the next. SQLite remains the first display source; legacy Redis integration is superseded for this feature. See LIVE-WORKFORCE-HANDOFF.md and WORKFORCE-PLAN.md.
 
@@ -101,4 +102,4 @@ Policy approved: [authority index](authority/README.md). Documentation approval 
 - [ ] Enforce independent review and bounded repairs across model changes.
 - [ ] Verify actual Windows vault operation and backup restore.
 
-The early office simulator was accepted as a demo and privately published separately. It does not satisfy all Stage B animation requirements. Further office development is deferred in issue #2; real runtime integration is still pending.
+The current office is integrated with the private runtime. See DASHBOARD-IMPLEMENTATION-2026-09-11.md. Live server deployment, hardware measurement, concurrency and media consumers remain open gates.

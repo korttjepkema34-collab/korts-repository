@@ -50,9 +50,9 @@ main{padding:0 16px 24px}
 .agent.st-working{border-color:var(--ok)}
 .agent.st-working .dot{animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.35}}
-.token{position:fixed;width:14px;height:14px;border-radius:3px;background:var(--accent);pointer-events:none;z-index:5;
-transition:transform .9s cubic-bezier(.4,.1,.2,1)}
-@media (prefers-reduced-motion:reduce){.agent.st-working .dot{animation:none}.token{display:none}}
+.token{position:fixed;width:14px;height:14px;border-radius:3px;background:var(--accent);pointer-events:none;z-index:5}
+.handoff-runner{position:fixed;left:0;top:0;width:34px;height:52px;z-index:80;pointer-events:none;filter:drop-shadow(0 4px 5px #000b)}.handoff-runner .pixel-person{scale:.86;transform-origin:bottom}.task-parcel{position:absolute;right:-5px;top:25px;width:12px;height:10px;background:#f3bd4f;border:2px solid #633f29;box-shadow:2px 2px #0008}.task-parcel:after{content:"";position:absolute;left:3px;top:-5px;width:4px;height:4px;background:#fff0a5}
+@media (prefers-reduced-motion:reduce){.agent.st-working .dot{animation:none}.token,.handoff-runner{display:none}}
 .feed{max-height:50vh;overflow:auto;font-size:13px;padding-left:22px}
 pre{white-space:pre-wrap;word-break:break-word;background:#0c1218;padding:10px;border-radius:6px;max-height:60vh;overflow:auto}
 dialog{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;max-width:min(700px,94vw);width:100%}

@@ -27,7 +27,8 @@ this branch.
 - Gaming mode changes the GPU room display. Runtime control still goes through the existing
   authenticated, CSRF-protected controller.
 - Preview motion is explicitly labeled **SIMULATED PREVIEW**. It changes browser presentation
-  only, pauses while the document is hidden, and sends no API mutations.
+  only, pauses while the document is hidden, sends no API mutations, and demonstrates a pixel
+  worker carrying a visible task parcel between Atlas, a specialist, and Judge.
 - Narrow screens keep the two-floor office composition in a contained horizontal scroller. The
   rest of the page has no horizontal overflow.
 - Native buttons provide keyboard activation; focus indicators and reduced-motion behavior remain
@@ -66,6 +67,8 @@ Security Policy; arbitrary inline CSS is not accepted.
   Game filter (14 authorized workers), task navigation, keyboard-opened worker panel, desktop
   sidebar, phone bottom navigation, contained office scrolling, zero unnamed buttons, no page-wide
   overflow, zero preview write requests, zero console errors, and zero failed requests.
+- The same automated flow loaded successfully from `/assistant/` through a reverse-proxy path,
+  proving that relative static assets and API calls use the application base path.
 - Rendered desktop office, worker panel, preview, task, system, inbox, and phone views were opened
   and visually inspected after the automated checks.
 
@@ -75,3 +78,13 @@ This evidence proves the dashboard against a disposable Windows runtime with syn
 does not prove the server's current systemd/nginx wiring, real long-running inference, or live
 Tailscale access. Deployment remains a separate owner review gate. The preview runtime and images
 under `work/` are temporary test artifacts and are not part of the public source checkpoint.
+
+## Prepared Tjepkema Server deployment
+
+`deploy/tjepkema-dashboard.conf`, the two systemd units under `deploy/`, and
+`scripts/deploy-dashboard-wsl.sh` form the reviewed deployment package. The script requires the
+exact approved revision, refuses a dirty checkout, reruns verification, preserves rollback copies,
+keeps the assistant on its Tailscale-only listener, and exposes it at `/assistant/` through the
+existing nginx page. The live nginx container was proven able to reach `100.72.202.38:8772`; the
+new nginx configuration passed `nginx -t` in an isolated container. Neither the script nor the
+configuration contains credentials. The package has not been installed.
