@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 from assistant.core import Store, safe_path, validate_subproject
 from assistant.models import (Cloud, CloudUnavailable, validate_route, verify_free_catalog,
-                              verify_zero_reported_cost, openrouter_ask, claude_env)
+                              verify_zero_reported_cost, openrouter_ask, local_ask, claude_env)
 from assistant.run import step, validate_plan, approved_review, init
 
 class MemoryTests(unittest.TestCase):
@@ -186,6 +186,13 @@ class PolicyTests(unittest.TestCase):
             request.return_value=response
             with patch.dict(os.environ,{'OPENROUTER_API_KEY':'test'}):
                 with self.assertRaises(CloudUnavailable):openrouter_ask('x/free:free','prompt')
+    @patch('assistant.models.request_json')
+    def test_local_worker_disables_hidden_thinking_by_default(self, request):
+        request.return_value={'message':{'content':'visible draft'}}
+        worker={'endpoint':'http://127.0.0.1:11435','model':'qwen3.5:9b',
+                'instructions':'bounded','num_ctx':8192}
+        self.assertEqual(local_ask(worker,'prompt'),'visible draft')
+        self.assertIs(request.call_args.args[1]['think'],False)
     def test_env_removes_paid_provider_and_pins_aliases(self):
         with patch.dict(os.environ,{'ANTHROPIC_API_KEY':'paid','CLAUDE_CODE_USE_BEDROCK':'1','OPENROUTER_API_KEY':'test'}):
             e=claude_env({'provider':'openrouter','model':'x:free'})

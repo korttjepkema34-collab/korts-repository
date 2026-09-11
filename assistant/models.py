@@ -158,6 +158,7 @@ def local_ask(worker, prompt):
     model=worker['model']
     if model.endswith(('-cloud',':cloud')): raise ValueError('Local worker cannot silently use cloud')
     data=request_json(base+'/api/chat',{'model':model,'stream':False,
+        'think':worker.get('think',False),
         'messages':[{'role':'system','content':worker['instructions']}, {'role':'user','content':prompt}],
         'options':{'num_ctx':worker.get('num_ctx',8192),'num_predict':4096}},timeout=600)
     return data['message']['content']
