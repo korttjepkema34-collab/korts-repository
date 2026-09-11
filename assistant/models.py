@@ -66,6 +66,30 @@ def parse_json(text):
         text='\n'.join(text.splitlines()[1:-1])
     return json.loads(text)
 
+def openrouter_ask(model, prompt, timeout=120, max_tokens=4096):
+    token=os.environ.get('OPENROUTER_API_KEY','')
+    if not token: raise CloudUnavailable('OPENROUTER_API_KEY is not set')
+    response=request_json('https://openrouter.ai/api/v1/chat/completions',{
+        'model':model,'stream':False,'temperature':0,'max_tokens':max_tokens,
+        'provider':{'allow_fallbacks':False},
+        'reasoning':{'effort':'none','exclude':True},
+        'usage':{'include':True},
+        'messages':[{'role':'system','content':'Return only the requested result. Do not claim evidence that was not supplied.'},
+                    {'role':'user','content':prompt}],
+    },{'Authorization':'Bearer '+token,'HTTP-Referer':'http://127.0.0.1/assistant.html',
+       'X-Title':'Korts Assistant'},timeout=timeout)
+    usage=response.get('usage') or {}
+    if 'cost' not in usage: raise CloudUnavailable('OpenRouter response did not report cost')
+    verify_zero_reported_cost({'total_cost_usd':usage['cost']})
+    actual=str(response.get('model',''))
+    if actual not in (model,model.removesuffix(':free')):
+        raise CloudUnavailable('OpenRouter returned a different model than requested')
+    choices=response.get('choices') or []
+    if not choices: raise CloudUnavailable('OpenRouter returned no response choice')
+    content=(choices[0].get('message',{}).get('content') or '').strip()
+    if not content: raise CloudUnavailable('OpenRouter returned no visible content')
+    return parse_json(content),{'provider':'openrouter','model':model,'actual_model':actual,'cost_usd':usage['cost']}
+
 def verify_zero_reported_cost(wrapper):
     """Reject responses when Claude Code reports any charge or unreadable cost."""
     reported=[]
@@ -100,8 +124,12 @@ class Cloud:
                 validate_route(route)
                 if provider=='openrouter':
                     verify_free_catalog(route['model'],request_json('https://openrouter.ai/api/v1/models'))
-                env=claude_env(route)
                 self.store.reserve_call(provider,int(self.config['daily_caps'][provider]))
+                if provider=='openrouter':
+                    return openrouter_ask(route['model'],prompt,
+                        timeout=int(self.config.get('cloud_timeout_seconds',120)),
+                        max_tokens=int(self.config.get('cloud_max_tokens',4096)))
+                env=claude_env(route)
                 cwd=self.store.root/'control'; cwd.mkdir(exist_ok=True)
                 # Deliberately no arbitrary tools in planning/review: controller executes validated jobs.
                 cmd=[self.config.get('claude_bin','claude'), '--bare', '-p', '--model',route['model'],

@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 from assistant.core import Store, safe_path, validate_subproject
 from assistant.models import (Cloud, CloudUnavailable, validate_route, verify_free_catalog,
-                              verify_zero_reported_cost, claude_env)
+                              verify_zero_reported_cost, openrouter_ask, claude_env)
 from assistant.run import step, validate_plan, approved_review, init
 
 class MemoryTests(unittest.TestCase):
@@ -170,6 +170,22 @@ class PolicyTests(unittest.TestCase):
                         {'modelUsage':{'x:free':{'costUSD':'unknown'}}},
                         {'modelUsage':[]}):
             with self.assertRaises(CloudUnavailable):verify_zero_reported_cost(wrapper)
+    @patch('assistant.models.request_json')
+    def test_direct_openrouter_requires_zero_cost_and_same_model(self, request):
+        request.return_value={'model':'x/free','usage':{'cost':0},
+                              'choices':[{'message':{'content':'{"ok":true}'}}]}
+        with patch.dict(os.environ,{'OPENROUTER_API_KEY':'test'}):
+            result,meta=openrouter_ask('x/free:free','prompt')
+        self.assertTrue(result['ok']);self.assertEqual(meta['cost_usd'],0)
+        payload=request.call_args.args[1]
+        self.assertFalse(payload['provider']['allow_fallbacks'])
+        self.assertEqual(payload['reasoning']['effort'],'none')
+        for response in ({'model':'x/free','usage':{'cost':0.01},'choices':[{'message':{'content':'{}'}}]},
+                         {'model':'other','usage':{'cost':0},'choices':[{'message':{'content':'{}'}}]},
+                         {'model':'x/free','usage':{},'choices':[{'message':{'content':'{}'}}]}):
+            request.return_value=response
+            with patch.dict(os.environ,{'OPENROUTER_API_KEY':'test'}):
+                with self.assertRaises(CloudUnavailable):openrouter_ask('x/free:free','prompt')
     def test_env_removes_paid_provider_and_pins_aliases(self):
         with patch.dict(os.environ,{'ANTHROPIC_API_KEY':'paid','CLAUDE_CODE_USE_BEDROCK':'1','OPENROUTER_API_KEY':'test'}):
             e=claude_env({'provider':'openrouter','model':'x:free'})
