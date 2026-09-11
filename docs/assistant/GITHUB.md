@@ -1,7 +1,7 @@
 # GitHub and server memory
 
 Correct project: `korttjepkema34-collab/korts-repository`. This repository is public.
-The setup branch is `assistant/cloud-led-memory-setup`; use the setup PR for review and integration.
+The consolidated setup is on `main`; use a focused feature branch and PR for subsequent changes.
 Do not confuse it with the earlier planning document in the business account.
 
 GitHub holds source, setup, public templates and existing game design. The server keeps a local

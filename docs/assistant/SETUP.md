@@ -49,14 +49,14 @@ or paid Obsidian service is necessary. Legacy game/media components have their o
 In PowerShell, select a new empty folder:
 
 ```powershell
-git clone --branch assistant/cloud-led-memory-setup https://github.com/korttjepkema34-collab/korts-repository.git C:\studio
+git clone --branch main https://github.com/korttjepkema34-collab/korts-repository.git C:\studio
 cd C:\studio
 powershell -ExecutionPolicy Bypass -File scripts\setup-assistant.ps1 -Role server -PullModels
 .\.venv\Scripts\python.exe -m unittest discover -s tests/assistant -v
 ```
 
-After the setup PR is merged, use `main` instead of the feature branch for new installs. The script
-is rerunnable: it preserves edited private config and vault notes. `-PullModels` is explicit because
+The consolidated setup is now on `main`. The script is rerunnable: it preserves edited private
+config and vault notes. `-PullModels` is explicit because
 model downloads take disk/bandwidth. On the gaming PC use the same clone and `-Role gpu -PullModels`.
 
 Default candidate models: server `qwen3.5:4b`; GPU `qwen3.5:9b`. They are candidates, not a claim
