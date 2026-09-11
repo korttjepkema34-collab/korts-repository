@@ -133,3 +133,10 @@ The live LAN address returned the reviewed HTML, JavaScript, and API state, but 
 browser's separate network sandbox could not reach the LAN address and blocked its localhost
 alias. Visual review therefore remains the earlier real-browser desktop and phone render of these
 same committed static assets; no claim is made that a new screenshot was captured after install.
+
+The owner's first real Edge visit used `http://127.0.0.1/assistant/` and exposed one additional
+proxy boundary: the backend allowed `127.0.0.1:8772` for direct access but not the portless
+`Host: 127.0.0.1` forwarded by nginx. The response correctly failed closed with HTTP 421 instead
+of serving an unapproved host. The private runtime and deployment script now include the portless
+loopback and localhost origins. The exact page, passwordless owner API, and same-origin control
+request then returned HTTP 200 through nginx using `Host: 127.0.0.1`.

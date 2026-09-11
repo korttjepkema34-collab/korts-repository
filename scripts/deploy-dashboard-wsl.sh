@@ -51,7 +51,8 @@ sudo -u kortt env ASSISTANT_HOME="$RUNTIME" python3 -m assistant.web access open
 sudo -u kortt env ASSISTANT_HOME="$RUNTIME" python3 -c '
 from assistant.web import load_config, save_config
 c = load_config()
-c["extra_origins"] = ["http://192.168.1.73", "http://tjepkema_server", "http://100.72.202.38"]
+c["extra_origins"] = ["http://127.0.0.1", "http://localhost", "http://192.168.1.73",
+                      "http://tjepkema_server", "http://100.72.202.38"]
 save_config(c)
 '
 

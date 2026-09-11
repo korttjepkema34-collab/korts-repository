@@ -213,6 +213,14 @@ class WebTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 web.validate_bind(bad)
 
+    def test_reverse_proxy_hostnames_come_from_extra_origins(self):
+        cfg = web.load_config(self.root)
+        cfg['host'] = '100.72.202.38'
+        cfg['port'] = 8772
+        cfg['extra_origins'] = ['http://127.0.0.1', 'http://localhost', 'http://192.168.1.73']
+        self.assertTrue({'127.0.0.1', 'localhost', '192.168.1.73'} <= web.allowed_hosts(cfg))
+        self.assertTrue(set(cfg['extra_origins']) <= web.allowed_origins(cfg))
+
 
 class OpenAccessWebTests(unittest.TestCase):
     def setUp(self):
