@@ -214,5 +214,57 @@ class WebTests(unittest.TestCase):
                 web.validate_bind(bad)
 
 
+class OpenAccessWebTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        cfg = web.load_config(self.root)
+        cfg.update({'open_access': True, 'open_user': 'kort', 'port': 0})
+        web.save_config(cfg, self.root)
+        self.app = web.App(self.root, profiles_loader=lambda: {})
+        self.httpd = ThreadingHTTPServer(('127.0.0.1', 0), type('H', (web.Handler,), {'app': self.app}))
+        self.port = self.httpd.server_address[1]
+        self.app.cfg['port'] = self.port
+        self.app.hosts = web.allowed_hosts(self.app.cfg)
+        self.app.origins = web.allowed_origins(self.app.cfg)
+        self.origin = 'http://127.0.0.1:%d' % self.port
+        threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
+
+    def tearDown(self):
+        self.httpd.shutdown()
+        self.httpd.server_close()
+        self.tmp.cleanup()
+
+    def req(self, method, path, body=None, csrf=None, origin=None):
+        c = http.client.HTTPConnection('127.0.0.1', self.port, timeout=10)
+        headers = {'Host': '127.0.0.1:%d' % self.port}
+        if body is not None:
+            headers['Content-Type'] = 'application/json'
+        if origin:
+            headers['Origin'] = origin
+        if csrf:
+            headers['X-CSRF-Token'] = csrf
+        c.request(method, path, body=json.dumps(body) if body is not None else None, headers=headers)
+        r = c.getresponse()
+        raw = r.read()
+        c.close()
+        return r.status, json.loads(raw)
+
+    def test_open_access_is_owner_without_cookie_and_keeps_csrf_origin_checks(self):
+        status, me = self.req('GET', '/api/me')
+        self.assertEqual(status, 200)
+        self.assertEqual(me['user'], 'kort')
+        self.assertTrue(me['signed_in'])
+        self.assertTrue(me['owner'])
+        self.assertTrue(me['open_access'])
+        self.assertEqual(me['projects'], list(PROJECTS))
+        self.assertEqual(self.req('GET', '/api/overview')[0], 200)
+        self.assertEqual(self.req('POST', '/api/control/pause', {}, origin=self.origin)[0], 403)
+        self.assertEqual(self.req('POST', '/api/control/pause', {}, me['csrf'], 'http://evil.example')[0], 403)
+        self.assertEqual(self.req('POST', '/api/control/pause', {}, me['csrf'], self.origin)[0], 200)
+        self.assertEqual(self.req('POST', '/api/control/resume', {}, me['csrf'], self.origin)[0], 200)
+        self.assertEqual(self.req('POST', '/api/login', {}, origin=self.origin)[0], 400)
+
+
 if __name__ == '__main__':
     unittest.main()

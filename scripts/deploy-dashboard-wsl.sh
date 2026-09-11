@@ -44,6 +44,7 @@ cp -a "$DASHBOARD/html/assistant.html" "$BACKUP/assistant.html" 2>/dev/null || t
 
 sudo -u kortt env ASSISTANT_HOME="$RUNTIME" python3 -m assistant.run init
 sudo -u kortt env ASSISTANT_HOME="$RUNTIME" python3 -m assistant.web bind "$TAILSCALE_IP" --port 8772
+sudo -u kortt env ASSISTANT_HOME="$RUNTIME" python3 -m assistant.web access open --user kort
 
 # Allow same-origin requests from the established Tjepkema Server names. Password hashes and
 # provider credentials remain in the private runtime/.env and never enter this script or Git.
@@ -53,12 +54,6 @@ c = load_config()
 c["extra_origins"] = ["http://192.168.1.73", "http://tjepkema_server", "http://100.72.202.38"]
 save_config(c)
 '
-
-if ! sudo -u kortt env ASSISTANT_HOME="$RUNTIME" python3 -c \
-  'from assistant.web import load_config; raise SystemExit(0 if load_config().get("users") else 1)'; then
-  echo "No dashboard user exists. Create the owner account now."
-  sudo -u kortt env ASSISTANT_HOME="$RUNTIME" python3 -m assistant.web user add kort --owner
-fi
 
 install -m 0644 deploy/my-assistant-dashboard.service /etc/systemd/system/my-assistant.service
 install -m 0644 deploy/my-assistant-runner.service /etc/systemd/system/my-assistant-runner.service

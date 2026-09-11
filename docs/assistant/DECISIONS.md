@@ -79,3 +79,11 @@ Simulation is an explicit browser-only preview with a persistent label and no co
 Arbitrary configured CSS is disallowed so the existing `style-src 'self'` policy stays intact.
 Actual mutations continue through authenticated controller endpoints and the audit log. See
 DASHBOARD-IMPLEMENTATION-2026-09-11.md for the implementation and verification record.
+
+## Tjepkema dashboard access — 2026-09-11
+
+The owner explicitly chose passwordless access for the Tjepkema Server page. The deployed runtime
+uses `assistant.web access open --user kort`: every visitor who can reach the private page receives
+owner scope, while allowed Host/Origin checks, CSRF validation, audit records, response redaction,
+strict browser headers, and the Tailscale-only backend bind remain enforced. Password access stays
+available as a reversible configuration mode.

@@ -75,15 +75,21 @@ cost check records `is_free_tier` so you can see which applies.
 
 ```powershell
 python -m assistant.web user add kort --owner          # prompts for a 12+ character password
+python -m assistant.web access open --user kort        # private server page without a login prompt
+python -m assistant.web access password                # restore password/session mode
 python -m assistant.web serve                          # http://127.0.0.1:8765
 python -m assistant.web bind 100.x.y.z                 # optional: your server's Tailscale IP only
 ```
 
-Security: sign-in with PBKDF2 password hash; HttpOnly SameSite=Strict session cookie with 12 h
-absolute / 2 h idle expiry; every change is a POST with a CSRF token, allowed Origin and Host
+The Tjepkema deployment uses explicit open access at the owner's request. Anyone who can open that
+private server page receives owner controls, so access depends on the existing LAN/tailnet boundary.
+The backend still refuses public/LAN wildcard binds and listens on the server's Tailscale address.
+Every change remains a POST with a process-scoped CSRF token, allowed Origin and Host
 (DNS-rebinding protection); 5 failed sign-ins lock for 15 minutes; strict Content-Security-Policy;
 no raw task JSON or filesystem paths are sent (paths are replaced by `[path]`); every control action
-and denial is in the audit log. Binding to `0.0.0.0` or a LAN/public address is refused. Other users
+and denial is in the audit log. Password mode retains PBKDF2 hashes, HttpOnly SameSite=Strict
+cookies, 12 h absolute / 2 h idle expiry, and sign-in rate limiting. Binding to `0.0.0.0` or a
+LAN/public address is refused. Other users
 (`--projects game`) see only their projects and cannot use system controls. Restrict the port in
 the Tailscale ACL as well (`scripts/tailscale-acl.example.json`).
 
@@ -191,7 +197,7 @@ nginx does not claim the site-wide `/api` or `/static` routes.
 The script requires the exact approved commit, refuses a dirty or different checkout, runs the
 assistant tests, compilation, privacy scan and synthetic recovery test before changing services,
 backs up the old systemd/nginx/assistant-page files, initializes the runtime without overwriting
-private configuration, prompts for the owner account only if none exists, installs separate runner
+private configuration, enables the owner-approved passwordless `kort` access mode, installs separate runner
 and dashboard services, validates nginx, reloads it, and probes both the direct and proxied pages.
 The nginx container's reachability to the target address and the configuration syntax were checked
 before review. Do not run the script until the owner approves the prepared commit.
@@ -199,7 +205,8 @@ before review. Do not run the script until the owner approves the prepared commi
 1. `git fetch` and check out this branch in a **copy** of the runtime first
    (`$env:ASSISTANT_HOME="$HOME\KortAssistant-test"`), run `python -m assistant.run init`.
 2. `python -m unittest discover -s tests/assistant -v` and `python scripts/synthetic_e2e.py`.
-3. Grant consent per project, create the dashboard user, open the dashboard, try every control.
+3. Grant consent per project, open the dashboard, and try every control. If password mode is later
+   restored, create the dashboard user first.
 4. `python -m assistant.benchmark run` for the 4B (server) and, with the tunnel up, the 9B roles.
 5. Gaming mode on/off with the 9B loaded; watch Task Manager VRAM.
 6. Put the gaming PC to sleep, confirm GPU roles go offline and come back.

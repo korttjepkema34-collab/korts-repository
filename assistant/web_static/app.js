@@ -598,6 +598,7 @@ async function boot() {
   S.me = await api('/api/me');
   if (!S.me.signed_in) return showLogin();
   $('login-view').hidden = true; $('app').hidden = false;
+  $('btn-logout').hidden = !!S.me.open_access;
   document.body.classList.toggle('is-owner', !!S.me.owner);
   for (const sel of [$('add-project'), $('filter-project')]) {
     const keep = sel.id === 'filter-project' ? [sel.firstElementChild] : [];

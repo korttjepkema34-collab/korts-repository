@@ -3,8 +3,9 @@
 Security model (see docs/assistant/DASHBOARD.md):
 * Binds to loopback by default; a Tailscale address (100.64.0.0/10 or fd7a:115c:a1e0::/48) is the
   only other permitted bind. 0.0.0.0 and LAN/public addresses are refused.
-* Every API except login requires a session cookie (HttpOnly, SameSite=Strict) with idle and
-  absolute expiry. Passwords are PBKDF2-SHA256 hashes in the private dashboard.json.
+* Password mode requires a session cookie (HttpOnly, SameSite=Strict) with idle and absolute
+  expiry. An explicit open-access mode is available for the owner's private server page; it
+  grants the configured local identity owner access without storing or requesting a password.
 * Every mutation is POST, requires the per-session CSRF token header, an allowed Origin and an
   allowed Host (DNS-rebinding protection), and is written to the audit table.
 * Each user has an explicit project list; every task, event, note, artifact and mailbox response
@@ -61,6 +62,8 @@ def load_config(root=None):
     cfg.setdefault('session_hours', 12)
     cfg.setdefault('idle_minutes', 120)
     cfg.setdefault('extra_origins', [])
+    cfg.setdefault('open_access', False)
+    cfg.setdefault('open_user', 'kort')
     return cfg
 
 
@@ -209,6 +212,7 @@ class App:
         validate_bind(self.cfg['host'])
         self.hosts = allowed_hosts(self.cfg)
         self.origins = allowed_origins(self.cfg)
+        self.open_csrf = secrets.token_urlsafe(24)
         self.streams = threading.BoundedSemaphore(MAX_STREAMS)
         if profiles_loader is None:
             def profiles_loader():
@@ -290,6 +294,10 @@ class Handler(BaseHTTPRequestHandler):
             raise ApiError(403, 'Cross-site request refused')
 
     def _session(self, store, required=True):
+        if self.app.cfg.get('open_access'):
+            return {'user': str(self.app.cfg.get('open_user') or 'kort')[:64],
+                    'csrf': self.app.open_csrf, 'projects': list(PROJECTS), 'owner': True,
+                    'token_hash': None, 'open_access': True}
         cookie = SimpleCookie(self.headers.get('Cookie') or '')
         token = cookie[COOKIE].value if COOKIE in cookie else None
         if not token:
@@ -315,7 +323,7 @@ class Handler(BaseHTTPRequestHandler):
             store.db.execute('UPDATE web_sessions SET last_seen=? WHERE token_hash=?', (state.iso(), th))
         projects = [p for p in user.get('projects', []) if p in PROJECTS]
         return {'user': row[0], 'csrf': row[1], 'projects': projects, 'owner': user.get('role') == 'owner',
-                'token_hash': th}
+                'token_hash': th, 'open_access': False}
 
     def _require_csrf(self, sess):
         sent = self.headers.get('X-CSRF-Token') or ''
@@ -356,7 +364,8 @@ class Handler(BaseHTTPRequestHandler):
             if path == '/api/me':
                 return self._json({'signed_in': bool(sess), 'user': sess and sess['user'],
                                    'projects': sess and sess['projects'], 'owner': bool(sess and sess['owner']),
-                                   'csrf': sess and sess['csrf']})
+                                   'csrf': sess and sess['csrf'],
+                                   'open_access': bool(sess and sess.get('open_access'))})
             if path == '/api/stream':
                 store.close()
                 store = None
@@ -389,6 +398,8 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---- auth
     def _login(self, store, body):
+        if self.app.cfg.get('open_access'):
+            raise ApiError(400, 'Password sign-in is disabled for this dashboard')
         name = str(body.get('user', ''))[:64]
         password = str(body.get('password', ''))[:256]
         ip = self._client_ip()
@@ -501,8 +512,9 @@ class Handler(BaseHTTPRequestHandler):
 
         try:
             if path == '/api/logout':
-                with store.db:
-                    store.db.execute('DELETE FROM web_sessions WHERE token_hash=?', (sess['token_hash'],))
+                if sess['token_hash']:
+                    with store.db:
+                        store.db.execute('DELETE FROM web_sessions WHERE token_hash=?', (sess['token_hash'],))
                 state.audit(store.db, actor, 'logout', True)
                 return self._json({'ok': True}, headers={'Set-Cookie': COOKIE + '=; Max-Age=0; Path=/'})
             if path == '/api/control/pause':
@@ -692,7 +704,7 @@ def overview(store, sess, profiles, office=None):
 
 def serve(root=None):
     app = App(root)
-    if not app.cfg['users']:
+    if not app.cfg.get('open_access') and not app.cfg['users']:
         raise SystemExit('No dashboard users. Run: python -m assistant.web user add <name> --owner')
     Handler.app = app
     httpd = ThreadingHTTPServer((app.cfg['host'], app.cfg['port']), Handler)
@@ -720,6 +732,9 @@ def main(argv=None):
     h = sub.add_parser('bind')
     h.add_argument('host')
     h.add_argument('--port', type=int)
+    access = sub.add_parser('access')
+    access.add_argument('mode', choices=('open', 'password'))
+    access.add_argument('--user', default='kort')
     a = p.parse_args(argv)
     if a.cmd == 'serve':
         return serve()
@@ -731,6 +746,13 @@ def main(argv=None):
             cfg['port'] = a.port
         save_config(cfg)
         print('Dashboard will listen on %s:%d' % (cfg['host'], cfg['port']))
+        return
+    if a.cmd == 'access':
+        cfg['open_access'] = a.mode == 'open'
+        cfg['open_user'] = str(a.user)[:64] or 'kort'
+        save_config(cfg)
+        print('Dashboard access is %s%s' %
+              (a.mode, ' as ' + cfg['open_user'] if a.mode == 'open' else ''))
         return
     if a.action == 'remove':
         cfg['users'].pop(a.name, None)
