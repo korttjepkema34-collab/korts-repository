@@ -13,11 +13,20 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+from urllib.request import urlopen
 
 from .core import PROJECTS, Store, runtime_root, validate_subproject
 
 REPO = Path(__file__).resolve().parents[1]
 MAX_BODY = 64 * 1024
+AGENT_NAMES = {
+    "cloud-engineer": ("Atlas", "Cloud HQ"), "backend": ("Forge", "GPU Studio"),
+    "game-coder": ("Forge", "GPU Studio"), "ui": ("Pixel", "Creative Studio"),
+    "visual-qa": ("Pixel", "Creative Studio"), "operations": ("Scout", "Server Room"),
+    "debugger": ("Scout", "Server Room"), "narrative": ("Scribe", "World Room"),
+    "level-designer": ("Scribe", "World Room"), "optimizer": ("Judge", "Review Room"),
+    "personal-helper": ("Scribe", "World Room"), "cloud-analyst": ("Judge", "Review Room"),
+}
 
 
 def now():
@@ -45,6 +54,69 @@ def public_task(task):
     }
 
 
+def ollama_models(endpoint, timeout=1.5):
+    try:
+        with urlopen(endpoint.rstrip("/") + "/api/tags", timeout=timeout) as response:
+            payload = json.load(response)
+        return sorted(str(item.get("name", "")) for item in payload.get("models", []) if item.get("name"))
+    except (OSError, ValueError, json.JSONDecodeError):
+        return []
+
+
+def public_routes(config):
+    return [{"provider": str(route.get("provider", "unknown")),
+             "model": str(route.get("model", "unknown")),
+             "qualified": route.get("qualified") is True}
+            for route in config.get("cloud_routes", [])[:8]]
+
+
+def workforce_state(project=""):
+    worker_path = runtime_root() / "workers.json"
+    if not worker_path.exists():
+        worker_path = REPO / "config" / "assistant" / "workers.json"
+    try:
+        workers = json.loads(worker_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        workers = {}
+    gpu_models = ollama_models("http://127.0.0.1:11435")
+    server_models = ollama_models("http://127.0.0.1:11434")
+    agents = []
+    used_names = {}
+    for worker_id, worker in workers.items():
+        projects = [value for value in worker.get("projects", []) if value in PROJECTS]
+        if project and project not in projects:
+            continue
+        display, room = AGENT_NAMES.get(worker_id, (str(worker.get("name", worker_id)), "Lounge"))
+        used_names[display] = used_names.get(display, 0) + 1
+        endpoint = str(worker.get("endpoint", ""))
+        adapter = str(worker.get("adapter", "unknown"))
+        if adapter == "unconfigured-media":
+            state, summary = "unavailable", "Media adapter not configured"
+        elif adapter.startswith("cloud-"):
+            state, summary = "setup", "Waiting for a qualified free cloud route"
+        elif endpoint.endswith(":11435"):
+            state, summary = ("idle", "GPU worker available") if gpu_models else ("offline", "Gaming PC worker offline")
+        elif endpoint.endswith(":11434"):
+            state, summary = ("idle", "Server worker available") if server_models else ("offline", "Server model endpoint unavailable")
+        else:
+            state, summary = "unknown", "Worker evidence unavailable"
+        agents.append({
+            "id": worker_id, "display_name": display, "instance": used_names[display],
+            "role": str(worker.get("name", worker_id)), "description": str(worker.get("description", ""))[:240],
+            "projects": projects, "adapter": adapter, "model": str(worker.get("model", "cloud route")),
+            "machine": "gaming-pc" if endpoint.endswith(":11435") else ("server" if endpoint.endswith(":11434") else "cloud"),
+            "room": room, "state": state, "summary": summary,
+        })
+    return {
+        "agents": agents,
+        "machines": [
+            {"id": "cloud", "name": "Cloud leader", "state": "configured" if os.environ.get("OPENROUTER_API_KEY") else "setup", "models": []},
+            {"id": "server", "name": "Tjepkema Server", "state": "online", "models": server_models},
+            {"id": "gaming-pc", "name": "Gaming PC GPU", "state": "online" if gpu_models else "offline", "models": gpu_models},
+        ],
+    }
+
+
 def setup_state():
     config_path = runtime_root() / "config.json"
     config = {}
@@ -63,6 +135,7 @@ def setup_state():
         "local_models": models,
         "local_model_count": len(models),
         "projects": list(PROJECTS),
+        "cloud_routes": public_routes(config),
         "source_revision": source_revision(),
     }
 
@@ -137,6 +210,13 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 store.close()
             self.respond({"ok": True, "tasks": tasks})
+            return
+        if parsed.path == "/api/workforce":
+            project = query.get("project", [""])[0]
+            if project and project not in PROJECTS:
+                self.respond({"ok": False, "error": "unknown project"}, HTTPStatus.BAD_REQUEST)
+                return
+            self.respond({"ok": True, **workforce_state(project)})
             return
         if parsed.path == "/api/search":
             project = query.get("project", [""])[0]

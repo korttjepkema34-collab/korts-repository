@@ -81,6 +81,26 @@ class WebTests(unittest.TestCase):
         self.assertEqual(1, len(result["results"]))
         self.assertNotIn("digest", result["results"][0])
 
+    @patch("assistant.web.ollama_models")
+    def test_workforce_is_project_scoped_and_sanitized(self, models):
+        models.side_effect = lambda endpoint: ["qwen3.5:9b"] if endpoint.endswith("11435") else []
+        workers = {
+            "game-coder": {"name": "Game engineer", "description": "Builds game candidates",
+                           "projects": ["game"], "adapter": "code-sandbox",
+                           "endpoint": "http://127.0.0.1:11435", "model": "qwen3.5:9b",
+                           "instructions": "private instructions"},
+            "personal-helper": {"name": "Personal helper", "projects": ["personal"],
+                                "adapter": "ollama-draft", "endpoint": "http://127.0.0.1:11434",
+                                "model": "qwen3.5:4b"},
+        }
+        Path(self.tmp.name, "workers.json").write_text(json.dumps(workers), encoding="utf-8")
+        status, _, result = self.request("/api/workforce?project=game")
+        self.assertEqual(200, status)
+        self.assertEqual(["game-coder"], [agent["id"] for agent in result["agents"]])
+        self.assertEqual("idle", result["agents"][0]["state"])
+        self.assertNotIn("instructions", result["agents"][0])
+        self.assertEqual("online", result["machines"][2]["state"])
+
 
 if __name__ == "__main__":
     unittest.main()
