@@ -132,7 +132,16 @@ def openrouter_ask(model, prompt, timeout=120, max_tokens=4096, fetch=None):
     },{'Authorization':'Bearer '+token,'HTTP-Referer':'http://127.0.0.1/assistant.html',
        'X-Title':'Korts Assistant'},timeout=timeout)
     usage=response.get('usage') or {}
-    if 'cost' not in usage: raise RouteRejected('rejected_cost_missing', 'OpenRouter response did not report cost')
+    if 'cost' not in usage:
+        # An envelope carrying neither usage nor any finish_reason is an unfinished generation, not a
+        # cost-policy violation; OpenRouter returns one intermittently (observed repeatedly on a cold
+        # route). Reporting it as a rejection applied the 30-minute policy cooldown and, with a single
+        # configured route, took cloud leadership offline for up to an hour after one transient blip.
+        # Treat it as a normal outage so it retries on the short backoff. The content is still refused,
+        # because its cost was never verified.
+        if not any((choice or {}).get('finish_reason') for choice in (response.get('choices') or [])):
+            raise CloudUnavailable('OpenRouter returned an incomplete generation without usage')
+        raise RouteRejected('rejected_cost_missing', 'OpenRouter response did not report cost')
     try:
         verify_zero_reported_cost({'total_cost_usd':usage['cost']})
     except CloudUnavailable as exc:
@@ -261,9 +270,14 @@ def local_ask(worker, prompt):
         raise ValueError('Use a local Ollama endpoint or localhost SSH tunnel')
     model=worker['model']
     if model.endswith(('-cloud',':cloud')): raise ValueError('Local worker cannot silently use cloud')
+    num_predict=int(worker.get('num_predict',4096))
+    # A CPU-only role measured ~6.8 tokens/second, so a full num_predict answer needs ~600 s there:
+    # the previous fixed 600 s timeout cut those off just before they finished. Scale with the
+    # budget the role is actually allowed to produce, and let a slow role raise it explicitly.
+    timeout=int(worker.get('timeout_seconds',max(600,num_predict//4)))
     data=request_json(base+'/api/chat',{'model':model,'stream':False,
         'think':worker.get('think',False),
         'keep_alive':worker.get('keep_alive','10m'),
         'messages':[{'role':'system','content':worker['instructions']}, {'role':'user','content':prompt}],
-        'options':{'num_ctx':worker.get('num_ctx',8192),'num_predict':4096}},timeout=600)
+        'options':{'num_ctx':worker.get('num_ctx',8192),'num_predict':num_predict}},timeout=timeout)
     return data['message']['content']

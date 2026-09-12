@@ -6,8 +6,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from assistant.core import Store, safe_path, validate_subproject
-from assistant.models import (Cloud, CloudUnavailable, validate_route, verify_free_catalog,
-                              verify_zero_reported_cost, openrouter_ask, local_ask, claude_env)
+from assistant.models import (Cloud, CloudUnavailable, RouteRejected, validate_route,
+                              verify_free_catalog, verify_zero_reported_cost, openrouter_ask,
+                              local_ask, claude_env)
 from assistant.run import step, validate_plan, approved_review, init
 
 class MemoryTests(unittest.TestCase):
@@ -186,6 +187,19 @@ class PolicyTests(unittest.TestCase):
             request.return_value=response
             with patch.dict(os.environ,{'OPENROUTER_API_KEY':'test'}):
                 with self.assertRaises(CloudUnavailable):openrouter_ask('x/free:free','prompt')
+    @patch('assistant.models.request_json')
+    def test_unfinished_generation_is_an_outage_not_a_cost_rejection(self, request):
+        """An incomplete envelope must not earn the long cost-policy cooldown, but its content is
+        still refused: a finished answer missing cost stays a rejection."""
+        request.return_value={'model':'x/free','choices':[{'message':{'content':'{"ok":true}'}}]}
+        with patch.dict(os.environ,{'OPENROUTER_API_KEY':'test'}):
+            with self.assertRaises(CloudUnavailable) as caught:openrouter_ask('x/free:free','prompt')
+        self.assertNotIsInstance(caught.exception,RouteRejected)
+        request.return_value={'model':'x/free','usage':{'total_tokens':9},
+                              'choices':[{'finish_reason':'stop','message':{'content':'{"ok":true}'}}]}
+        with patch.dict(os.environ,{'OPENROUTER_API_KEY':'test'}):
+            with self.assertRaises(RouteRejected) as caught:openrouter_ask('x/free:free','prompt')
+        self.assertEqual(caught.exception.outcome,'rejected_cost_missing')
     @patch('assistant.models.request_json')
     def test_local_worker_disables_hidden_thinking_by_default(self, request):
         request.return_value={'message':{'content':'visible draft'}}

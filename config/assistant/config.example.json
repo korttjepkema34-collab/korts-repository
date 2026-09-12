@@ -5,7 +5,7 @@
   "cloud_routes": [
     {
       "provider": "openrouter",
-      "model": "qwen/qwen3-coder:free",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
       "qualified": false
     }
   ],

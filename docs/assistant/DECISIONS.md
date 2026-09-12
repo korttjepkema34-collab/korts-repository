@@ -80,6 +80,51 @@ Arbitrary configured CSS is disallowed so the existing `style-src 'self'` policy
 Actual mutations continue through authenticated controller endpoints and the audit log. See
 DASHBOARD-IMPLEMENTATION-2026-09-11.md for the implementation and verification record.
 
+## Media workers deferred — 2026-09-11
+
+The owner decided to **skip media work entirely for now**, until the rest of the system is finished
+and fine-tuned. Image, sprite, audio, video and ComfyUI adapters stay on the `unconfigured-media`
+adapter and keep reporting **unavailable**; their jobs block rather than pretending to succeed.
+No media tool, endpoint or credential is to be selected or wired up until the owner reopens this.
+Revisit only after local/cloud routing, consent, execution boundaries, backup and the reboot and
+overnight acceptance runs are settled. This supersedes the media items in ACCEPTANCE.md's gap list
+for scheduling purposes; it does not mark them complete.
+
+## Cloud context granted for all projects — 2026-09-11
+
+The owner reviewed per-project cloud scoping, kept the mechanism, and chose to enable cloud models
+for **every** project rather than a subset. Both required switches are now set for `personal`,
+`business` and `game`: the audited runtime grant (`assistant.run consent <project> --grant`) and
+the `allow_cloud_context` flag in the private `config.json`. Project notes and task context for all
+three scopes may therefore be sent to qualified zero-cost OpenRouter routes. Per-project revocation
+remains available and audited; the two-key design is unchanged.
+
+## Why cloud leadership looked unreliable — 2026-09-11
+
+Measured against the live catalog, not inferred. Cloud calls were never broken; two defects and one
+misconfiguration made the strongest routes look unusable, so leadership stayed pinned to the
+smallest model that happened to pass first.
+
+- The private `config.json` carried `cloud_timeout_seconds: 60` while the shipped template uses
+  `600`. Raised to 600.
+- OpenRouter intermittently answers with HTTP 200 and an envelope containing neither `usage` nor any
+  `finish_reason` — an unfinished generation, reproduced repeatedly on a cold route and absent once
+  warm. `openrouter_ask` reported that as `rejected_cost_missing`, a policy rejection carrying the
+  1800 s cooldown that doubles to the 3600 s cap. With one configured route this removed cloud
+  leadership for 30–60 minutes after a single blip. It is now an ordinary outage on the 60 s
+  backoff; the answer is still refused, because its cost was never verified.
+
+Live seven-case results afterwards, zero reported cost throughout and no substituted models:
+`nemotron-3-ultra-550b-a55b:free` 5/7 (2.5–7.7 s, no transient failures once the classification was
+fixed), `nemotron-3-super-120b-a12b:free` 5/7 (0.7–7.7 s), `ling-3.0-flash-vl:free` 5/7,
+`nex-n2.5-pro:free` 5/7. `thinkingmachines/inkling:free` returns hard HTTP 403 because OpenRouter
+restricts it to approved agentic harnesses — not to be worked around. `gemma-4-31b-it:free` returned
+HTTP 429 on every attempt and is treated as saturated.
+
+Across every randomized reconciliation problem, Ultra answered 4 of 5 correctly; Super, Ling and
+nex each answered 0. No free route is dependable at money arithmetic, so Charter C5 stands: business
+figures must be recomputed independently and never taken from a model's own output.
+
 ## Tjepkema dashboard access — 2026-09-11
 
 The owner explicitly chose passwordless access for the Tjepkema Server page. The deployed runtime
