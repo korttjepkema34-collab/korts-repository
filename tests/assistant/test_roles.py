@@ -106,78 +106,51 @@ class ModelSwitchTests(unittest.TestCase):
         self.assertIs(benchmark.switch_model(self.root, 'ops', 'a:4b')['qualified'], True)
 
 
-class OneModelPerMachineTests(unittest.TestCase):
-    """A machine holds one model, so the endpoint is the unit that gets switched."""
+class ModelChoiceIsPerSpecialistTests(unittest.TestCase):
+    """Specialists on one machine may want different models; the machine swaps between them."""
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         gpu = {'endpoint': 'http://127.0.0.1:11435', 'model': 'a:9b', 'instructions': 'sys',
-               'num_ctx': 8192, 'num_predict': 1024, 'approved_models': ['a:9b', 'b:9b']}
-        cpu = {'endpoint': 'http://127.0.0.1:11434', 'model': 'small:4b', 'instructions': 'sys',
-               'num_ctx': 8192, 'num_predict': 1024, 'approved_models': ['small:4b']}
-        self.workers = {'ui': dict(gpu), 'sprites': dict(gpu), 'ops': dict(cpu)}
-        self.write()
+               'num_ctx': 8192, 'num_predict': 1024, 'approved_models': ['a:9b', 'b:27b']}
+        self.workers = {'ui': dict(gpu), 'sprites': dict(gpu)}
+        (self.root / 'workers.json').write_text(json.dumps(self.workers), encoding='utf-8')
 
     def tearDown(self):
         self.tmp.cleanup()
 
-    def write(self):
-        (self.root / 'workers.json').write_text(json.dumps(self.workers), encoding='utf-8')
-
     def saved(self):
         return json.loads((self.root / 'workers.json').read_text(encoding='utf-8'))
 
-    def test_switching_one_specialist_moves_its_whole_machine(self):
-        out = benchmark.switch_model(self.root, 'ui', 'b:9b')
+    def test_switching_one_specialist_leaves_the_others_alone(self):
+        benchmark.switch_model(self.root, 'ui', 'b:27b')
         saved = self.saved()
-        self.assertEqual(saved['ui']['model'], 'b:9b')
-        self.assertEqual(saved['sprites']['model'], 'b:9b', 'left two models on one machine')
-        self.assertEqual(out['moved'], ['sprites', 'ui'])
+        self.assertEqual(saved['ui']['model'], 'b:27b')
+        self.assertEqual(saved['sprites']['model'], 'a:9b',
+                         'switching one specialist must not drag the rest of the machine with it')
 
-    def test_other_machines_are_left_alone(self):
-        benchmark.switch_model(self.root, 'ui', 'b:9b')
-        self.assertEqual(self.saved()['ops']['model'], 'small:4b')
-
-    def test_a_switch_the_machine_cannot_take_changes_nothing(self):
-        """If one specialist on the machine has not approved the model, nobody moves."""
+    def test_a_model_another_specialist_has_not_approved_is_still_allowed(self):
+        """The machine, not the config, is what limits how many models are resident."""
         self.workers['sprites']['approved_models'] = ['a:9b']
-        self.write()
-        with self.assertRaises(ValueError):
-            benchmark.switch_model(self.root, 'ui', 'b:9b')
-        saved = self.saved()
-        self.assertEqual(saved['ui']['model'], 'a:9b')
-        self.assertEqual(saved['sprites']['model'], 'a:9b')
-
-    def test_each_specialist_is_qualified_on_its_own_evidence(self):
-        """Moving together is a hardware fact; being trusted is still earned per role."""
-        d = self.root / 'reports' / 'benchmarks'
-        d.mkdir(parents=True, exist_ok=True)
-        profile = dict(self.workers['ui'], model='b:9b')
-        (d / 'ui-new.json').write_text(json.dumps({
-            'model': 'b:9b', 'num_ctx': 8192, 'passed': True,
-            'at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'profile_fingerprint': local_profile_fingerprint(profile)}), encoding='utf-8')
-        out = benchmark.switch_model(self.root, 'ui', 'b:9b')
-        saved = self.saved()
-        self.assertIs(saved['ui']['qualified'], True)
-        self.assertIs(saved['sprites']['qualified'], False)
-        self.assertEqual(out['unqualified'], ['sprites'])
+        (self.root / 'workers.json').write_text(json.dumps(self.workers), encoding='utf-8')
+        benchmark.switch_model(self.root, 'ui', 'b:27b')
+        self.assertEqual(self.saved()['ui']['model'], 'b:27b')
 
 
 class ApprovedModelTests(unittest.TestCase):
-    def test_every_machine_offers_one_model_to_all_of_its_specialists(self):
-        """Two specialists on a machine must agree on what it may run, or no switch is possible."""
+    def test_every_approved_model_is_one_the_machine_has(self):
+        """A role may only be offered models downloaded on the machine it runs on."""
         by_endpoint = {}
         for name, p in WORKERS.items():
             if isinstance(p, dict) and p.get('endpoint'):
                 by_endpoint.setdefault(p['endpoint'].rstrip('/'), []).append((name, p))
         self.assertTrue(by_endpoint, 'no local machines configured')
         for endpoint, rows in by_endpoint.items():
-            models = {p.get('model') for _, p in rows}
-            self.assertEqual(len(models), 1, endpoint + ' is split across models: ' + str(models))
-            approved = {tuple(p.get('approved_models') or ()) for _, p in rows}
-            self.assertEqual(len(approved), 1, endpoint + ' specialists approve different models')
+            for name, p in rows:
+                approved = p.get('approved_models') or []
+                self.assertIn(p.get('model'), approved,
+                              name + ' runs a model it does not list as approved')
 
 
 if __name__ == '__main__':

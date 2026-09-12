@@ -547,12 +547,9 @@ class Handler(BaseHTTPRequestHandler):
                 name = str(body.get('worker', ''))
                 model = str(body.get('model', ''))
                 profile = benchmark.switch_model(self.app.root, name, model)
-                moved = profile.get('moved') or [name]
-                state.audit(store.db, actor, 'worker.model', True,
-                            detail='%s -> %s (%d on that machine)' % (name, model, len(moved)))
+                state.audit(store.db, actor, 'worker.model', True, detail=name + ' -> ' + model)
                 return self._json({'ok': True, 'worker': name, 'model': profile.get('model'),
-                                   'qualified': profile.get('qualified') is True,
-                                   'moved': moved, 'unqualified': profile.get('unqualified') or []})
+                                   'qualified': profile.get('qualified') is True})
             if path == '/api/control/backup':
                 owner_only()
                 from . import backup

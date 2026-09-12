@@ -440,17 +440,19 @@ function renderOffice() {
   } catch (_) { /* display only */ }
 }
 
-// A specialist runs one of the models its profile approves. Switching is a profile
-// change, so it re-checks qualification: a model without recent passing evidence leaves
-// the role plainly marked unqualified rather than quietly trusted.
+// A specialist runs one of the models its profile approves, independently of the other
+// specialists on the same machine; the machine still holds only one at a time and swaps as
+// work moves between them. Switching is a profile change, so it re-checks qualification: a
+// model without recent passing evidence leaves the role plainly marked unqualified rather
+// than quietly trusted.
 function modelControl(w, onDone) {
   const approved = Array.isArray(w.approved_models) ? w.approved_models : [];
   if (approved.length < 2) {
     return el('div', { class: 'model-pick' }, el('span', {}, w.model || 'active cloud route'),
       approved.length === 1 ? el('small', { class: 'muted' },
-        'The only model approved for this machine.') : null);
+        'The only model downloaded on this machine.') : null);
   }
-  const select = el('select', { 'aria-label': 'Model for the machine ' + w.name + ' runs on' },
+  const select = el('select', { 'aria-label': 'Model for ' + w.name },
     ...approved.map((m) => el('option', { value: m, selected: m === w.model || null }, m)));
   const status = el('small', { class: 'muted' }, '');
   select.addEventListener('change', async () => {
@@ -459,15 +461,8 @@ function modelControl(w, onDone) {
     status.textContent = 'Switching…';
     try {
       const r = await api('/api/worker/model', { body: { worker: w.id, model } });
-      // A machine holds one model, so the switch moved every specialist sharing it.
-      const also = (r.moved || []).filter((n) => n !== w.id);
-      const unqualified = r.unqualified || [];
-      status.textContent = [
-        also.length ? ('Switched this machine — ' + also.length + ' other specialist'
-          + (also.length > 1 ? 's' : '') + ' moved too.') : 'Switched.',
-        unqualified.length ? ('Not qualified for this model yet: ' + unqualified.join(', ')
-          + '. Benchmark before relying on them.') : 'Qualified on existing evidence.',
-      ].join(' ');
+      status.textContent = r.qualified ? 'Switched. Qualified on existing evidence.'
+        : 'Switched. Not qualified for this model — benchmark it before relying on it.';
       w.model = r.model; w.qualified = r.qualified;
       if (onDone) onDone();
     } catch (e) {
