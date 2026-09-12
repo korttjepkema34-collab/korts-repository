@@ -134,23 +134,13 @@ def evidence_for(root, role, profile, max_age_days=7):
     return None
 
 
-def switch_model(root, role, model, max_age_days=7):
-    """Move a role onto one of its approved models.
+def endpoint_of(profile):
+    """Which machine a profile runs on. One Ollama endpoint is one machine."""
+    return (profile.get('endpoint') or '').rstrip('/')
 
-    Switching never grants qualification it cannot evidence. The fingerprint covers the
-    model, so a model with no recent passing benchmark leaves the role visibly unqualified
-    rather than quietly trusted; the owner sees that and can benchmark it.
-    """
-    root = Path(root)
-    workers_path = root / 'workers.json'
-    workers = json.loads(workers_path.read_text(encoding='utf-8'))
-    profile = workers.get(role)
-    if not isinstance(profile, dict):
-        raise ValueError('Unknown specialist')
-    approved = profile.get('approved_models') or []
-    if model not in approved:
-        raise ValueError('That model is not approved for this specialist')
-    profile['model'] = model
+
+def _requalify(root, role, profile, max_age_days):
+    """Re-decide qualification from evidence that matches this profile exactly."""
     report = evidence_for(root, role, profile, max_age_days)
     if report:
         profile['qualified'] = True
@@ -160,10 +150,50 @@ def switch_model(root, role, model, max_age_days=7):
     else:
         profile['qualified'] = False
         profile.pop('qualification', None)
+    return profile
+
+
+def switch_model(root, role, model, max_age_days=7):
+    """Put a machine on a model, moving every specialist that runs there with it.
+
+    A machine holds one model in memory at a time. Leaving two specialists on one endpoint
+    pointed at different models does not give you two models; it gives you one machine
+    evicting and reloading several gigabytes between jobs, which is slower than either
+    model and fails in a way that looks like the model being bad. So the endpoint is the
+    unit of choice: switching a specialist switches its machine.
+
+    Qualification is still decided per specialist, because each role is benchmarked on its
+    own cases. A role that has no recent passing benchmark for the new model comes back
+    plainly unqualified rather than quietly trusted; the owner sees that and can benchmark
+    it. Roles on other machines are untouched.
+    """
+    root = Path(root)
+    workers_path = root / 'workers.json'
+    workers = json.loads(workers_path.read_text(encoding='utf-8'))
+    profile = workers.get(role)
+    if not isinstance(profile, dict):
+        raise ValueError('Unknown specialist')
+    if model not in (profile.get('approved_models') or []):
+        raise ValueError('That model is not approved for this specialist')
+    endpoint = endpoint_of(profile)
+    if not endpoint:
+        raise ValueError('That specialist does not run on a local machine')
+    moved = []
+    for name, p in workers.items():
+        if not isinstance(p, dict) or endpoint_of(p) != endpoint:
+            continue
+        if model not in (p.get('approved_models') or []):
+            raise ValueError('%s runs on the same machine but does not approve %s' % (name, model))
+        p['model'] = model
+        _requalify(root, name, p, max_age_days)
+        moved.append(name)
     tmp = workers_path.with_suffix('.tmp')
     tmp.write_text(json.dumps(workers, indent=2), encoding='utf-8')
     tmp.replace(workers_path)
-    return profile
+    result = dict(profile)
+    result['moved'] = sorted(moved)
+    result['unqualified'] = sorted(n for n in moved if workers[n].get('qualified') is not True)
+    return result
 
 
 def qualify(root, role, max_age_days=7):

@@ -16,8 +16,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/ui.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "backend": {
@@ -36,8 +35,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/backend.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "visual-qa": {
@@ -57,8 +55,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/visual-qa.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "debugger": {
@@ -79,8 +76,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/debugger.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "optimizer": {
@@ -100,8 +96,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/optimizer.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "operations": {
@@ -140,8 +135,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/game-coder.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "environment": {
@@ -160,8 +154,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/environment.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "sprites": {
@@ -180,8 +173,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/sprites.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "narrative": {
@@ -219,8 +211,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/audio.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "level-designer": {
@@ -239,8 +230,7 @@
     "qualified": false,
     "direction": "config/assistant/roles/level-designer.md",
     "approved_models": [
-      "qwen3.5:9b",
-      "nemotron-3.5-lightning:latest"
+      "qwen3.5:9b"
     ]
   },
   "personal-helper": {

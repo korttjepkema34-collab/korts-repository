@@ -15,7 +15,7 @@
   },
   "cloud_timeout_seconds": 600,
   "max_worker_attempts": 3,
-  "poll_seconds": 60,
+  "poll_seconds": 5,
   "allow_cloud_context": {
     "personal": false,
     "business": false,
