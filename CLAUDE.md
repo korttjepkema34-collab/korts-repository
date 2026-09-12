@@ -1,6 +1,10 @@
 # Claude Code entry point
 
-Read `AGENTS.md` first. Current setup: `docs/assistant/SETUP.md`; implementation status and
+**Read `docs/assistant/HANDOFF-LOG.md` first** — it is the living handoff shared with Codex and
+Kort: current state, open work, and the problems already encountered with their causes. Update it
+before you stop working, and append a session log entry rather than rewriting someone else's.
+
+Then read `AGENTS.md`. Current setup: `docs/assistant/SETUP.md`; implementation status and
 remaining work: `docs/assistant/ACCEPTANCE.md`. The brain is a qualified free cloud model;
 local workers never take over. The old local-led studio runtime is disabled.
 

@@ -1,3 +1,8 @@
+> **Shared working state — read first:** [docs/assistant/HANDOFF-LOG.md](docs/assistant/HANDOFF-LOG.md)
+> is the living handoff between Kort, Claude Code and Codex. It records where the last session
+> stopped, what is still open, and the problems already hit and why. Read it before starting and
+> update it before you stop, so work is handed over through the repository rather than through chat.
+
 > **Approved studio authority:** Read [the authority index](docs/assistant/authority/README.md). It supersedes conflicting legacy instructions below. Pause blocked actions, record decisions for Kort, and continue independent authorized work.
 
 > **Current assistant setup (2026-09-09):** Read [the current setup guide](docs/assistant/SETUP.md). Cloud models lead and approve; local models never take over. No new GPU or paid inference is planned. The older game studio loop below is preserved for migration, not approved for unattended operation under the current requirements.
