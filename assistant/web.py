@@ -646,6 +646,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def overview(store, sess, profiles, office=None):
     from . import gpu
+    from .models import local_qualified
     db = store.db
     states = state.worker_states(db)
     workforce = []
@@ -655,16 +656,20 @@ def overview(store, sess, profiles, office=None):
             continue
         s = states.get(name, {})
         current = s.get('state')
+        local = p.get('adapter') in ('ollama-draft', 'code-sandbox')
+        qualified = local_qualified(p) if local else p.get('qualified') is True
+        if local and not qualified and current == 'idle':
+            current = 'unavailable'
         if current is None:
             # Missing instrumentation is unknown, and untested roles are not "idle".
-            current = 'idle' if p.get('qualified') is True or str(p.get('adapter', '')).startswith('cloud') \
+            current = 'idle' if qualified or str(p.get('adapter', '')).startswith('cloud') \
                 else 'unavailable'
         task = s.get('task_id') if s.get('project') in sess['projects'] else None
         display = display_workers.get(name, {}) if isinstance(display_workers.get(name, {}), dict) else {}
         workforce.append({'id': name, 'name': p.get('name', name), 'adapter': p.get('adapter'),
                           'device': gpu.device_of(p), 'model': p.get('model'), 'state': current,
                           'task_id': task, 'job_id': s.get('job_id') if task else None, 'updated': s.get('updated'),
-                          'qualified': p.get('qualified') is True,
+                          'qualified': qualified,
                           'projects': sorted(set(p.get('projects', [])) & set(sess['projects'])),
                           'display': redact({k: str(display.get(k, ''))[:40] for k in ('callsign', 'room', 'palette')})})
     for special in ('orchestrator', 'reviewer'):

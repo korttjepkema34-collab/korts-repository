@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 from .core import Store, PROJECTS, runtime_root, now
-from .models import Cloud, CloudUnavailable, local_ask
+from .models import Cloud, CloudUnavailable, local_ask, local_qualified
 from .state import cloud_consent, emit, set_worker_state
 from . import gpu
 
@@ -23,7 +23,7 @@ def _context(cloud, **values):
 def local_gate(store, config, profile, worker_name, project, tid, jid, health=gpu.endpoint_health):
     """Return None when a local worker may start, otherwise a display-safe waiting reason.
     Waiting never consumes an attempt."""
-    if config.get('require_qualified_workers') and profile.get('qualified') is not True:
+    if config.get('require_qualified_workers') and not local_qualified(profile):
         set_worker_state(store.db, worker_name, 'unavailable')
         return 'unqualified'
     if gpu.device_of(profile)=='gpu':
