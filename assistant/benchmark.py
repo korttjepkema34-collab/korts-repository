@@ -23,10 +23,11 @@ from .gpu import device_of
 FILLER = ('The caravan crossed the dunes while the keepers counted relics and mended their banners. ' * 40)
 
 
-def _chat(profile, prompt, fetch=request_json, num_predict=512):
+def _chat(profile, prompt, fetch=request_json, num_predict=4096):
     started = time.monotonic()
     data = fetch(profile['endpoint'].rstrip('/') + '/api/chat', {
         'model': profile['model'], 'stream': False, 'format': 'json',
+        'think': profile.get('think', False),
         'keep_alive': profile.get('keep_alive', '10m'),
         'messages': [{'role': 'system', 'content': profile.get('instructions', '')},
                      {'role': 'user', 'content': prompt}],
