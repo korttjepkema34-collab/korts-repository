@@ -466,6 +466,18 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/api/mailbox':
             return self._json({'items': redact(state.mailbox_items(store.db, projects,
                                                                    q.get('all') == '1'))})
+        if path == '/api/worker/direction':
+            # The standing rules a specialist works to. Repository content, shown so the
+            # owner can read what the role was actually told rather than infer it.
+            name = str(q.get('worker', ''))
+            profile = (self.app.profiles_loader() or {}).get(name)
+            if not isinstance(profile, dict) or not profile.get('direction'):
+                raise ApiError(404, 'No direction file for that specialist')
+            from .core import safe_path
+            from .models import REPO, effective_instructions
+            safe_path(REPO, profile['direction'])
+            return self._json({'worker': name, 'path': profile['direction'],
+                               'text': effective_instructions(profile)[:40000]})
         if path == '/api/audit':
             return self._json({'rows': redact(state.audit_rows(store.db, projects, 200))})
         if path == '/api/notes':
@@ -529,6 +541,15 @@ class Handler(BaseHTTPRequestHandler):
                 owner_only()
                 control.consent(store, actor, str(body.get('project')), bool(body.get('grant')))
                 return self._json({'ok': True})
+            if path == '/api/worker/model':
+                owner_only()
+                from . import benchmark
+                name = str(body.get('worker', ''))
+                model = str(body.get('model', ''))
+                profile = benchmark.switch_model(self.app.root, name, model)
+                state.audit(store.db, actor, 'worker.model', True, detail=name + ' -> ' + model)
+                return self._json({'ok': True, 'worker': name, 'model': profile.get('model'),
+                                   'qualified': profile.get('qualified') is True})
             if path == '/api/control/backup':
                 owner_only()
                 from . import backup
@@ -670,6 +691,8 @@ def overview(store, sess, profiles, office=None):
                           'device': gpu.device_of(p), 'model': p.get('model'), 'state': current,
                           'task_id': task, 'job_id': s.get('job_id') if task else None, 'updated': s.get('updated'),
                           'qualified': qualified,
+                          'approved_models': [str(m)[:64] for m in p.get('approved_models', [])][:8],
+                          'direction': bool(p.get('direction')),
                           'projects': sorted(set(p.get('projects', [])) & set(sess['projects'])),
                           'display': redact({k: str(display.get(k, ''))[:40] for k in ('callsign', 'room', 'palette')})})
     for special in ('orchestrator', 'reviewer'):

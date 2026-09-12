@@ -10,6 +10,9 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlparse
 
+REPO=Path(__file__).resolve().parents[1]
+DIRECTION_LIMIT=20000
+
 class CloudUnavailable(RuntimeError): pass
 
 def request_json(url, payload=None, headers=None, timeout=120):
@@ -264,6 +267,29 @@ class Cloud:
                 errors.append(provider+': '+type(e).__name__)
         raise CloudUnavailable('No qualified free cloud route completed: '+', '.join(errors))
 
+def effective_instructions(worker):
+    """A role's standing direction: its own file when it has one, the inline text otherwise.
+
+    Read on each request rather than cached, so editing a direction file takes effect on the
+    next job. Because local_request builds the payload from this, an edit also changes the
+    profile fingerprint and the role must be benchmarked again before it counts as qualified:
+    rules nobody re-checks are not rules.
+    """
+    direction=worker.get('direction')
+    if not direction:
+        return worker['instructions']
+    from .core import safe_path
+    path=safe_path(REPO,direction)
+    if path.suffix!='.md':
+        raise ValueError('Role direction must be a Markdown file')
+    text=path.read_text(encoding='utf-8').strip()
+    if not text:
+        raise ValueError('Role direction file is empty: '+str(direction))
+    if len(text)>DIRECTION_LIMIT:
+        raise ValueError('Role direction file is too long to use as a system prompt')
+    return text
+
+
 def local_request(worker, prompt):
     """One request definition shared by production and qualification."""
     base=worker['endpoint'].rstrip('/')
@@ -280,7 +306,7 @@ def local_request(worker, prompt):
     payload={'model':model,'stream':False,
         'think':worker.get('think',False),
         'keep_alive':worker.get('keep_alive','10m'),
-        'messages':[{'role':'system','content':worker['instructions']}, {'role':'user','content':prompt}],
+        'messages':[{'role':'system','content':effective_instructions(worker)}, {'role':'user','content':prompt}],
         'options':{'num_ctx':worker.get('num_ctx',8192),'num_predict':num_predict}}
     return base+'/api/chat',payload,timeout
 

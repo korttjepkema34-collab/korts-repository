@@ -107,6 +107,65 @@ def latest(root, role):
     return json.loads(files[-1].read_text(encoding='utf-8')) if files else None
 
 
+def evidence_for(root, role, profile, max_age_days=7):
+    """Newest passing benchmark whose fingerprint matches this exact profile, if any.
+
+    Reports are kept per run, so evidence for a model a role used previously is still on
+    disk. That is what makes switching back cheap: the role recovers its qualification
+    without a fresh benchmark, but only from evidence that matches it exactly.
+    """
+    d = Path(root) / 'reports' / 'benchmarks'
+    if not d.is_dir():
+        return None
+    want = local_profile_fingerprint(profile)
+    for f in sorted(d.glob(role + '-*.json'), reverse=True):
+        try:
+            report = json.loads(f.read_text(encoding='utf-8'))
+        except ValueError:
+            continue
+        if not report.get('passed') or report.get('profile_fingerprint') != want:
+            continue
+        try:
+            measured = datetime.strptime(report['at'], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+        except (KeyError, ValueError):
+            continue
+        if 0 <= time.time() - measured.timestamp() <= max_age_days * 86400:
+            return report
+    return None
+
+
+def switch_model(root, role, model, max_age_days=7):
+    """Move a role onto one of its approved models.
+
+    Switching never grants qualification it cannot evidence. The fingerprint covers the
+    model, so a model with no recent passing benchmark leaves the role visibly unqualified
+    rather than quietly trusted; the owner sees that and can benchmark it.
+    """
+    root = Path(root)
+    workers_path = root / 'workers.json'
+    workers = json.loads(workers_path.read_text(encoding='utf-8'))
+    profile = workers.get(role)
+    if not isinstance(profile, dict):
+        raise ValueError('Unknown specialist')
+    approved = profile.get('approved_models') or []
+    if model not in approved:
+        raise ValueError('That model is not approved for this specialist')
+    profile['model'] = model
+    report = evidence_for(root, role, profile, max_age_days)
+    if report:
+        profile['qualified'] = True
+        profile['qualification'] = {'at': report['at'], 'model': report['model'],
+                                    'num_ctx': report['num_ctx'],
+                                    'profile_fingerprint': report['profile_fingerprint']}
+    else:
+        profile['qualified'] = False
+        profile.pop('qualification', None)
+    tmp = workers_path.with_suffix('.tmp')
+    tmp.write_text(json.dumps(workers, indent=2), encoding='utf-8')
+    tmp.replace(workers_path)
+    return profile
+
+
 def qualify(root, role, max_age_days=7):
     root = Path(root)
     workers_path = root / 'workers.json'
@@ -139,11 +198,17 @@ def main(argv=None):
     r.add_argument('roles', nargs='*', help='default: every local role')
     q = sub.add_parser('qualify')
     q.add_argument('role')
+    m = sub.add_parser('use', help='switch a role onto one of its approved models')
+    m.add_argument('role')
+    m.add_argument('model')
     a = p.parse_args(argv)
     root = runtime_root()
     workers = json.loads((root / 'workers.json').read_text(encoding='utf-8'))
     if a.cmd == 'qualify':
         print(json.dumps(qualify(root, a.role), indent=2))
+        return
+    if a.cmd == 'use':
+        print(json.dumps(switch_model(root, a.role, a.model), indent=2))
         return
     names = a.roles or [n for n, w in workers.items() if device_of(w) in ('cpu', 'gpu')]
     for name in names:

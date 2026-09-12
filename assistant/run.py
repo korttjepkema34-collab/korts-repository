@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 from .core import Store, PROJECTS, runtime_root, now
-from .models import Cloud, CloudUnavailable, local_ask, local_qualified
+from .models import Cloud, CloudUnavailable, local_ask, local_qualified, effective_instructions
 from .state import cloud_consent, emit, set_worker_state
 from . import gpu
 
@@ -191,7 +191,7 @@ def step(store, task, config, profiles, cloud=None, worker_call=local_ask):
                 emit(store.db,project,'work.start','Specialist started work',task_id=tid,job_id=j['id'],worker=j['worker'])
                 try:
                     if profile['adapter'] in ('cloud-draft','cloud-code'):
-                        instruction=profile['instructions']+'\n'+prompt
+                        instruction=effective_instructions(profile)+'\n'+prompt
                         if profile['adapter']=='cloud-draft':
                             instruction+='\nReturn JSON only: {"draft":"your complete deliverable"}.'
                         _context(cloud,task_id=tid,job_id=j['id'],purpose='work')

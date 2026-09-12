@@ -10,11 +10,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the UI specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Use screenshots when available; do not infer visual success from source alone.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/ui.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "backend": {
     "name": "Backend specialist",
@@ -26,11 +30,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Backend specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Separate test data from live data; preserve calculations and record edge cases.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/backend.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "visual-qa": {
     "name": "Visual QA",
@@ -43,11 +51,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Visual QA. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. A screenshot path without image access is not visual evidence. Flag missing captures.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/visual-qa.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "debugger": {
     "name": "Debugger",
@@ -61,11 +73,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Debugger. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Distinguish symptoms, hypotheses and confirmed causes. Do not repeat a failed hypothesis.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/debugger.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "optimizer": {
     "name": "Performance specialist",
@@ -78,11 +94,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Performance specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Request a baseline and before/after measurement; never optimize by intuition alone.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/optimizer.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "operations": {
     "name": "Operations helper",
@@ -95,11 +115,14 @@
     "endpoint": "http://127.0.0.1:11434",
     "model": "qwen3.5:4b",
     "num_ctx": 8192,
-    "instructions": "You are the Operations helper. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Never send messages or change live records. Cite supplied sources and identify missing current research.",
     "skills": [],
     "device": "cpu",
     "keep_alive": "15m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/operations.md",
+    "approved_models": [
+      "qwen3.5:4b"
+    ]
   },
   "game-coder": {
     "name": "Game engineer",
@@ -111,11 +134,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Game engineer. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Preserve Reapers Relics design. Use matching engine reference; no Godot 3 syntax.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/game-coder.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "environment": {
     "name": "Environment artist",
@@ -127,11 +154,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Environment artist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Require ComfyUI workflow, style references, seed, license and actual preview.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/environment.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "sprites": {
     "name": "Sprite animator",
@@ -143,11 +174,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Sprite animator. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Require fixed grid, palette, transparency, alignment and animation preview.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/sprites.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "narrative": {
     "name": "Narrative editor",
@@ -159,11 +194,14 @@
     "endpoint": "http://127.0.0.1:11434",
     "model": "qwen3.5:4b",
     "num_ctx": 8192,
-    "instructions": "You are the Narrative editor. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Read the canonical world bible; preserve names and item identifiers.",
     "skills": [],
     "device": "cpu",
     "keep_alive": "15m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/narrative.md",
+    "approved_models": [
+      "qwen3.5:4b"
+    ]
   },
   "audio": {
     "name": "Audio producer",
@@ -175,11 +213,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Audio producer. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Distinguish SFX from speech/music. Require playable audio and clipping/loop checks.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/audio.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "level-designer": {
     "name": "Level designer",
@@ -191,11 +233,15 @@
     "endpoint": "http://127.0.0.1:11435",
     "model": "qwen3.5:9b",
     "num_ctx": 8192,
-    "instructions": "You are the Level designer. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Preserve map schema and prove traversal before accepting gameplay.",
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/level-designer.md",
+    "approved_models": [
+      "qwen3.5:9b",
+      "nemotron-3.5-lightning:latest"
+    ]
   },
   "personal-helper": {
     "name": "Personal helper",
@@ -207,11 +253,14 @@
     "endpoint": "http://127.0.0.1:11434",
     "model": "qwen3.5:4b",
     "num_ctx": 8192,
-    "instructions": "You are the Personal helper. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Keep personal context scoped. Do not invent private facts or claim external actions.",
     "skills": [],
     "device": "cpu",
     "keep_alive": "15m",
-    "qualified": false
+    "qualified": false,
+    "direction": "config/assistant/roles/personal-helper.md",
+    "approved_models": [
+      "qwen3.5:4b"
+    ]
   },
   "cloud-engineer": {
     "name": "cloud-engineer",
@@ -222,8 +271,8 @@
       "game"
     ],
     "adapter": "cloud-code",
-    "instructions": "Act as a specialized cloud worker, not the orchestrator. Complete the assigned bounded job; never approve your own output. You are the Backend specialist. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Separate test data from live data; preserve calculations and record edge cases.",
-    "skills": []
+    "skills": [],
+    "direction": "config/assistant/roles/cloud-engineer.md"
   },
   "cloud-analyst": {
     "name": "cloud-analyst",
@@ -234,7 +283,7 @@
       "game"
     ],
     "adapter": "cloud-draft",
-    "instructions": "Act as a specialized cloud worker, not the orchestrator. Complete the assigned bounded job; never approve your own output. You are the Operations helper. Execute only the assigned task. Return evidence and uncertainty; never approve your own work. Never send messages or change live records. Cite supplied sources and identify missing current research.",
-    "skills": []
+    "skills": [],
+    "direction": "config/assistant/roles/cloud-analyst.md"
   }
 }
