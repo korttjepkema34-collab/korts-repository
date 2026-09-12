@@ -74,10 +74,11 @@ def run_role(name, profile, fetch=request_json):
         result['passed'] = False
         return result
     for case, prompt, check in cases(result['num_ctx']):
-        entry = {'case': case}
+        entry = {'case': case, 'prompt': prompt}
         try:
             text, metrics = _chat(profile, prompt, fetch)
             entry.update(metrics)
+            entry['response'] = text
             try:
                 entry['passed'] = bool(check(parse_json(text)))
                 entry['recovered_json'] = not text.strip().startswith('{')

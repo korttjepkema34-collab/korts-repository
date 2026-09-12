@@ -220,3 +220,30 @@ reproduce now.
 
 **Not done deliberately:** media (deferred by Kort), real project execution paths, reboot/overnight
 testing, off-machine backups. Each needs Kort's go-ahead rather than an agent's judgement.
+
+### 2026-09-11 — Codex qualification reliability candidate
+
+Owner asked to continue assistant work while Claude handles sprites/characters. Prepared an isolated
+candidate on `codex/qualification-reliability`, based on `d174dd7`, under `work/qualification-reliability`.
+No sprite, character, static frontend or media configuration changes. The only dashboard change is
+backend qualification status reporting; reconcile that small `assistant/web.py` hunk if Claude edits it.
+
+**VERIFIED offline:** Shared benchmark/production request construction; profile-bound qualification
+checked at promotion and execution; accurate dashboard qualification status; private prompt/response
+evidence retention. Regressions reproduced on baseline, then passed. Final repository gate:
+150 passed, one Windows symlink-permission skip, ten passing subtests. Independent reviewer accepted
+the corrected candidate and independently passed all five new regression tests. Leak scan clean.
+
+**VERIFIED live:** All four baseline services active at `d174dd7`; doctor passes with service
+environment loaded. CPU narrative passed 3/4 production-equivalent cases but failed pressure handling;
+the probe correctly refused promotion. CPU operations passed 4/4, then completed an isolated synthetic
+business draft through planning, worker and review to `draft_ready`. Both cloud calls used Nemotron
+Ultra at verified zero cost; one CPU worker call. The pressure benchmark took 630.11 seconds and
+4096 tokens, so this does not establish interactive-speed performance. No GPU calls or business notes.
+
+**PARTIAL:** Full code-project/multi-job acceptance, other role qualifications, reboot/overnight and
+off-machine backups remain open. Existing live qualifications lack the new fingerprint and must be
+retested before this candidate is deployed. No service/profile changes, push, merge or deployment.
+
+Details and rollout/rollback instructions: `QUALIFICATION-RELIABILITY-2026-09-11.md`.
+Private live evidence: runtime `reports/qualification-review-20260912/` (narrative and operations).

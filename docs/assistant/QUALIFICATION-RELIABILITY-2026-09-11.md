@@ -15,6 +15,8 @@ Candidate lives in an isolated checkout. No artwork, media configuration or stat
   qualification and does not show a stale idle worker as available.
 - Cloud qualification and catalog reports save the exact synthetic question on success and failure.
   Randomized arithmetic questions can therefore be independently recomputed from retained evidence.
+- Local benchmark reports also retain synthetic prompts and raw responses, including malformed
+  responses, in the existing private report directory so future failures can be investigated.
 - Benchmark age uses an explicitly UTC timestamp and rejects future dates.
 
 ## Verification
@@ -43,6 +45,35 @@ healthy, with individual timestamps; they are not all new probes.
 
 Live CPU-only acceptance is recorded in the handoff session entry when complete.
 No GPU inference is part of this candidate's acceptance probe.
+
+**VERIFIED live limitation:** On 2026-09-12 at 01:59:48 UTC, CPU `narrative` (`qwen3.5:4b`,
+context 8192) passed structured output, dependency ordering and long-context recall but failed
+`malformed_pressure` under production request settings. That case returned 1451 output tokens
+in 243.03 seconds; it was not a request timeout. The probe refused promotion and did not start a
+workflow. Its private report identifier is `codex-qualification-gxzauhlt`. This run preceded raw
+response retention, so the exact content-level cause is unknown. Do not relabel this result as a
+pass or infer that the existing narrative qualification proves production-equivalent compliance.
+
+**VERIFIED live CPU draft flow:** The separate `operations` run starting 02:07:24 UTC passed all
+four cases. The pressure case consumed the full 4096-token budget and took 630.11 seconds, which
+also demonstrates why a fixed 600-second timeout is insufficient. This is a compliance pass,
+not evidence of acceptable interactive latency.
+
+The isolated synthetic business task then completed cloud planning -> CPU operations draft ->
+cloud review -> `draft_ready`. It used two verified zero-cost cloud calls and one CPU worker call.
+Both planning and review used `nvidia/nemotron-3-ultra-550b-a55b:free`. The artifact independently
+contained the required sentence, and the recorded review approved it. No private business notes
+were loaded; task data and the temporary qualification remained isolated. Cloud calls were charged
+against the existing configured daily call ledger, not a separate test allowance.
+
+Evidence is preserved in private runtime `reports/qualification-review-20260912/`, with separate
+`narrative` and `operations` directories. Raw benchmark responses remain private. The final amendment
+retaining responses was independently reviewed and all five focused tests passed again; the full
+repository gate was repeated afterward with the same 150 passed, one skipped result.
+
+**PARTIAL overall acceptance:** This verifies one CPU draft workflow. It does not close the prior
+multi-job code execution/integration issue, requalify the other CPU/GPU roles, or establish reboot,
+overnight or off-machine backup acceptance. No deployed profiles or services were changed.
 
 ## Rollout and rollback
 

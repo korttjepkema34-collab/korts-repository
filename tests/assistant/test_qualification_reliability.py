@@ -36,6 +36,8 @@ class QualificationReliabilityTests(unittest.TestCase):
             with patch('assistant.benchmark.cases', return_value=[('ok', 'prompt', lambda x: True)]):
                 report = benchmark.run_role('writer', profile, fetch)
             self.assertTrue(report['passed'])
+            self.assertEqual(report['cases'][0]['prompt'], 'prompt')
+            self.assertEqual(report['cases'][0]['response'], '{}')
             benchmark.save(report, root)
             profile['instructions'] = 'A different persona.'
             (root / 'workers.json').write_text(json.dumps({'writer': profile}))
