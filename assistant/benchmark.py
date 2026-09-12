@@ -9,30 +9,25 @@ For each local role this measures, with real requests:
 
 Results are written to the private runtime (reports/benchmarks/). Nothing is marked qualified
 automatically: `python -m assistant.benchmark qualify <role>` copies qualified=true into the
-private workers.json only when a passing benchmark for the same model and context is < 7 days old.
+private workers.json only when a passing benchmark for the same effective profile is < 7 days old.
 """
 from __future__ import annotations
 import argparse
 import json
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from .core import runtime_root
-from .models import request_json, parse_json
+from .models import request_json, parse_json, local_request, local_profile_fingerprint
 from .gpu import device_of
 
 FILLER = ('The caravan crossed the dunes while the keepers counted relics and mended their banners. ' * 40)
 
 
-def _chat(profile, prompt, fetch=request_json, num_predict=4096):
+def _chat(profile, prompt, fetch=request_json):
     started = time.monotonic()
-    data = fetch(profile['endpoint'].rstrip('/') + '/api/chat', {
-        'model': profile['model'], 'stream': False, 'format': 'json',
-        'think': profile.get('think', False),
-        'keep_alive': profile.get('keep_alive', '10m'),
-        'messages': [{'role': 'system', 'content': profile.get('instructions', '')},
-                     {'role': 'user', 'content': prompt}],
-        'options': {'num_ctx': profile.get('num_ctx', 8192), 'num_predict': num_predict, 'temperature': 0}},
-        timeout=900)
+    url, payload, timeout = local_request(profile, prompt)
+    data = fetch(url, payload, timeout=timeout)
     elapsed = time.monotonic() - started
     evals = data.get('eval_count') or 0
     eval_s = (data.get('eval_duration') or 0) / 1e9
@@ -65,6 +60,7 @@ def run_role(name, profile, fetch=request_json):
               'num_ctx': profile.get('num_ctx', 8192), 'at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
               'cases': []}
     try:
+        result['profile_fingerprint'] = local_profile_fingerprint(profile)
         started = time.monotonic()
         fetch(endpoint + '/api/generate', {'model': profile['model'], 'prompt': '', 'keep_alive': '10m'}, timeout=900)
         result['warmup_seconds'] = round(time.monotonic() - started, 2)
@@ -78,10 +74,11 @@ def run_role(name, profile, fetch=request_json):
         result['passed'] = False
         return result
     for case, prompt, check in cases(result['num_ctx']):
-        entry = {'case': case}
+        entry = {'case': case, 'prompt': prompt}
         try:
             text, metrics = _chat(profile, prompt, fetch)
             entry.update(metrics)
+            entry['response'] = text
             try:
                 entry['passed'] = bool(check(parse_json(text)))
                 entry['recovered_json'] = not text.strip().startswith('{')
@@ -120,11 +117,15 @@ def qualify(root, role, max_age_days=7):
         raise ValueError('No passing benchmark for this role; run the benchmark first')
     if report['model'] != profile.get('model') or report['num_ctx'] != profile.get('num_ctx', 8192):
         raise ValueError('Latest benchmark used a different model or context size')
-    age = time.time() - time.mktime(time.strptime(report['at'], '%Y-%m-%dT%H:%M:%SZ')) + time.timezone
-    if age > max_age_days * 86400:
-        raise ValueError('Benchmark is older than %d days; rerun it' % max_age_days)
+    if report.get('profile_fingerprint') != local_profile_fingerprint(profile):
+        raise ValueError('Latest benchmark lacks matching profile evidence; rerun it')
+    measured = datetime.strptime(report['at'], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+    age = time.time() - measured.timestamp()
+    if not 0 <= age <= max_age_days * 86400:
+        raise ValueError('Benchmark timestamp is future-dated or older than %d days; rerun it' % max_age_days)
     profile['qualified'] = True
-    profile['qualification'] = {'at': report['at'], 'model': report['model'], 'num_ctx': report['num_ctx']}
+    profile['qualification'] = {'at': report['at'], 'model': report['model'], 'num_ctx': report['num_ctx'],
+                                'profile_fingerprint': report['profile_fingerprint']}
     tmp = workers_path.with_suffix('.tmp')
     tmp.write_text(json.dumps(workers, indent=2), encoding='utf-8')
     tmp.replace(workers_path)

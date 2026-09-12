@@ -46,8 +46,8 @@ def main():
             for name,prompt,predicate in CASES:
                 try:
                     response,provenance=cloud.ask(prompt)
-                    results.append({'case':name,'passed':bool(predicate(response)),'response':response,'route':provenance})
-                except Exception as e:results.append({'case':name,'passed':False,'error':str(e)})
+                    results.append({'case':name,'prompt':prompt,'passed':bool(predicate(response)),'response':response,'route':provenance})
+                except Exception as e:results.append({'case':name,'prompt':prompt,'passed':False,'error':str(e)})
             reports.append({'route':candidate,'passed':all(r['passed'] for r in results),'cases':results})
         p=s.root/'reports'/'qualification.json';p.parent.mkdir(exist_ok=True)
         p.write_text(json.dumps({'at':now(),'results':reports,'note':'Smoke evaluation only. No configuration changed.'},indent=2),encoding='utf-8')

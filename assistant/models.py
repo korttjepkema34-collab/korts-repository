@@ -1,6 +1,7 @@
 """Free-only cloud leadership through Claude Code; bounded local Ollama workers."""
 from __future__ import annotations
 import json
+import hashlib
 import os
 import subprocess
 import time
@@ -263,7 +264,8 @@ class Cloud:
                 errors.append(provider+': '+type(e).__name__)
         raise CloudUnavailable('No qualified free cloud route completed: '+', '.join(errors))
 
-def local_ask(worker, prompt):
+def local_request(worker, prompt):
+    """One request definition shared by production and qualification."""
     base=worker['endpoint'].rstrip('/')
     parsed=urlparse(base)
     if parsed.scheme!='http' or parsed.hostname not in ('127.0.0.1','localhost'):
@@ -275,9 +277,41 @@ def local_ask(worker, prompt):
     # the previous fixed 600 s timeout cut those off just before they finished. Scale with the
     # budget the role is actually allowed to produce, and let a slow role raise it explicitly.
     timeout=int(worker.get('timeout_seconds',max(600,num_predict//4)))
-    data=request_json(base+'/api/chat',{'model':model,'stream':False,
+    payload={'model':model,'stream':False,
         'think':worker.get('think',False),
         'keep_alive':worker.get('keep_alive','10m'),
         'messages':[{'role':'system','content':worker['instructions']}, {'role':'user','content':prompt}],
-        'options':{'num_ctx':worker.get('num_ctx',8192),'num_predict':num_predict}},timeout=timeout)
+        'options':{'num_ctx':worker.get('num_ctx',8192),'num_predict':num_predict}}
+    return base+'/api/chat',payload,timeout
+
+
+def local_profile_fingerprint(worker):
+    """Bind evidence to effective request settings and the role's execution configuration.
+
+    Qualification bookkeeping and display labels intentionally do not affect the fingerprint.
+    This identifies configuration, not model weights or the content of referenced skill files.
+    """
+    url,payload,timeout=local_request(worker,'')
+    evidence={'version':1,'url':url,'payload':payload,'timeout':timeout,
+              'adapter':worker.get('adapter'),'device':worker.get('device'),
+              'skills':worker.get('skills',[])}
+    return hashlib.sha256(json.dumps(evidence,sort_keys=True).encode('utf-8')).hexdigest()
+
+
+def local_qualified(worker):
+    """Legacy or changed profiles need new evidence before the runner can use them."""
+    if worker.get('qualified') is not True:
+        return False
+    qualification=worker.get('qualification')
+    if not isinstance(qualification,dict) or not qualification.get('profile_fingerprint'):
+        return False
+    try:
+        return qualification['profile_fingerprint']==local_profile_fingerprint(worker)
+    except (ValueError,TypeError,KeyError,AttributeError):
+        return False
+
+
+def local_ask(worker, prompt):
+    url,payload,timeout=local_request(worker,prompt)
+    data=request_json(url,payload,timeout=timeout)
     return data['message']['content']

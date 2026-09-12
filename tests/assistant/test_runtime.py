@@ -338,6 +338,12 @@ class GpuTests(Base):
         self.assertEqual(run.local_gate(self.s, self.cfg, self.profiles['writer'], 'writer', 'game', 't', 'j'),
                          'unqualified')
         self.profiles['writer']['qualified'] = True
+        self.assertEqual(run.local_gate(self.s, self.cfg, self.profiles['writer'], 'writer', 'game', 't', 'j'),
+                         'unqualified')
+        from assistant.models import local_profile_fingerprint
+        self.profiles['writer']['model'] = 'qwen3.5:4b'
+        self.profiles['writer']['qualification'] = {
+            'profile_fingerprint': local_profile_fingerprint(self.profiles['writer'])}
         self.assertIsNone(run.local_gate(self.s, self.cfg, self.profiles['writer'], 'writer', 'game', 't', 'j'))
 
 

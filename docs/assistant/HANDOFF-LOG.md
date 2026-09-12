@@ -238,15 +238,29 @@ The claim that Ling variants are interchangeable is stronger than one small shar
 The cooldown change retains rejection of answers without verified cost and has a passing regression
 test. Full workflow acceptance remains open. No runtime changes, deployment or publication performed.
 
-### 2026-09-11 — Codex isolated reliability work (coordination note)
+### 2026-09-11 — Codex qualification reliability candidate
 
-Prepared candidate `95ac19a` on `codex/qualification-reliability` in
-`work/qualification-reliability`; the shared checkout stays on its existing branch.
-No sprites, characters, static frontend or media configuration touched. A small backend
-qualification-status change in `assistant/web.py` needs normal reconciliation if Claude edits it.
-**VERIFIED:** final repository tests 150 passed, one skipped; independent code review accepted;
-CPU operations passed the corrected benchmark and an isolated Nemotron -> CPU draft -> Nemotron
-review workflow at verified zero cloud cost. CPU narrative failed one of four corrected cases.
-**PARTIAL:** other roles and full code-project acceptance remain open. Nothing deployed or pushed.
-Existing local qualifications require fresh evidence before deploying the candidate.
-See candidate `docs/assistant/QUALIFICATION-RELIABILITY-2026-09-11.md` for evidence and rollout notes.
+Owner asked to continue assistant work while Claude handles sprites/characters. Prepared an isolated
+candidate on `codex/qualification-reliability`, based on `d174dd7`, under `work/qualification-reliability`.
+No sprite, character, static frontend or media configuration changes. The only dashboard change is
+backend qualification status reporting; reconcile that small `assistant/web.py` hunk if Claude edits it.
+
+**VERIFIED offline:** Shared benchmark/production request construction; profile-bound qualification
+checked at promotion and execution; accurate dashboard qualification status; private prompt/response
+evidence retention. Regressions reproduced on baseline, then passed. Final repository gate:
+150 passed, one Windows symlink-permission skip, ten passing subtests. Independent reviewer accepted
+the corrected candidate and independently passed all five new regression tests. Leak scan clean.
+
+**VERIFIED live:** All four baseline services active at `d174dd7`; doctor passes with service
+environment loaded. CPU narrative passed 3/4 production-equivalent cases but failed pressure handling;
+the probe correctly refused promotion. CPU operations passed 4/4, then completed an isolated synthetic
+business draft through planning, worker and review to `draft_ready`. Both cloud calls used Nemotron
+Ultra at verified zero cost; one CPU worker call. The pressure benchmark took 630.11 seconds and
+4096 tokens, so this does not establish interactive-speed performance. No GPU calls or business notes.
+
+**PARTIAL:** Full code-project/multi-job acceptance, other role qualifications, reboot/overnight and
+off-machine backups remain open. Existing live qualifications lack the new fingerprint and must be
+retested before this candidate is deployed. No service/profile changes, push, merge or deployment.
+
+Details and rollout/rollback instructions: `QUALIFICATION-RELIABILITY-2026-09-11.md`.
+Private live evidence: runtime `reports/qualification-review-20260912/` (narrative and operations).

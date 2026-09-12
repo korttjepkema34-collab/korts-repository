@@ -64,9 +64,9 @@ def evaluate(root,config,model,cloud_factory=Cloud):
             start=time.monotonic()
             try:
                 response,route=cloud.ask(prompt)
-                results.append({'case':name,'passed':bool(predicate(response)),'response':response,'route':route,'seconds':time.monotonic()-start})
+                results.append({'case':name,'prompt':prompt,'passed':bool(predicate(response)),'response':response,'route':route,'seconds':time.monotonic()-start})
             except Exception as e:
-                results.append({'case':name,'passed':False,'error':type(e).__name__,'seconds':time.monotonic()-start})
+                results.append({'case':name,'prompt':prompt,'passed':False,'error':type(e).__name__,'seconds':time.monotonic()-start})
     finally:store.close()
     card={'model':model,'at':now(),'suite':SUITE,'fingerprint':entry['fingerprint'],
           'passed':all(x['passed'] for x in results),'cases':results,
