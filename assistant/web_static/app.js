@@ -10,6 +10,68 @@ const $ = (id) => document.getElementById(id);
 const APP_BASE = location.pathname.replace(/\/[^/]*$/, '').replace(/\/$/, '');
 const appUrl = (path) => APP_BASE + (path.startsWith('/') ? path : '/' + path);
 
+// ---------------------------------------------------------------- crew sprites
+// The workforce sprites are 48x64 pixel grids in static/sprites.js, drawn by
+// scripts/gen_crew_sprites.py. Each is expanded once into an SVG <symbol>; every
+// agent on screen is a <use> of that symbol, so re-rendering the office does not
+// rebuild thousands of rectangles.
+const SVG_NS = 'http://www.w3.org/2000/svg';
+let spritesInstalled = false;
+
+function svgEl(tag, attrs) {
+  const n = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  return n;
+}
+
+function spriteRects(rows, pal) {
+  let out = '';
+  for (let y = 0; y < rows.length; y++) {
+    const row = rows[y];
+    for (let x = 0; x < row.length;) {
+      const ch = row[x];
+      if (ch === '.') { x++; continue; }
+      let run = 1;
+      while (x + run < row.length && row[x + run] === ch) run++;
+      out += '<rect x="' + x + '" y="' + y + '" width="' + run +
+             '" height="1" fill="' + (pal[ch] || '#ff00ff') + '"/>';
+      x += run;
+    }
+  }
+  return out;
+}
+
+function installSprites() {
+  if (spritesInstalled || !window.CREW_SPRITES) return;
+  const data = window.CREW_SPRITES;
+  const box = 'viewBox="0 0 ' + data.size[0] + ' ' + data.size[1] + '">';
+  let markup = '';
+  for (const [id, s] of Object.entries(data.crew)) {
+    markup += '<symbol id="crew-' + id + '-0" ' + box + spriteRects(s.f0, s.pal) + '</symbol>';
+    markup += '<symbol id="crew-' + id + '-1" ' + box + spriteRects(s.f1, s.pal) + '</symbol>';
+  }
+  const defs = svgEl('svg', { width: 0, height: 0, 'aria-hidden': 'true',
+    style: 'position:absolute', focusable: 'false' });
+  defs.innerHTML = markup;
+  document.body.prepend(defs);
+  spritesInstalled = true;
+}
+
+// Two frames: at rest, and with the head dropped a pixel. CSS cross-fades them
+// while the agent is working, and shows only the first frame otherwise.
+function pixelPerson(workerId) {
+  installSprites();
+  const data = window.CREW_SPRITES;
+  const svg = svgEl('svg', { class: 'pixel-person', 'aria-hidden': 'true',
+    focusable: 'false', 'shape-rendering': 'crispEdges',
+    viewBox: '0 0 ' + (data ? data.size[0] : 48) + ' ' + (data ? data.size[1] : 64) });
+  if (!data) return svg;
+  const id = data.crew[workerId] ? workerId : 'operations';
+  svg.append(svgEl('use', { href: '#crew-' + id + '-0', class: 'fr-a' }));
+  svg.append(svgEl('use', { href: '#crew-' + id + '-1', class: 'fr-b' }));
+  return svg;
+}
+
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs || {})) {
@@ -371,7 +433,7 @@ function renderOffice() {
         title: w.name + ' — open details', 'aria-label': w.name + ', ' + w.state,
         onclick: open },
         bubble ? el('span', { class: 'agent-bubble' }, bubble) : null,
-        el('span', { class: 'pixel-person', 'aria-hidden': 'true' }),
+        pixelPerson(w.id),
         el('span', { class: 'agent-name' }, display),
         el('span', { class: 'agent-state' }, w.state)));
     }
@@ -389,7 +451,7 @@ function showAgent(w, room) {
   const failures = events.filter((e) => /fail|blocked/.test(e.kind)).length;
   const task = S.tasks.find((t) => t.id === w.task_id);
   body.replaceChildren(el('div', { class: 'agent-profile' },
-    el('div', { class: 'agent-profile-head' }, el('span', { class: 'pixel-person', 'aria-hidden': 'true' }),
+    el('div', { class: 'agent-profile-head' }, pixelPerson(w.id),
       el('div', {}, el('span', { class: 'eyebrow' }, labels[room] || room), el('h2', {}, w.name), statusChip(w.state))),
     (w.state === 'blocked' || w.state === 'waiting') ? el('div', { class: 'agent-needs' }, el('h3', {}, w.state === 'blocked' ? 'NEEDS YOUR HELP' : 'WAITING'),
       el('p', {}, task ? task.goal : (w.state === 'blocked' ? 'Open the associated task for its blocker and evidence.' : 'This specialist is waiting for its next dependency or resource.'))) : null,
@@ -443,7 +505,7 @@ function animateHandoff(from, to) {
     const a = $('agent-' + from); const b = $('agent-' + to); if (!a || !b) return;
     const ra = a.getBoundingClientRect(); const rb = b.getBoundingClientRect();
     const t = el('div', { class: 'handoff-runner', 'aria-hidden': 'true' },
-      el('span', { class: 'pixel-person' }), el('span', { class: 'task-parcel' }));
+      pixelPerson(from), el('span', { class: 'task-parcel' }));
     document.body.append(t);
     const start = `translate(${ra.left + ra.width / 2 - 16}px, ${ra.top + ra.height / 2 - 24}px)`;
     const end = `translate(${rb.left + rb.width / 2 - 16}px, ${rb.top + rb.height / 2 - 24}px)`;
