@@ -125,6 +125,32 @@ Across every randomized reconciliation problem, Ultra answered 4 of 5 correctly;
 nex each answered 0. No free route is dependable at money arithmetic, so Charter C5 stands: business
 figures must be recomputed independently and never taken from a model's own output.
 
+## Leadership promoted to Nemotron Ultra — 2026-09-11
+
+Owner approved promoting `nvidia/nemotron-3-ultra-550b-a55b:free` to the primary route with
+`inclusionai/ling-3.0-flash-vl:free` retained as fallback. Both are marked qualified from live
+evidence recorded in the private runtime under `models/`. Verified after the change: the primary
+served a real request, and with the primary deliberately broken the call fell through to the
+fallback, both at zero reported cost with no substituted model.
+
+The three free Ling variants were compared over one 10-case run (the suite plus three extra
+reconciliation problems). `-fin`, `-sante` and `-vl` each scored 5/10 with money arithmetic 0/5,
+passing every judgment case and failing every arithmetic one at 0.7-1.4 s. They are interchangeable
+for this system's purposes; keep `-vl` and ignore the others. Notably `-fin` is finance-branded and
+still answered none correctly, with plausible near-miss figures — domain tuning is not evidence of
+arithmetic reliability.
+
+## Specialists are routed by strength; arithmetic is not a model job — 2026-09-11
+
+The owner's design intent is a team: a weaker orchestrator is acceptable when another specialist
+covers that gap, and roles should be assigned to strengths rather than seeking one model that is
+best at everything. That holds for reasoning, drafting, review and code.
+
+It does not extend to money arithmetic, because no tested free model is dependable there and the
+best observed was 4/5. The specialist for a financial figure is deterministic code, not another
+model. Any finance role must recompute through a calculation tool and treat model output as a
+proposal to check, which is what Charter C5 already requires.
+
 ## Tjepkema dashboard access — 2026-09-11
 
 The owner explicitly chose passwordless access for the Tjepkema Server page. The deployed runtime
