@@ -220,3 +220,33 @@ reproduce now.
 
 **Not done deliberately:** media (deferred by Kort), real project execution paths, reboot/overnight
 testing, off-machine backups. Each needs Kort's go-ahead rather than an agent's judgement.
+
+### 2026-09-11 — Codex review of a18bece..d174dd7
+
+**VERIFIED locally:** checkout was clean at d174dd7 before this review; five commits above a18bece.
+Offline assistant suite ran 132 tests: OK, with 1 skipped (131 executed successfully).
+The repository leak checker reported no findings across git-tracked files.
+**PARTIAL:** live service health, server commit and GitHub commit were not independently verified;
+GitHub remote lookup failed to connect from this environment.
+
+Review findings: benchmark/production parity remains incomplete: benchmark forces JSON format and
+zero temperature, uses a fixed 900-second timeout and ignores profile num_predict, while production
+uses different settings. Existing qualification checks bind evidence only to model/context, not
+persona or generation settings. Randomized cloud reconciliation reports do not save the generated
+prompt or expected answer, preventing later independent reconstruction from the report alone.
+The claim that Ling variants are interchangeable is stronger than one small shared test supports.
+The cooldown change retains rejection of answers without verified cost and has a passing regression
+test. Full workflow acceptance remains open. No runtime changes, deployment or publication performed.
+
+### 2026-09-11 — Codex isolated reliability work (coordination note)
+
+Prepared candidate `95ac19a` on `codex/qualification-reliability` in
+`work/qualification-reliability`; the shared checkout stays on its existing branch.
+No sprites, characters, static frontend or media configuration touched. A small backend
+qualification-status change in `assistant/web.py` needs normal reconciliation if Claude edits it.
+**VERIFIED:** final repository tests 150 passed, one skipped; independent code review accepted;
+CPU operations passed the corrected benchmark and an isolated Nemotron -> CPU draft -> Nemotron
+review workflow at verified zero cloud cost. CPU narrative failed one of four corrected cases.
+**PARTIAL:** other roles and full code-project acceptance remain open. Nothing deployed or pushed.
+Existing local qualifications require fresh evidence before deploying the candidate.
+See candidate `docs/assistant/QUALIFICATION-RELIABILITY-2026-09-11.md` for evidence and rollout notes.
