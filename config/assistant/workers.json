@@ -8,15 +8,16 @@
     ],
     "adapter": "code-sandbox",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/ui.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "backend": {
@@ -27,15 +28,16 @@
     ],
     "adapter": "code-sandbox",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/backend.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "visual-qa": {
@@ -47,15 +49,16 @@
     ],
     "adapter": "ollama-draft",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/visual-qa.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "debugger": {
@@ -68,15 +71,16 @@
     ],
     "adapter": "ollama-draft",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/debugger.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "optimizer": {
@@ -88,15 +92,16 @@
     ],
     "adapter": "ollama-draft",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/optimizer.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "operations": {
@@ -113,7 +118,6 @@
     "skills": [],
     "device": "cpu",
     "keep_alive": "15m",
-    "qualified": false,
     "direction": "config/assistant/roles/operations.md",
     "approved_models": [
       "qwen3.5:4b"
@@ -127,15 +131,16 @@
     ],
     "adapter": "code-sandbox",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/game-coder.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "environment": {
@@ -146,15 +151,16 @@
     ],
     "adapter": "unconfigured-media",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/environment.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "sprites": {
@@ -165,15 +171,16 @@
     ],
     "adapter": "unconfigured-media",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/sprites.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "narrative": {
@@ -189,7 +196,6 @@
     "skills": [],
     "device": "cpu",
     "keep_alive": "15m",
-    "qualified": false,
     "direction": "config/assistant/roles/narrative.md",
     "approved_models": [
       "qwen3.5:4b"
@@ -203,15 +209,16 @@
     ],
     "adapter": "unconfigured-media",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gemma4:12b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/audio.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "level-designer": {
@@ -222,15 +229,16 @@
     ],
     "adapter": "ollama-draft",
     "endpoint": "http://127.0.0.1:11435",
-    "model": "qwen3.5:9b",
+    "model": "gpt-oss:20b",
     "num_ctx": 8192,
     "skills": [],
     "device": "gpu",
     "keep_alive": "5m",
-    "qualified": false,
     "direction": "config/assistant/roles/level-designer.md",
     "approved_models": [
-      "qwen3.5:9b"
+      "qwen3.5:9b",
+      "gemma4:12b",
+      "gpt-oss:20b"
     ]
   },
   "personal-helper": {
@@ -246,7 +254,6 @@
     "skills": [],
     "device": "cpu",
     "keep_alive": "15m",
-    "qualified": false,
     "direction": "config/assistant/roles/personal-helper.md",
     "approved_models": [
       "qwen3.5:4b"
